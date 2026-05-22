@@ -113,7 +113,7 @@ the tone, the hesitations, the "not sure if...". This is raw material.]
 
 ## Suggested follow-up
 
-- [ ] [Concrete action if obvious, otherwise delete this section]
+- [ ] [Concrete action if obvious; task-roundup will add a ^t-id and pull it into TODO.md]
 ```
 
 ### Step 6 — Propagation

@@ -146,8 +146,9 @@ calendar, drive, chat, and internal vault activity. Top themes: [3-5 keywords].
 
 ## Pending follow-ups
 
-- [ ] [Owner: user] [Action] — deadline: YYYY-MM-DD — context: [[...]]
-- [ ] [Owner: user] [...]
+[Fed from the Overdue + Today buckets of [[TODO]]. Each links back to its source note.]
+- [ ] [Action] — [[TODO]] → [[<source-note>#^t-id]] — due YYYY-MM-DD
+- [ ] [Action] — [[<source-note>#^t-id]] — due YYYY-MM-DD
 
 ## People touched today
 
@@ -309,6 +310,24 @@ prioritize:
 List the non-updated ones in the brief: "12 other people interacted with today not
 auto-updated (volume cap). Invoke people-update manually if needed."
 
+### Step 6.5 — Task roundup & reconciliation (CRITICAL)
+
+Run the `task-roundup` procedure (see `.claude/skills/task-roundup/SKILL.md`):
+
+1. Collect the action items **you own** from today's new/updated notes (ingested
+   meetings, decisions, follow-ups) plus anything still open across the vault.
+2. Assign a `^t-id` block-ID to any new action line that lacks one (additive edit).
+3. Reconcile checkboxes both ways with `TODO.md` at the vault root: a box checked in
+   `TODO.md` since the last run flips its source line to `[x] ✅ <date>`, and vice versa.
+4. Refresh `TODO.md`, bucketed by due date (overdue / today / upcoming / later / no date
+   / waiting-on-others / done).
+
+⚠️ Completing a task in `02-people/` or `05-decisions/` is a checkbox toggle + `✅ <date>`
+stamp only — never touch Compiled truth in auto mode.
+
+Then surface the result at the top of the brief: feed `## Pending follow-ups` from the
+**Overdue** and **Today** buckets (with the `[[TODO]]` backlinks), and flag the overdue count.
+
 ### Step 7 — Propagation
 
 - **Link from the previous daily**: append "→ Next: [[YYYY-MM-DD]]" in the previous day's daily note.
@@ -333,6 +352,10 @@ auto-updated (volume cap). Invoke people-update manually if needed."
 - 2 new people detected (never seen in the vault):
   - "Riley Chen" (3 emails today, seems to be a PM) → create a note?
   - "Sam Patel" (1 meeting + 1 email, external context) → create a note?
+
+✅ TASKS
+✓ TODO.md refreshed — ⏰ 2 overdue · 📅 3 due today · ⏳ 5 waiting on others
+✓ Reconciled 3 check-offs with source notes (2 done here, 1 done in source)
 
 🎯 SYNTHESIS
 ✓ Top topic: onboarding script friction

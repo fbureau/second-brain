@@ -165,7 +165,36 @@ ai-first: true
 4. **Active dedup** — if you detect a duplicate (same person, same project), merge instead of duplicating.
 5. **Append-only on sensitive notes** (people, decisions) — never overwrite, always timeline.
 
-## 7. Auto-orchestration (daily-brief as conductor)
+## 7. Tasks & the TODO dashboard
+
+Action items are born scattered across notes (meeting `## Action items`, decision
+`## Execution plan`, daily `## Pending follow-ups`, people timeline `Follow-up:` lines,
+braindump `## Suggested follow-up`). The `task-roundup` skill consolidates the ones the
+user owns into a single **`TODO.md` at the vault root** and keeps the checkboxes synced.
+
+**Source notes are the source of truth; `TODO.md` is a generated, reconcilable view.**
+
+### Action-line convention
+```
+- [ ] <action> — owner: me — due: YYYY-MM-DD — #from/meeting ^t-ab12cd
+```
+- `owner:` — `me` / your alias = yours; a `[[02-people/...]]` = someone else's.
+- `^t-xxxxxx` — a stable block-ID anchor (`^t-` + 6 lowercase alphanumerics), assigned
+  once by `task-roundup`, **never changed or reused**. It links a `TODO.md` line back to
+  its source line and makes two-way check-off reliable.
+
+### Sync rules
+- Box checked in `TODO.md` → next roundup sets the source line to `[x] ✅ <date>`.
+- Box checked in a source note → next roundup checks it in `TODO.md`.
+- Completing a task in an append-only zone (`02-people/`, `05-decisions/`) is a checkbox
+  toggle + `✅ <date>` stamp **only** — never rewrite surrounding content.
+- Done items stay in `TODO.md` for 14 days, then drop off (history lives in the source + Git).
+
+Skills that create action lines (`meeting-ingest`, `daily-brief`, `challenge-decision`,
+`braindump`) should write them in this convention so roundup is cheap; `task-roundup`
+backfills anchors on any that lack one.
+
+## 8. Auto-orchestration (daily-brief as conductor)
 
 The system is designed to run **autonomously**. The scheduled `daily-brief` is more
 than a brief — it's an orchestrator that:
@@ -173,7 +202,8 @@ than a brief — it's an orchestrator that:
 1. Detects new meeting transcripts → invokes `meeting-ingest` automatically (except sensitive 1-1s → flag for manual validation).
 2. Detects the day's people interactions → auto-updates existing people notes (frontmatter + `(auto-logged)` timeline entry).
 3. Clears `staleness-flag` when an interaction is detected.
-4. Generates the usual synthetic brief.
+4. Runs `task-roundup`: collects new action items, reconciles `TODO.md` check-offs both ways, surfaces overdue/today.
+5. Generates the usual synthetic brief.
 
 ### Auto vs. manual marking conventions
 
@@ -218,7 +248,7 @@ Backfilled notes (`(Backfilled)` marker) weight at ~30% for the first 6–8 week
 `staleness-flag` is auto-cleared as soon as a real interaction is detected (by
 daily-brief or by manual `people-update`). No human action needed to remove it.
 
-## 8. Default behavior
+## 9. Default behavior
 
 When a skill runs, you:
 
@@ -229,7 +259,7 @@ When a skill runs, you:
 5. Report at the end: what was created/modified, with paths.
 6. Ask for confirmation before any destructive action (deletion, structural refactor).
 
-## 9. What you NEVER do
+## 10. What you NEVER do
 
 - Delete a note (use `07-archive/` instead).
 - Overwrite a section without a timestamp.

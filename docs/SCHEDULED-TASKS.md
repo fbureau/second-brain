@@ -103,8 +103,17 @@ For each person interacted with today:
 - If the note doesn't exist: create NOTHING; list it for validation
 - CAP: max 20 auto-updates per run
 
+PHASE 6.5 — TASK ROUNDUP (step 6.5 — CRITICAL)
+Run the task-roundup procedure (.claude/skills/task-roundup/SKILL.md):
+- Collect the action items the user owns from today's new/updated notes + anything still open
+- Assign a ^t-id block-ID to any new action line that lacks one (additive)
+- Reconcile checkboxes BOTH ways with the vault-root TODO.md (a box checked in TODO.md →
+  set source line to "[x] ✅ <today>"; checked in source → check in TODO.md)
+- Refresh TODO.md, bucketed by due date
+- Completing a task in 02-people/ or 05-decisions/ = checkbox toggle + ✅ stamp ONLY
+
 PHASE 7 — PROPAGATION (step 7)   PHASE 8 — REPORT (step 8)
-Report: 📥 auto-ingestion · ⏸ awaiting validation · 🎯 synthesis (top 3-5, weak signals, near deadlines)
+Report: 📥 auto-ingestion · ⏸ awaiting validation · ✅ tasks (overdue/today/waiting) · 🎯 synthesis (top 3-5, weak signals, near deadlines)
 
 NON-NEGOTIABLE
 ✓ AI-first 100% (preamble, frontmatter, wikilinks, recency markers)

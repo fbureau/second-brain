@@ -1,5 +1,23 @@
 # Changelog
 
+## v3.1 — Centralized task management
+
+- **New `task-roundup` skill.** Consolidates the action items you own from across the
+  vault (meeting `## Action items`, decision `## Execution plan`, daily `## Pending
+  follow-ups`, people `Follow-up:`, braindump `## Suggested follow-up`) into a single
+  **`TODO.md` at the vault root**.
+- **Two-way checkbox sync** via stable Obsidian block-IDs (`^t-id`): notes stay the
+  source of truth, `TODO.md` is a generated, reconcilable view. Checking a box in either
+  place propagates to the other; completions are stamped `✅ <date>`.
+- **`daily-brief` integration**: a roundup phase reconciles `TODO.md` every run and
+  surfaces overdue/today items at the top of the brief.
+- Buckets: overdue / today / upcoming / later / no-date / waiting-on-others / done
+  (done kept 14 days). Optional priority (🔴/🟡) and task-staleness flags.
+- Updated `_CLAUDE.md` (action-line convention + sync rules), templates, `meeting-ingest`,
+  `braindump`, README, QUICKSTART, USAGE-PATTERNS, and SCHEDULED-TASKS accordingly.
+- Append-only safe: completing a task in `02-people/` or `05-decisions/` is a checkbox
+  toggle + `✅` stamp only — the pre-commit hook still permits it.
+
 ## v3 — Migration to Claude Code (English, generic)
 
 ### Major changes
