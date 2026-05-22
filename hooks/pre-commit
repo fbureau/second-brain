@@ -1,0 +1,107 @@
+#!/usr/bin/env bash
+#
+# Second Brain — pre-commit vault validation
+#
+# Runs 3 checks on staged Markdown notes:
+#   1. AI-first compliance  — frontmatter + `ai-first: true` + "For future Claude" preamble
+#   2. Append-only history  — refuse deleting timeline entries / protected markers
+#                             in 02-people/ and 05-decisions/
+#   3. Frontmatter sanity   — well-formed `---` fences (+ wikilink warnings)
+#
+# Bypass (use sparingly, for intentional history edits):
+#   git commit --no-verify
+#
+set -uo pipefail
+
+# Match note files inside the numbered vault folders, anywhere in the tree
+# (works whether the vault is at repo root or nested under vault-starter/).
+VAULT_NOTE_RE='(^|/)0[0-7]-(inbox|daily|people|projects|meetings|decisions|knowledge|archive)/.+\.md$'
+APPEND_ONLY_RE='(^|/)0(2-people|5-decisions)/.+\.md$'
+
+errors=0
+warnings=0
+
+# Staged files added/copied/modified (not deletions).
+staged="$(git diff --cached --name-only --diff-filter=ACM)"
+
+note_files=()
+while IFS= read -r f; do
+  [[ -z "$f" ]] && continue
+  [[ "$(basename "$f")" == "README.md" ]] && continue
+  if [[ "$f" =~ $VAULT_NOTE_RE ]]; then
+    note_files+=("$f")
+  fi
+done <<< "$staged"
+
+# ---------------------------------------------------------------------------
+# Check 1 + 3 — AI-first compliance & frontmatter sanity (on note content)
+# ---------------------------------------------------------------------------
+for f in "${note_files[@]:-}"; do
+  [[ -z "${f:-}" ]] && continue
+  [[ -f "$f" ]] || continue
+
+  # Frontmatter must open on line 1 and have a closing fence.
+  first_line="$(head -n 1 "$f")"
+  fence_count="$(grep -c '^---[[:space:]]*$' "$f")"
+  if [[ "$first_line" != "---" || "$fence_count" -lt 2 ]]; then
+    echo "✗ [frontmatter] $f — missing or unterminated YAML frontmatter (--- ... ---)"
+    errors=$((errors + 1))
+    continue
+  fi
+
+  # ai-first: true must be present.
+  if ! grep -Eq '^ai-first:[[:space:]]*true[[:space:]]*$' "$f"; then
+    echo "✗ [ai-first] $f — frontmatter missing 'ai-first: true'"
+    errors=$((errors + 1))
+  fi
+
+  # "For future Claude" preamble must be present.
+  if ! grep -Eq '^##[[:space:]]+For future Claude[[:space:]]*$' "$f"; then
+    echo "✗ [preamble] $f — missing '## For future Claude' preamble"
+    errors=$((errors + 1))
+  fi
+
+  # Warn on obviously broken wikilinks: empty [[]] or unmatched [[.
+  if grep -Eq '\[\[[[:space:]]*\]\]' "$f"; then
+    echo "⚠ [wikilink] $f — contains an empty wikilink [[ ]]"
+    warnings=$((warnings + 1))
+  fi
+done
+
+# ---------------------------------------------------------------------------
+# Check 2 — Append-only history on 02-people/ and 05-decisions/
+# Block diffs that DELETE a dated timeline header or a protected marker.
+# Editing Compiled truth / Open threads / frontmatter is still allowed.
+# ---------------------------------------------------------------------------
+while IFS= read -r f; do
+  [[ -z "$f" ]] && continue
+  [[ "$f" =~ $APPEND_ONLY_RE ]] || continue
+
+  removed="$(git diff --cached -U0 -- "$f" | grep -E '^-' | grep -Ev '^---')"
+
+  # Removed dated timeline entry header, e.g. "### 2026-05-20 — ..."
+  if grep -Eq '^-#{2,4}[[:space:]]*[0-9]{4}-[0-9]{2}-[0-9]{2}' <<< "$removed"; then
+    echo "✗ [append-only] $f — deletes a dated timeline entry (history is append-only)"
+    errors=$((errors + 1))
+  fi
+
+  # Removed protected marker.
+  if grep -Eq '^-.*\((auto-logged|Backfilled)\)' <<< "$removed"; then
+    echo "✗ [append-only] $f — removes a protected (auto-logged)/(Backfilled) marker"
+    errors=$((errors + 1))
+  fi
+done <<< "$staged"
+
+# ---------------------------------------------------------------------------
+echo
+if [[ "$warnings" -gt 0 ]]; then
+  echo "⚠ $warnings warning(s)."
+fi
+if [[ "$errors" -gt 0 ]]; then
+  echo "✗ $errors error(s). Commit blocked."
+  echo "  Fix the notes above, or — for an intentional history edit — use: git commit --no-verify"
+  exit 1
+fi
+
+echo "✓ Vault checks passed."
+exit 0
