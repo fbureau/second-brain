@@ -1,0 +1,110 @@
+# CLAUDE.md — Project brief
+
+> Read this first, every session. It defines how the Second Brain works and the
+> rules you must never break.
+
+## What this is
+
+This repository is the **tooling** for an AI-first personal knowledge system:
+six skills (`.claude/skills/`), note templates, docs, Git hooks, and a
+`vault-starter/` you copy into your actual notes vault.
+
+The **vault** is a separate folder of Markdown notes (an Obsidian vault, synced
+however you like). It is the *memory*. Claude has no persistent memory across
+sessions — the vault is what persists. Every durable fact, decision, and
+interaction belongs in the vault, not in chat history.
+
+## Where the vault lives
+
+Set this once and keep it accurate. The skills read and write here.
+
+```
+VAULT_PATH: <fill in — e.g. ~/notes/second-brain or ./vault>
+```
+
+If the vault is a sibling folder or nested under this repo, point the skills and
+hooks at it. If it is its own Git repository, install the hooks there too
+(see `hooks/README.md`).
+
+## Vault structure
+
+```
+_CLAUDE.md        ← system brief, read first every session that touches the vault
+00-inbox/         ← raw, untriaged capture
+  MY-PROFILE.md   ← the user's profile, read by every skill at preflight
+01-daily/         ← daily briefs + journal
+02-people/        ← stakeholder CRM (the strategic core) — APPEND-ONLY
+03-projects/      ← active and past projects
+04-meetings/      ← ingested meetings
+05-decisions/     ← decision log (feeds challenge-decision) — APPEND-ONLY
+06-knowledge/     ← durable syntheses, frameworks, lessons
+07-archive/       ← inactive (never deleted)
+```
+
+## The six skills
+
+| Skill | Purpose | Auto-invoked by daily-brief? |
+|---|---|---|
+| `braindump` | Fast capture of unstructured thoughts → `00-inbox/` | No |
+| `meeting-ingest` | Transcript → structured note in `04-meetings/` | Yes |
+| `daily-brief` | Daily/weekly synthesis + orchestrator | Scheduled |
+| `people-update` | Append-only stakeholder CRM updates | Yes |
+| `challenge-decision` | Red-team a decision against vault history | No |
+| `kickstart-backfill` | One-shot Day-1 backfill from 1–6 months of history | No (single use) |
+
+Each skill auto-triggers from its description in `.claude/skills/<name>/SKILL.md`.
+You can also invoke one explicitly by name.
+
+## AI-first rules (NON-NEGOTIABLE)
+
+Every note you create or modify must follow all seven:
+
+1. **"For future Claude" preamble** — 2–3 sentences in **English** at the top of
+   every note: what it is, why it was written, when. Always English, even when
+   the body is in another language.
+2. **Machine-readable frontmatter** — at minimum `date`, `type`, `tags`,
+   `ai-first: true`.
+3. **Recency markers** — date every external claim inline: `(as of 2026-03)`.
+4. **Verbatim sources** — inline URL or reference, never a paraphrased citation.
+5. **Wikilinks for every entity** — `[[02-people/Alex Rivera]]`,
+   `[[03-projects/Onboarding Refresh]]`. Create a stub rather than skip a link.
+6. **Confidence levels** when relevant — `stated | high | medium | speculation`.
+7. **Append-only on sensitive notes** (`02-people/`, `05-decisions/`) — never
+   overwrite; add timestamped entries.
+
+## Default behavior when a skill runs
+
+1. Read `_CLAUDE.md` (vault root) and `00-inbox/MY-PROFILE.md` first.
+2. Read the relevant notes (people, projects) before writing.
+3. Apply the AI-first rules 100%.
+4. Create missing links (stubs if needed).
+5. End with a short report: what was created/modified, with paths.
+6. Ask before any destructive action (delete, structural refactor, overwrite).
+
+## What you NEVER do
+
+- Delete a note (move to `07-archive/` instead).
+- Overwrite a section without a timestamp.
+- Create a person note without fuzzy-matching for an existing one first.
+- Invent sources or dates (prefer `unknown` or `as of <date>, from conversation`).
+- Reformat old notes without asking.
+- Auto-ingest a meeting marked sensitive in `MY-PROFILE.md` without confirmation.
+- Modify a person's "Compiled truth" in auto mode (manual `people-update` only).
+- Edit the `(auto-logged)` and `(Backfilled)` markers — other skills rely on them.
+
+## Working language
+
+Write note bodies in the user's working language. The `For future Claude`
+preamble is always English (LLMs parse structured English preambles best).
+
+## Scheduling
+
+Claude Code has no built-in cron. The daily/weekly automations run via an
+external scheduler — see `docs/SCHEDULED-TASKS.md` for tool-agnostic setups.
+
+## Git conventions
+
+- Commit vault changes often; the append-only history is the audit trail.
+- The pre-commit hook in `hooks/` validates AI-first compliance and refuses
+  destructive diffs on `02-people/` and `05-decisions/`. Don't bypass it with
+  `--no-verify` unless you understand why it fired.
