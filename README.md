@@ -126,6 +126,13 @@ See [`docs/INSTALL.md`](docs/INSTALL.md) for the full procedure. In short:
 - **Weekly review**: run `daily-brief` in weekly mode.
 - **Vault health**: a monthly scheduled check for orphans, stubs, and duplicates.
 
+## Versioning
+
+[Semantic Versioning](https://semver.org/) with annotated Git tags on `main`. Current
+version is in [`VERSION`](VERSION); changes are logged in [`CHANGELOG.md`](CHANGELOG.md).
+To move an existing vault between versions, see [`docs/UPGRADING.md`](docs/UPGRADING.md);
+to cut a release, see [`docs/RELEASING.md`](docs/RELEASING.md).
+
 ## Credits
 
 Patterns drawn from:
