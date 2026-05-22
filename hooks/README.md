@@ -21,6 +21,8 @@ The single `pre-commit` script runs three checks on staged Markdown notes:
 
    Editing `Compiled truth`, `Open threads`, or frontmatter (e.g. updating
    `last-interaction`) is still allowed — only history destruction is blocked.
+   Toggling a task checkbox (`- [ ]` → `- [x] … ✅ <date>`) and appending a `^t-id`
+   anchor are line edits, not deletions, so `task-roundup` sync passes the hook.
 
 3. **Frontmatter sanity** — rejects unterminated frontmatter; warns (non-blocking)
    on empty wikilinks `[[ ]]`.

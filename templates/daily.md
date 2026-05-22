@@ -33,7 +33,8 @@ email, calendar, drive, chat, and internal vault activity. [Top themes summary.]
 
 ## Pending follow-ups
 
-- [ ]
+<!-- Fed/synced by task-roundup ↔ TODO.md. Action lines carry a ^t-id anchor. -->
+- [ ] [Action] — owner: me — due: YYYY-MM-DD — #from/daily ^t-xxxxxx
 
 ## People touched today
 

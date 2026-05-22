@@ -21,12 +21,13 @@ Three non-negotiable principles:
 ## How it works
 
 ```
-SOURCES (via MCP / available tools)         CLAUDE CODE + 6 SKILLS
+SOURCES (via MCP / available tools)         CLAUDE CODE + 7 SKILLS
   email · calendar · drive · chat   ──────▶   braindump          → fast capture
                                               meeting-ingest     → transcript → structured note
                                               daily-brief        → daily/weekly synthesis + orchestrator
                                               people-update      → append-only stakeholder CRM
                                               challenge-decision → red-team against your own history
+                                              task-roundup       → consolidate actions → TODO.md (two-way sync)
                                               kickstart-backfill → one-shot Day-1 seeding
                                                        │
                                                        ▼
@@ -49,6 +50,7 @@ SOURCES (via MCP / available tools)         CLAUDE CODE + 6 SKILLS
 │   │   ├── daily-brief/SKILL.md
 │   │   ├── people-update/SKILL.md
 │   │   ├── challenge-decision/SKILL.md
+│   │   ├── task-roundup/SKILL.md
 │   │   └── kickstart-backfill/SKILL.md
 │   └── settings.json          ← Claude Code config
 ├── hooks/                     ← Git pre-commit vault validation (+ install.sh)
@@ -69,6 +71,7 @@ SOURCES (via MCP / available tools)         CLAUDE CODE + 6 SKILLS
 
 ```
 _CLAUDE.md        ← system brief, read first every session
+TODO.md           ← consolidated action list (task-roundup, two-way checkbox sync)
 00-inbox/         ← raw capture · MY-PROFILE.md lives here
 01-daily/         ← daily briefs + journal
 02-people/        ← stakeholder CRM (append-only)
@@ -89,15 +92,16 @@ See [`docs/INSTALL.md`](docs/INSTALL.md) for the full procedure. In short:
 4. Try it: `/braindump my priorities this week are X, Y, Z`.
 5. (Optional) Wire `daily-brief` to an external scheduler — see [`docs/SCHEDULED-TASKS.md`](docs/SCHEDULED-TASKS.md).
 
-## The six skills
+## The seven skills
 
 | Skill | When to use | Output |
 |---|---|---|
 | **braindump** | Loose ideas, after an informal chat, in the morning | Tagged, linked note in `00-inbox/` |
 | **meeting-ingest** | After a meeting (transcript, raw notes) | Structured note in `04-meetings/` (decisions, actions, people) |
-| **daily-brief** | Daily/weekly (scheduled) or on demand | `01-daily/YYYY-MM-DD.md` synthesis; orchestrates auto-ingest + people updates |
+| **daily-brief** | Daily/weekly (scheduled) or on demand | `01-daily/YYYY-MM-DD.md` synthesis; orchestrates auto-ingest + people updates + task roundup |
 | **people-update** | After a meaningful stakeholder interaction | Append-only update to `02-people/[Name].md` |
 | **challenge-decision** | Before a high-stakes decision | Red-team of your idea against vault history |
+| **task-roundup** | "what's on my plate", or after new action items land | Consolidated `TODO.md` at the vault root, checkboxes synced both ways |
 | **kickstart-backfill** | Once, on Day 1 | Pre-fills the vault from 1–6 months of history |
 
 ## Daily use
@@ -121,6 +125,13 @@ See [`docs/INSTALL.md`](docs/INSTALL.md) for the full procedure. In short:
   `02-people/` and `05-decisions/`.
 - **Weekly review**: run `daily-brief` in weekly mode.
 - **Vault health**: a monthly scheduled check for orphans, stubs, and duplicates.
+
+## Versioning
+
+[Semantic Versioning](https://semver.org/) with annotated Git tags on `main`. Current
+version is in [`VERSION`](VERSION); changes are logged in [`CHANGELOG.md`](CHANGELOG.md).
+To move an existing vault between versions, see [`docs/UPGRADING.md`](docs/UPGRADING.md);
+to cut a release, see [`docs/RELEASING.md`](docs/RELEASING.md).
 
 ## Credits
 

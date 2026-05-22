@@ -128,6 +128,31 @@ When you meet a new peer or stakeholder:
 - 3-5 interactions later, you'll have a rich compiled picture.
 - 10 interactions later, it's a real mental model of the person.
 
+### Workflow 6 — Staying on top of your actions
+
+Actions pile up scattered across meeting notes, decisions, daily follow-ups, and 1-1s.
+`task-roundup` pulls the ones **you own** into one `TODO.md` at the vault root and keeps
+the checkboxes in sync.
+
+**Anytime**
+```
+/task-roundup
+```
+→ Refreshes `TODO.md`: ⏰ overdue, 📅 today, 🔜 upcoming, 🗓 later, 🧭 no date,
+⏳ waiting on others, ✅ done. Each line links back to its source note via a `^t-id` anchor.
+
+**Check things off where it's convenient**
+- Tick a box in `TODO.md` → the next roundup flips the box in the source note and stamps `✅ <date>`.
+- Tick it in the source note (e.g. inside a meeting note) → the next roundup checks it in `TODO.md`.
+
+**It runs itself**
+- `daily-brief` runs a roundup every evening, so overdue/today items surface at the top
+  of the brief under "Pending follow-ups" without you asking.
+
+**Tip** — when you say "I owe Alex Rivera the QA plan by Friday", that becomes an anchored
+action line in today's daily note and shows up in `TODO.md` automatically. Don't keep tasks
+only in your head — out of the head, into a note, and roundup does the rest.
+
 ## Advanced patterns
 
 ### Pattern A — Automated pre-meeting prep

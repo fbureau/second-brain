@@ -23,7 +23,7 @@ vault-starter/       ← copy into your notes vault (fill in 00-inbox/MY-PROFILE
 
 Full details: [`docs/INSTALL.md`](docs/INSTALL.md).
 
-## 3. The six commands to remember
+## 3. The seven commands to remember
 
 ```
 /braindump [content]                         ← flash capture
@@ -31,6 +31,7 @@ Full details: [`docs/INSTALL.md`](docs/INSTALL.md).
 /people-update [Name]: [observation]         ← CRM
 /daily-brief                                 ← synthesis on demand
 /challenge-decision [position you're weighing]← before a high-stakes decision
+/task-roundup                                ← consolidate actions into TODO.md
 /kickstart-backfill                          ← once, on Day 1
 ```
 

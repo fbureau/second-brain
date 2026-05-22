@@ -61,8 +61,9 @@ was addressed in the final decision.]
 
 ## Execution plan
 
-- [ ] [Action 1] — owner: [[...]] — deadline: YYYY-MM-DD
-- [ ] [Action 2]
+<!-- Action lines carry an owner, a due date, and a ^t-id anchor (assigned by task-roundup) -->
+- [ ] [Action 1] — owner: me — due: YYYY-MM-DD — #from/decision ^t-xxxxxx
+- [ ] [Action 2] — owner: [[02-people/...]] — due: YYYY-MM-DD
 
 ## Timeline (post-decision)
 

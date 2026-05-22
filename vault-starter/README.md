@@ -8,6 +8,7 @@ AI-first structure the skills expect.
 ```
 .
 ├── _CLAUDE.md              ← System brief (read by Claude every session)
+├── TODO.md                 ← Consolidated action list (task-roundup, two-way sync)
 ├── 00-inbox/               ← Raw, untriaged capture
 │   └── MY-PROFILE.md       ← Your profile (read by every skill) — FILL THIS IN
 ├── 01-daily/               ← Daily briefs + journal

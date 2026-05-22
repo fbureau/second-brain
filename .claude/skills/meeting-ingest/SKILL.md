@@ -188,8 +188,10 @@ unresolved item or follow-up.]
 
 ## Action items
 
-- [ ] [Action] — owner: [[02-people/...]] — deadline: YYYY-MM-DD
-- [ ] [Action] — owner: unassigned ⚠️ — deadline: unspecified
+<!-- Each line carries owner, due date, #from/meeting tag, and a ^t-id anchor for TODO.md sync -->
+- [ ] [Action] — owner: me — due: YYYY-MM-DD — #from/meeting ^t-xxxxxx
+- [ ] [Action] — owner: [[02-people/...]] — due: YYYY-MM-DD — #from/meeting ^t-xxxxxx
+- [ ] [Action] — owner: unassigned ⚠️ — due: unspecified — #from/meeting ^t-xxxxxx
 
 ## Strategic themes
 
@@ -247,8 +249,9 @@ Append to `01-daily/YYYY-MM-DD.md` (ingestion date) under `## Meetings ingested`
 ```
 
 #### 7.5 Action items
-If a task-management system is in place (`tasks.md`, dataview, a Tasks plugin),
-add the action items there. Otherwise, keep them in the meeting note.
+Keep the action items in the meeting note (with `^t-id` anchors). The ones the user
+owns are consolidated into the vault-root `TODO.md` by `task-roundup` (and by
+`daily-brief`'s roundup phase) — no need to duplicate them anywhere else.
 
 ### Step 8 — Report
 
