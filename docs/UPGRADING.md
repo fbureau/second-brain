@@ -1,139 +1,143 @@
 # Upgrading
 
-How to move an existing vault to a newer version. Each section is self-contained — do
-the one for the jump you're making. Works whether you drive the system with **Claude Code**
-or with a **scheduled assistant (Cowork) + Obsidian** still running the previous version.
+Moving an existing vault to a newer version. Find your jump below and follow the numbered
+steps. Each upgrade is **additive and append-only safe** — nothing is renamed or deleted.
 
-> Golden rule before any upgrade: **commit (or back up) your vault first.** Every step
-> below is additive and append-only safe, but a clean checkpoint means a one-command rollback.
+## How upgrades work here (read once)
+
+There are two parts, and they're separate:
+
+1. **The tooling** = this repo (skills, hooks, docs). You update it with `git pull` (Claude
+   Code) or by re-uploading the changed skill files (Cowork). Updating tooling is safe — it
+   touches no notes.
+2. **Your vault** = your Markdown notes. Most upgrades need *nothing* here. A few add a new
+   file or a one-time pass over existing notes — always called out explicitly.
+
+> **Before any upgrade:** commit (or back up) your vault. That's your one-command undo.
+
+**The 3-step shape of every upgrade:**
+1. Update the tooling.
+2. Apply any vault changes for that version (often none).
+3. Verify, then commit your vault.
 
 ---
 
-## 3.0.0 → 3.1.0 — Centralized tasks (`task-roundup`)
+## 3.1.0 → 3.2.0  ·  Doc ingestion, knowledge base, recall, prioritize, language setting
 
-**What's new:** a `task-roundup` skill that consolidates the action items you own into a
-single **`TODO.md`** at the vault root, with **two-way checkbox sync** via stable block-IDs
-(`^t-id`). `daily-brief` gains a roundup phase. Nothing is renamed or removed — this is a
-backward-compatible minor release, so no data migration is required, just a one-time
-anchor backfill (step D).
+**TL;DR:** four new skills + a language setting. Purely additive — **no vault migration**.
 
-### A. Update the tooling
+### What's new
+- `doc-ingest` — capture strategy docs / analyses / reports into `06-knowledge/`.
+- `knowledge-build` — distill a real knowledge base from the vault (also runs weekly).
+- `recall` — ask the vault questions, get cited answers.
+- `prioritize` — get a ranked plan of what to do next.
+- **Working language** is now a setting in `MY-PROFILE.md`.
 
-**Claude Code**
-```bash
-cd /path/to/second-brain        # the tooling repo
-git fetch origin && git checkout main && git pull
-git checkout v3.1.0             # or stay on main
+### Steps
+
+**1. Update the tooling**
+- *Claude Code:* `git pull` in this repo. The four new skills appear under `.claude/skills/`
+  and auto-trigger — nothing to install.
+- *Cowork / Obsidian:* upload these new/changed files into your project:
+  `doc-ingest/SKILL.md`, `knowledge-build/SKILL.md`, `recall/SKILL.md`, `prioritize/SKILL.md`,
+  and the updated `daily-brief/SKILL.md`. Add them to your project's skill list if you keep one.
+
+**2. Set your language** (the FR/EN mixing fix)
+Open `00-inbox/MY-PROFILE.md` → **Communication preferences** → set:
 ```
-The new skill is now at `.claude/skills/task-roundup/SKILL.md` and auto-triggers. Nothing
-else to install.
+- **Working language**: fr     # or en, es, …
+```
+From now on every skill writes note bodies and replies in that language. The
+"For future Claude" preamble stays English by design. *(Existing notes aren't rewritten;
+this applies going forward. Ask `knowledge-build`/`recall` in your language anytime.)*
 
-**Cowork (or another assistant) + Obsidian**
-Upload the two changed skill files into your project's files, replacing the old ones:
-- `.claude/skills/task-roundup/SKILL.md` (new)
-- `.claude/skills/daily-brief/SKILL.md` (updated — adds the roundup phase)
+**3. (Optional) Seed your knowledge base**
+Run it once to turn existing meetings/decisions/docs into durable knowledge:
+```
+knowledge-build
+```
+Review what it proposes (auto-created notes are flagged `needs-review: true`), then commit.
 
-If your project's custom instructions list the skills, add `task-roundup` to that list.
+**4. (Cowork only) Add the weekly knowledge sweep**
+If you run a hand-written *weekly* prompt, add one line so it folds in the new behavior:
+`After the review, run knowledge-build (conservative sweep; flag new/updated notes needs-review: true).`
+On Claude Code this is already in the skill — nothing to do.
 
-### B. Update your existing vault
+### You're done when
+- `recall what do I know about <a topic>` returns a cited answer.
+- `doc-ingest` + a pasted report creates a note in `06-knowledge/` linked to a project.
+- `prioritize` returns a ranked plan.
+- New notes come out in your chosen language.
 
-**B1. Add `TODO.md`** at the vault root. Either copy the seed:
+---
+
+## 3.0.0 → 3.1.0  ·  Centralized tasks (`task-roundup` + `TODO.md`)
+
+**TL;DR:** new `task-roundup` skill + a `TODO.md` at the vault root with two-way checkbox
+sync. One small vault change (add `TODO.md`) and one one-time pass (backfill anchors).
+
+### Steps
+
+**1. Update the tooling**
+- *Claude Code:* `git pull`. New skill at `.claude/skills/task-roundup/`; `daily-brief` updated.
+- *Cowork:* upload `task-roundup/SKILL.md` (new) and `daily-brief/SKILL.md` (updated).
+
+**2. Add `TODO.md` to your vault** (or let step 4 create it)
 ```bash
 cp /path/to/second-brain/vault-starter/TODO.md /path/to/your/vault/TODO.md
 ```
-…or skip it — the first `task-roundup` run creates it.
 
-**B2. Merge the new `_CLAUDE.md` section.** If you **haven't customized** your vault's
-`_CLAUDE.md`, just overwrite it with `vault-starter/_CLAUDE.md`. If you **have** customized
-it, diff the two and bring over just these changes:
+**3. Update your vault's `_CLAUDE.md`** *(skip if you never customized it — just copy the new one)*
+Add the new **"Tasks & the TODO dashboard"** section. The easiest path: open
+`vault-starter/_CLAUDE.md` and your vault's `_CLAUDE.md` side by side and copy the section
+across. The block to add:
 
-1. Insert a new **section 7 — Tasks & the TODO dashboard** (paste the block below) before
-   your current "Auto-orchestration" section.
-2. In the auto-orchestration numbered list, add the bullet:
-   `Runs task-roundup: collects new action items, reconciles TODO.md check-offs both ways, surfaces overdue/today.`
-3. Renumber the trailing sections (Auto-orchestration, Default behavior, What you NEVER do)
-   so numbers stay sequential.
-
-<details><summary>Section 7 block to paste</summary>
+<details><summary>Section to paste into your <code>_CLAUDE.md</code></summary>
 
 ```markdown
-## 7. Tasks & the TODO dashboard
+## Tasks & the TODO dashboard
 
-Action items are born scattered across notes (meeting `## Action items`, decision
-`## Execution plan`, daily `## Pending follow-ups`, people timeline `Follow-up:` lines,
-braindump `## Suggested follow-up`). The `task-roundup` skill consolidates the ones the
-user owns into a single **`TODO.md` at the vault root** and keeps the checkboxes synced.
+Action items are scattered across notes (meeting `## Action items`, decision
+`## Execution plan`, daily `## Pending follow-ups`, people `Follow-up:`, braindump
+`## Suggested follow-up`). `task-roundup` consolidates the ones you own into a single
+`TODO.md` at the vault root. Source notes are the source of truth; `TODO.md` is a
+generated, reconcilable view.
 
-**Source notes are the source of truth; `TODO.md` is a generated, reconcilable view.**
+Action-line convention: `- [ ] <action> — owner: me — due: YYYY-MM-DD — #from/meeting ^t-ab12cd`
+- `^t-xxxxxx` is a stable block-ID, assigned once by task-roundup, never changed.
 
-### Action-line convention
-- [ ] <action> — owner: me — due: YYYY-MM-DD — #from/meeting ^t-ab12cd
-- `owner:` — `me` / your alias = yours; a `[[02-people/...]]` = someone else's.
-- `^t-xxxxxx` — a stable block-ID anchor, assigned once by task-roundup, never changed or
-  reused. It links a `TODO.md` line back to its source line and makes two-way check-off reliable.
-
-### Sync rules
-- Box checked in `TODO.md` → next roundup sets the source line to `[x] ✅ <date>`.
-- Box checked in a source note → next roundup checks it in `TODO.md`.
-- Completing a task in an append-only zone (`02-people/`, `05-decisions/`) is a checkbox
-  toggle + `✅ <date>` stamp only — never rewrite surrounding content.
-- Done items stay in `TODO.md` for 14 days, then drop off (history lives in the source + Git).
+Sync: a box checked in `TODO.md` flips its source line to `[x] ✅ <date>` on the next
+roundup, and vice-versa. Completing a task in `02-people/` or `05-decisions/` is a checkbox
+toggle + `✅` stamp only — never rewrite surrounding content.
 ```
 </details>
 
-**B3. (Optional) Adopt the action-line convention** in your own note templates so future
-actions carry `owner:` / `due:` / `#from/` and get anchored cleanly. The shipped templates
-(`templates/decision.md`, `templates/daily.md`) show the format.
-
-### C. Update the daily automation
-
-The skill file already contains the roundup phase, so if your scheduler simply runs
-"follow the daily-brief skill", you're done. **Only if you pinned a hand-written daily
-prompt** (common in Cowork), add this phase between the people-update and propagation phases:
-
-```
-PHASE 6.5 — TASK ROUNDUP
-Run the task-roundup procedure (.claude/skills/task-roundup/SKILL.md):
-- Collect the action items the user owns from today's new/updated notes + anything still open
-- Assign a ^t-id block-ID to any new action line that lacks one (additive)
-- Reconcile checkboxes BOTH ways with the vault-root TODO.md
-  (box checked in TODO.md → set source to "[x] ✅ <today>"; checked in source → check in TODO.md)
-- Refresh TODO.md, bucketed by due date
-- In 02-people/ and 05-decisions/: checkbox toggle + ✅ stamp ONLY
-```
-
-### D. One-time migration: backfill anchors
-
-Run the skill once against your existing vault:
+**4. One-time: backfill anchors and build the first `TODO.md`**
 ```
 task-roundup
 ```
-On this first run it scans your existing notes, **appends a `^t-id` to every action line
-that lacks one** (additive — it removes nothing), and builds your first `TODO.md`. This is
-safe: it doesn't rewrite action text, doesn't touch Compiled truth, and passes the
-pre-commit hook. Review the diff and commit:
+It adds a `^t-id` to every existing action line (additive — removes nothing) and builds
+`TODO.md`. Review and commit:
 ```bash
-cd /path/to/your/vault && git add -A && git commit -m "Backfill task anchors + initial TODO.md (v3.1.0)"
+cd /path/to/your/vault && git add -A && git commit -m "Backfill task anchors + TODO.md (v3.1.0)"
 ```
 
-### E. Verify
+**5. (Cowork only)** If you run a hand-written *daily* prompt, add a roundup phase — see the
+`PHASE 6.5` block in [`SCHEDULED-TASKS.md`](SCHEDULED-TASKS.md).
 
-1. Open `TODO.md` — your open actions should be bucketed by due date, each linking back to its source.
-2. Tick a box in `TODO.md`, run `task-roundup` again → confirm the box flips to `[x] ✅ <date>` in the source note.
-3. Tick a different box inside a source note, run `task-roundup` → confirm it now shows under `## ✅ Done` in `TODO.md`.
+### You're done when
+- `TODO.md` lists your open actions bucketed by due date, each linking to its source note.
+- Checking a box in `TODO.md` then running `task-roundup` flips it in the source note.
 
 ### Rollback
-
 ```bash
-cd /path/to/second-brain && git checkout v3.0.0     # tooling
-cd /path/to/your/vault && git revert <backfill-commit>   # or: git checkout <pre-upgrade-commit> -- .
+cd /path/to/second-brain && git checkout v3.0.0          # tooling
+cd /path/to/your/vault   && git revert <backfill-commit> # vault (anchors are harmless if kept)
 ```
-The anchors are harmless if left in place, so a full rollback is rarely needed.
 
-### Notes
+---
 
-- **Obsidian** renders `^t-id` as an invisible block reference at end of line — it won't
-  clutter your notes, and `[[note#^t-id]]` links jump straight to the action.
-- The two-way sync runs at **roundup time** (manual `task-roundup` or the daily brief),
-  not live. If you want live check-off inside Obsidian too, the Tasks/Dataview plugins can
-  read the same `- [ ]` lines — optional and not required.
+### Notes that apply to all upgrades
+- **macOS:** the `.claude/` folder is hidden in Finder (dot-folder). Press **⌘⇧.** to reveal it.
+- The pre-commit hook permits checkbox toggles and `^t-id` anchors in `02-people/` /
+  `05-decisions/` — it only blocks deleting timeline history.

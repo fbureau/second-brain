@@ -23,17 +23,23 @@ vault-starter/       ← copy into your notes vault (fill in 00-inbox/MY-PROFILE
 
 Full details: [`docs/INSTALL.md`](docs/INSTALL.md).
 
-## 3. The seven commands to remember
+## 3. The commands to remember
 
 ```
 /braindump [content]                         ← flash capture
 /meeting-ingest  (then paste a transcript)   ← process a meeting
+/doc-ingest  (then paste/link a document)    ← capture a strategy doc / report / analysis
 /people-update [Name]: [observation]         ← CRM
 /daily-brief                                 ← synthesis on demand
 /challenge-decision [position you're weighing]← before a high-stakes decision
 /task-roundup                                ← consolidate actions into TODO.md
+/knowledge-build [topic]                     ← distill durable knowledge
+/recall [your question]                      ← query the vault (cited answers)
+/prioritize                                  ← what to focus on + a plan
 /kickstart-backfill                          ← once, on Day 1
 ```
+
+(You don't have to type the command — describing what you want triggers the right skill.)
 
 (You can also just describe what you want — the skills auto-trigger.)
 

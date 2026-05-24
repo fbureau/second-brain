@@ -73,6 +73,12 @@ When relevant: `stated` | `high` | `medium` | `speculation`.
 NEVER overwrite an existing note. Add entries to "Timeline" or "Updates" sections
 with a timestamp.
 
+### 3.8 Working language
+Write note **bodies** and chat replies in the **Working language** set in
+`00-inbox/MY-PROFILE.md` (default `en`). The `## For future Claude` preamble is **always
+English** regardless. If the user writes in another language, capture verbatim content in
+its original language but keep the note's structure and preamble per these rules.
+
 ## 4. Type schemas (frontmatter by type)
 
 ### `type: braindump`
@@ -149,6 +155,30 @@ tags: [daily]
 ai-first: true
 ```
 
+### `type: knowledge`
+```yaml
+date: YYYY-MM-DD              # first crystallized
+updated: YYYY-MM-DD
+type: knowledge
+tags: [knowledge, <topic-tags>]
+confidence: high | medium | speculation
+needs-review: false          # true if created/updated by knowledge-build in auto mode
+ai-first: true
+```
+
+### `type: doc`  (an ingested produced document)
+```yaml
+date: YYYY-MM-DD              # ingestion date
+doc-date: YYYY-MM-DD          # the document's own date (or "unknown")
+type: doc
+doc-type: strategy | analysis | report | deck | spec | research | external-article
+tags: [doc, <topic-tags>]
+source: "<verbatim URL or path/title>"
+project: "[[03-projects/...]]"
+confidence: high | medium | speculation
+ai-first: true
+```
+
 ## 5. Naming conventions
 
 - **Files**: `kebab-case.md` except people (`02-people/First Last.md`).
@@ -204,6 +234,9 @@ than a brief — it's an orchestrator that:
 3. Clears `staleness-flag` when an interaction is detected.
 4. Runs `task-roundup`: collects new action items, reconciles `TODO.md` check-offs both ways, surfaces overdue/today.
 5. Generates the usual synthetic brief.
+
+In **weekly mode**, daily-brief also runs `knowledge-build` — a conservative sweep that
+proposes new/updated `06-knowledge/` notes, flagged `needs-review: true` for you to confirm.
 
 ### Auto vs. manual marking conventions
 

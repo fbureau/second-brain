@@ -28,6 +28,12 @@ is what persists.
    cd second-brain
    ```
 
+   > **macOS note — the `.claude/` folder looks "missing".** Folders starting with a dot are
+   > hidden by Finder, so after cloning or unzipping you won't see `.claude/` (where the skills
+   > live). It's there and intentional — Claude Code requires that exact path. To see it:
+   > in Finder press **⌘⇧.** (Command-Shift-Period) to toggle hidden files, or in Terminal run
+   > `ls -a`. Don't rename it. (Same goes for `.gitignore`.)
+
 2. Open the project in Claude Code (open the folder in the desktop/web app, or run the
    CLI from inside it). Claude Code automatically reads:
    - `CLAUDE.md` — the project brief and the non-negotiable AI-first rules.
