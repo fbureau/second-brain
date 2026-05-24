@@ -21,7 +21,7 @@ Three non-negotiable principles:
 ## How it works
 
 ```
-SOURCES (via MCP / available tools)         CLAUDE CODE + 11 SKILLS
+SOURCES (via MCP / available tools)         CLAUDE CODE + 12 SKILLS
   email · calendar · drive · chat   ──────▶   braindump          → fast capture
                                               meeting-ingest     → transcript → structured note
                                               doc-ingest         → strategy doc/report → knowledge
@@ -32,6 +32,7 @@ SOURCES (via MCP / available tools)         CLAUDE CODE + 11 SKILLS
                                               knowledge-build    → distill durable knowledge from the vault
                                               recall             → query the vault, answer with citations
                                               prioritize         → recommend priorities + a plan
+                                              vault-tend         → whole-vault maintenance (re-language, tidy)
                                               kickstart-backfill → one-shot Day-1 seeding
                                                        │
                                                        ▼
@@ -59,6 +60,7 @@ SOURCES (via MCP / available tools)         CLAUDE CODE + 11 SKILLS
 │   │   ├── knowledge-build/SKILL.md
 │   │   ├── recall/SKILL.md
 │   │   ├── prioritize/SKILL.md
+│   │   ├── vault-tend/SKILL.md
 │   │   └── kickstart-backfill/SKILL.md
 │   └── settings.json          ← Claude Code config
 ├── hooks/                     ← Git pre-commit vault validation (+ install.sh)
@@ -100,7 +102,7 @@ See [`docs/INSTALL.md`](docs/INSTALL.md) for the full procedure. In short:
 4. Try it: `/braindump my priorities this week are X, Y, Z`.
 5. (Optional) Wire `daily-brief` to an external scheduler — see [`docs/SCHEDULED-TASKS.md`](docs/SCHEDULED-TASKS.md).
 
-## The eleven skills
+## The twelve skills
 
 | Skill | When to use | Output |
 |---|---|---|
@@ -114,6 +116,7 @@ See [`docs/INSTALL.md`](docs/INSTALL.md) for the full procedure. In short:
 | **knowledge-build** | "what have we learned about X", or to fill out `06-knowledge/` | Distilled, citeable knowledge notes (also runs weekly) |
 | **recall** | "what do I know about X", "did we decide Y" | An answer with citations + a confidence level |
 | **prioritize** | "what should I focus on", "plan my day" | A ranked plan: priorities, order, how to handle, suggested replies |
+| **vault-tend** | "tidy the vault", "put everything in French", "deduplicate" | Whole-vault maintenance — preview-first, batched, append-only safe |
 | **kickstart-backfill** | Once, on Day 1 | Pre-fills the vault from 1–6 months of history |
 
 ## Daily use

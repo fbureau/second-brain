@@ -100,6 +100,7 @@ participants: ["[[02-people/...]]", ...]
 project: "[[03-projects/...]]"
 meeting-type: 1-1 | team-sync | stakeholder | external | townhall
 duration: <min>
+source: ""                                        # verbatim link to the transcript / Google Doc / recording, if any
 ingestion-mode: manual | auto | auto-validated   # auto = ingested by daily-brief; auto-validated = auto then reviewed
 needs-review: true | false                        # true if auto and not yet reviewed
 ai-first: true

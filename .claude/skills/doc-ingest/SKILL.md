@@ -25,7 +25,9 @@ enriches both `06-knowledge/` and the relevant projects.
 
 1. **Read `_CLAUDE.md`** (rules, schemas) and `00-inbox/MY-PROFILE.md` (working language, sensitive topics).
 2. **Get the real timestamp.**
-3. **Capture the source verbatim** — the URL or file path/title. This is non-negotiable (AI-first rule 4).
+3. **Capture the source verbatim** — the URL or file path/title. This is non-negotiable (AI-first
+   rule 4). If it's a **Google Doc** (or any linked doc), keep the canonical URL so you can reopen
+   the original later — store it in both the `source:` frontmatter and the `## Links` section.
 4. **List `02-people/` and `03-projects/`** for reference resolution.
 5. **Classify the document**: strategy | analysis | report/reporting | deck | spec | research | external-article.
 6. **Decide destination**: durable synthesis always lands in `06-knowledge/`; if it's tied to a project, also propagate to that `03-projects/` note.
@@ -100,6 +102,7 @@ confidence are below. [Note if the source is external / its reliability.]
 
 ## Links
 
+- Source: [original document link — e.g. the Google Doc URL]
 - Projects: [[03-projects/...]]
 - People: [[02-people/...]]
 - Related decisions/meetings: [[05-decisions/...]], [[04-meetings/...]]

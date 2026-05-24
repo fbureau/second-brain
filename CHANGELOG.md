@@ -25,9 +25,16 @@ and [`docs/UPGRADING.md`](docs/UPGRADING.md) to move an existing vault between v
   (path + date) and a confidence level, and saying honestly when the vault is silent.
 - **`prioritize` skill** — recommends priority actions and a short plan (order, how to
   handle, suggested replies) from `TODO.md`, calendar, active projects, and recent signals.
+- **`vault-tend` skill** — a standing "knowledge-manager team" for whole-vault maintenance:
+  re-language the vault to one language, normalize frontmatter, repair broken wikilinks,
+  deduplicate people/projects, tidy formatting, propose archives, or any vault-wide adjustment.
+  Always preview-first, confirmation-gated, batched (one commit per batch), and append-only safe.
 - **`type: knowledge` and `type: doc`** frontmatter schemas in `_CLAUDE.md`.
 
 ### Changed
+- **Source links are preserved on ingest**: `meeting-ingest` gains a `source:` field (the
+  transcript / Google Doc / recording link) and `doc-ingest` keeps the original Google Doc URL
+  in both frontmatter and `## Links`, so you can always reopen the source.
 - **Working language is now a setting**: `MY-PROFILE.md` declares it (default `en`); every
   skill writes note bodies and replies in that language while the "For future Claude"
   preamble stays English. Documented in `_CLAUDE.md` (rule 3.8) and `CLAUDE.md`.

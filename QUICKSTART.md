@@ -36,6 +36,7 @@ Full details: [`docs/INSTALL.md`](docs/INSTALL.md).
 /knowledge-build [topic]                     ← distill durable knowledge
 /recall [your question]                      ← query the vault (cited answers)
 /prioritize                                  ← what to focus on + a plan
+/vault-tend                                  ← whole-vault cleanup (re-language, tidy, dedup)
 /kickstart-backfill                          ← once, on Day 1
 ```
 
