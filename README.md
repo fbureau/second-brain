@@ -1,6 +1,6 @@
 # Second Brain
 
-An AI-first personal knowledge system for Claude Code. It turns your meetings,
+An AI-first personal knowledge system for Claude Cowork. It turns your meetings,
 decisions, people, and stray thoughts into a structured Markdown vault that Claude
 can read, search, and reason over — so your second brain *is* Claude's memory.
 
