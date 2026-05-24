@@ -153,6 +153,40 @@ the checkboxes in sync.
 action line in today's daily note and shows up in `TODO.md` automatically. Don't keep tasks
 only in your head — out of the head, into a note, and roundup does the rest.
 
+### Workflow 7 — Capture knowledge, ask, and plan
+
+Three habits that make the vault pay off beyond capture:
+
+**Ingest the docs you produce or receive**
+```
+/doc-ingest   (then paste/link a strategy doc, analysis, report, or article)
+```
+→ A `06-knowledge/` note with the source recorded, claims dated and confidence-rated, linked
+to the relevant project. The document twin of `/meeting-ingest`.
+
+**Let the knowledge base build itself**
+```
+/knowledge-build               (or: "what have we learned about onboarding rollouts?")
+```
+→ Distills recurring lessons, frameworks, and anti-patterns from across the vault into cited
+`06-knowledge/` notes. It also runs automatically in the weekly review, so the base grows on
+its own. This is what makes `06-knowledge/` worth having — and what `recall` and
+`challenge-decision` lean on.
+
+**Ask the vault instead of digging**
+```
+/recall did we decide how to handle tier-1 support, and who pushed back?
+```
+→ A direct answer with citations (path + date) and a confidence level — and an honest
+"nothing in the vault on this" when that's true.
+
+**Get told what to do next**
+```
+/prioritize                    (or: "what should I focus on today?")
+```
+→ A ranked plan from `TODO.md` + your calendar + active projects: the few things that matter,
+in order, with a first step for each and suggested replies you can adapt.
+
 ## Advanced patterns
 
 ### Pattern A — Automated pre-meeting prep

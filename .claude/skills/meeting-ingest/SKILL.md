@@ -22,8 +22,11 @@ description: Ingests a meeting transcript (video-call transcript, raw notes, tra
 1. **Read `_CLAUDE.md`** (rules, structure, conventions).
 2. **Get the real timestamp** of processing time.
 3. **Determine the meeting date** (priority: from the transcript / calendar invite; fallback: ask).
-4. **List existing notes** in `02-people/` and `03-projects/` for reference resolution.
-5. **Determine the invocation mode**:
+4. **Capture the source link** — if the transcript comes from a Google Doc, a recording, or a
+   calendar event, keep its URL **verbatim** for the `source:` field, so you can jump back to
+   the original later. If there's no link (pasted text), set `source: "pasted transcript"`.
+5. **List existing notes** in `02-people/` and `03-projects/` for reference resolution.
+6. **Determine the invocation mode**:
    - **Manual**: the user invokes it explicitly → standard behavior.
    - **Auto**: invoked by daily-brief orchestration → adapted behavior (see "Auto mode").
 
@@ -157,6 +160,7 @@ participants: ["[[02-people/...]]", ...]
 project: "[[03-projects/...]]"      # optional if cross-cutting
 meeting-type: 1-1|team-sync|stakeholder|external|townhall
 duration: <min>
+source: "<verbatim link to the transcript / Google Doc / recording, or 'pasted transcript'>"
 ai-first: true
 ---
 
@@ -216,6 +220,7 @@ unresolved item or follow-up.]
 
 ## Links
 
+- Source: [original transcript / Google Doc / recording link, if any]
 - People: [all participant + mentioned wikilinks]
 - Projects: [wikilinks to discussed projects]
 - Related decisions: [[05-decisions/...]] if a major decision was logged separately

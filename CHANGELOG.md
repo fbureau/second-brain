@@ -12,6 +12,36 @@ The current version is in the [`VERSION`](VERSION) file. Each release is an anno
 Git tag (`vX.Y.Z`) on `main`. See [`docs/RELEASING.md`](docs/RELEASING.md) for the process
 and [`docs/UPGRADING.md`](docs/UPGRADING.md) to move an existing vault between versions.
 
+## [3.2.0] - 2026-05-22
+
+### Added
+- **`doc-ingest` skill** — the document twin of `meeting-ingest`: ingests a produced doc
+  (strategy, analysis, report, deck, spec, external article) into a `06-knowledge/` note
+  with verbatim source, dated claims + confidence levels, and links to the relevant projects.
+- **`knowledge-build` skill** — distills `06-knowledge/` from across the vault (recurring
+  themes, lessons, anti-patterns, reversed-decision lessons), with citations and confidence.
+  Manual, and a conservative auto sweep during the **weekly review** (flags `needs-review`).
+- **`recall` skill** — queries the vault to find/confirm info, answering with citations
+  (path + date) and a confidence level, and saying honestly when the vault is silent.
+- **`prioritize` skill** — recommends priority actions and a short plan (order, how to
+  handle, suggested replies) from `TODO.md`, calendar, active projects, and recent signals.
+- **`vault-tend` skill** — a standing "knowledge-manager team" for whole-vault maintenance:
+  re-language the vault to one language, normalize frontmatter, repair broken wikilinks,
+  deduplicate people/projects, tidy formatting, propose archives, or any vault-wide adjustment.
+  Always preview-first, confirmation-gated, batched (one commit per batch), and append-only safe.
+- **`type: knowledge` and `type: doc`** frontmatter schemas in `_CLAUDE.md`.
+
+### Changed
+- **Source links are preserved on ingest**: `meeting-ingest` gains a `source:` field (the
+  transcript / Google Doc / recording link) and `doc-ingest` keeps the original Google Doc URL
+  in both frontmatter and `## Links`, so you can always reopen the source.
+- **Working language is now a setting**: `MY-PROFILE.md` declares it (default `en`); every
+  skill writes note bodies and replies in that language while the "For future Claude"
+  preamble stays English. Documented in `_CLAUDE.md` (rule 3.8) and `CLAUDE.md`.
+- `daily-brief` weekly mode now also runs `knowledge-build`.
+- Docs updated: README, QUICKSTART, `docs/UPGRADING.md` (rewritten as a clearer step-by-step),
+  `docs/INSTALL.md` (note on the hidden `.claude` folder on macOS).
+
 ## [3.1.0] - 2026-05-22
 
 ### Added

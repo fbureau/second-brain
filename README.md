@@ -21,13 +21,18 @@ Three non-negotiable principles:
 ## How it works
 
 ```
-SOURCES (via MCP / available tools)         CLAUDE CODE + 7 SKILLS
+SOURCES (via MCP / available tools)         CLAUDE CODE + 12 SKILLS
   email · calendar · drive · chat   ──────▶   braindump          → fast capture
                                               meeting-ingest     → transcript → structured note
+                                              doc-ingest         → strategy doc/report → knowledge
                                               daily-brief        → daily/weekly synthesis + orchestrator
                                               people-update      → append-only stakeholder CRM
                                               challenge-decision → red-team against your own history
                                               task-roundup       → consolidate actions → TODO.md (two-way sync)
+                                              knowledge-build    → distill durable knowledge from the vault
+                                              recall             → query the vault, answer with citations
+                                              prioritize         → recommend priorities + a plan
+                                              vault-tend         → whole-vault maintenance (re-language, tidy)
                                               kickstart-backfill → one-shot Day-1 seeding
                                                        │
                                                        ▼
@@ -47,10 +52,15 @@ SOURCES (via MCP / available tools)         CLAUDE CODE + 7 SKILLS
 │   ├── skills/                ← the 6 skills (auto-trigger from their description)
 │   │   ├── braindump/SKILL.md
 │   │   ├── meeting-ingest/SKILL.md
+│   │   ├── doc-ingest/SKILL.md
 │   │   ├── daily-brief/SKILL.md
 │   │   ├── people-update/SKILL.md
 │   │   ├── challenge-decision/SKILL.md
 │   │   ├── task-roundup/SKILL.md
+│   │   ├── knowledge-build/SKILL.md
+│   │   ├── recall/SKILL.md
+│   │   ├── prioritize/SKILL.md
+│   │   ├── vault-tend/SKILL.md
 │   │   └── kickstart-backfill/SKILL.md
 │   └── settings.json          ← Claude Code config
 ├── hooks/                     ← Git pre-commit vault validation (+ install.sh)
@@ -92,16 +102,21 @@ See [`docs/INSTALL.md`](docs/INSTALL.md) for the full procedure. In short:
 4. Try it: `/braindump my priorities this week are X, Y, Z`.
 5. (Optional) Wire `daily-brief` to an external scheduler — see [`docs/SCHEDULED-TASKS.md`](docs/SCHEDULED-TASKS.md).
 
-## The seven skills
+## The twelve skills
 
 | Skill | When to use | Output |
 |---|---|---|
 | **braindump** | Loose ideas, after an informal chat, in the morning | Tagged, linked note in `00-inbox/` |
 | **meeting-ingest** | After a meeting (transcript, raw notes) | Structured note in `04-meetings/` (decisions, actions, people) |
+| **doc-ingest** | A strategy doc, analysis, report, deck, or article to capture | Note in `06-knowledge/` + links to the relevant projects |
 | **daily-brief** | Daily/weekly (scheduled) or on demand | `01-daily/YYYY-MM-DD.md` synthesis; orchestrates auto-ingest + people updates + task roundup |
 | **people-update** | After a meaningful stakeholder interaction | Append-only update to `02-people/[Name].md` |
 | **challenge-decision** | Before a high-stakes decision | Red-team of your idea against vault history |
 | **task-roundup** | "what's on my plate", or after new action items land | Consolidated `TODO.md` at the vault root, checkboxes synced both ways |
+| **knowledge-build** | "what have we learned about X", or to fill out `06-knowledge/` | Distilled, citeable knowledge notes (also runs weekly) |
+| **recall** | "what do I know about X", "did we decide Y" | An answer with citations + a confidence level |
+| **prioritize** | "what should I focus on", "plan my day" | A ranked plan: priorities, order, how to handle, suggested replies |
+| **vault-tend** | "tidy the vault", "put everything in French", "deduplicate" | Whole-vault maintenance — preview-first, batched, append-only safe |
 | **kickstart-backfill** | Once, on Day 1 | Pre-fills the vault from 1–6 months of history |
 
 ## Daily use

@@ -168,6 +168,10 @@ calendar, drive, chat, and internal vault activity. Top themes: [3-5 keywords].
 [Links to ingested meetings — meeting-ingest appends here]
 ```
 
+> **Weekly mode also runs `knowledge-build`**: after writing the review, do a conservative
+> sweep (see `.claude/skills/knowledge-build/SKILL.md`) — propose new/updated `06-knowledge/`
+> notes flagged `needs-review: true`, and list them in the review under `## Knowledge updates`.
+
 **Weekly format** (different — synthesis-focused vs. collection):
 
 ```markdown
