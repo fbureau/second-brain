@@ -1,10 +1,13 @@
 # Second Brain
 
-A personal knowledge system you run with **Claude**. As you work, you tell Claude about
-your meetings, decisions, people, and stray ideas — and it files everything into a tidy
-folder of Markdown notes (your *vault*). Over time that vault becomes **Claude's long-term
-memory of your work**: who's who, what was decided and why, what you're working on, and what
-you've learned.
+A personal knowledge system you run with **Claude**, built on an **[Obsidian](https://obsidian.md)
+vault**. As you work, you tell Claude about your meetings, decisions, people, and stray ideas
+— and it files everything into a tidy folder of Markdown notes (your *vault*). Over time that
+vault becomes **Claude's long-term memory of your work**: who's who, what was decided and why,
+what you're working on, and what you've learned.
+
+The same notes are also *yours* to read: it's an ordinary Obsidian vault, so you browse, edit,
+and explore the knowledge graph in Obsidian while Claude reads and writes the same files.
 
 Built for **Claude Cowork** (you work with Claude in conversation; the skills trigger
 automatically). It also runs in **Claude Code** for power users who want Git and a local CLI
@@ -105,8 +108,18 @@ You:  "I'm thinking of centralizing tier-1 support in one hub."
 
 ## The vault
 
-A plain folder of Markdown notes (works great as an [Obsidian](https://obsidian.md) vault,
-synced however you like):
+The vault is an **[Obsidian](https://obsidian.md) vault** — a plain folder of Markdown notes,
+synced however you like. That choice does real work:
+
+- **One file, two readers.** Obsidian is your human window (browse, edit, search, graph view);
+  Claude is the machine reader. No export, no database — the notes Claude writes are the notes
+  you open in Obsidian.
+- **`[[wikilinks]]` build a graph.** Every person, project, and decision is linked, so the
+  vault becomes a navigable knowledge graph in Obsidian — and survives renames.
+- **Future-proof & Git-native.** Flat Markdown is readable by any LLM with no plugins, and
+  versions cleanly in Git.
+
+Structure:
 
 ```
 _CLAUDE.md        ← the vault's own brief, read first every session
@@ -132,7 +145,8 @@ their descriptions, so most of the time you just talk.
 
 1. **Get the files** — clone or download this repo.
 2. **Create your vault** — copy `vault-starter/*` into your notes folder, then fill in
-   `00-inbox/MY-PROFILE.md` (this is what makes it *yours*).
+   `00-inbox/MY-PROFILE.md` (this is what makes it *yours*). Open that folder as a vault in
+   [Obsidian](https://obsidian.md) to browse and edit it as a human.
 3. **Give Claude the skills and point them at your vault** — make the `.claude/skills/`
    available to your Claude workspace and tell it where the vault lives.
 4. **Start working** — tell Claude about a meeting or a decision, or ask
