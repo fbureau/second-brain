@@ -1,44 +1,152 @@
 # Second Brain
 
-An AI-first personal knowledge system for Claude Cowork. It turns your meetings,
-decisions, people, and stray thoughts into a structured Markdown vault that Claude
-can read, search, and reason over — so your second brain *is* Claude's memory.
+A personal knowledge system you run with **Claude**. As you work, you tell Claude about
+your meetings, decisions, people, and stray ideas — and it files everything into a tidy
+folder of Markdown notes (your *vault*). Over time that vault becomes **Claude's long-term
+memory of your work**: who's who, what was decided and why, what you're working on, and what
+you've learned.
+
+Built for **Claude Cowork** (you work with Claude in conversation; the skills trigger
+automatically). It also runs in **Claude Code** for power users who want Git and a local CLI
+— see [Setup](#setup).
 
 Inspired by [COG-second-brain](https://github.com/huytieu/COG-second-brain) and
 [obsidian-second-brain](https://github.com/eugeniughelbur/obsidian-second-brain).
 
-## Philosophy
+## The problem it solves
 
-> Your vault isn't for you. It's for the future Claude that will query it in 6 months,
-> 2 years, 5 years.
+Claude has no memory across sessions. Close the tab and the context is gone. So this system
+makes the **vault** the memory: every durable fact, decision, and interaction is written to a
+note, not left in chat history. Next session — or in two years — Claude reads the vault and
+picks up exactly where you left off, with citations.
 
-Three non-negotiable principles:
-
-1. **AI-first** — every note is built to be retrieved and understood by an LLM, not scrolled by a human.
-2. **Append-only** — never overwrite; add with a timestamp. Git versions everything.
-3. **MVP 98%** — the minimal structure that works. No religious PARA, no dogmatic Zettelkasten.
+You don't file notes by hand. You just *work*, and the skills do the capturing, linking, and
+organizing for you.
 
 ## How it works
 
 ```
-SOURCES (via MCP / available tools)         CLAUDE CODE + 12 SKILLS
-  email · calendar · drive · chat   ──────▶   braindump          → fast capture
-                                              meeting-ingest     → transcript → structured note
-                                              doc-ingest         → strategy doc/report → knowledge
-                                              daily-brief        → daily/weekly synthesis + orchestrator
-                                              people-update      → append-only stakeholder CRM
-                                              challenge-decision → red-team against your own history
-                                              task-roundup       → consolidate actions → TODO.md (two-way sync)
-                                              knowledge-build    → distill durable knowledge from the vault
-                                              recall             → query the vault, answer with citations
-                                              prioritize         → recommend priorities + a plan
-                                              vault-tend         → whole-vault maintenance (re-language, tidy)
-                                              kickstart-backfill → one-shot Day-1 seeding
-                                                       │
-                                                       ▼
-                                              THE VAULT (Markdown, versioned in Git)
-                                              a second brain that maintains itself
+        YOU, going through your day
+              │   "process this meeting" · "I decided X" · "what should I focus on?"
+              ▼
+   CLAUDE  +  12 SKILLS   (they trigger automatically from what you say)
+        capture  →  organize  →  recall  →  plan  →  maintain
+              │   (skills read and write Markdown)
+              ▼
+   THE VAULT  — a folder of Markdown notes, versioned in Git
+   = a second brain that maintains itself, and that Claude can query
 ```
+
+Each skill is a small instruction file (`SKILL.md`) with a description. When what you say
+matches a description, that skill runs — you rarely type a command. You *can* invoke one by
+name (e.g. `recall …`) when you want to be explicit.
+
+## Three principles
+
+1. **AI-first** — every note is written to be retrieved and understood by Claude later, not
+   scrolled by a human. Machine-readable frontmatter, an English "for future Claude" preamble,
+   dated claims, and wikilinks between every person/project/decision.
+2. **Append-only** — never overwrite; add a timestamped entry. People and decisions are sacred
+   history. Git versions everything, so nothing is ever lost.
+3. **MVP 98%** — the minimal structure that works. No religious PARA, no dogmatic Zettelkasten.
+
+## The twelve skills
+
+Grouped by what they're for. You don't memorize these — you describe what you want and the
+right one runs.
+
+**Capture** — get things into the vault
+| Skill | Use it when | You get |
+|---|---|---|
+| **braindump** | A loose thought, an idea, a stray observation | A tagged, linked note in `00-inbox/` |
+| **meeting-ingest** | You have a meeting transcript or raw notes | A structured note in `04-meetings/` (decisions, actions, people) + the source link |
+| **doc-ingest** | A strategy doc, analysis, report, deck, or article | A note in `06-knowledge/` with the source (e.g. Google Doc) kept, linked to projects |
+
+**Organize** — mostly automatic, runs while you work
+| Skill | Use it when | You get |
+|---|---|---|
+| **people-update** | After a meaningful interaction with someone | An append-only update to that person's note in `02-people/` |
+| **task-roundup** | "what's on my plate?" | One `TODO.md` at the vault root, checkboxes synced both ways with the source notes |
+| **daily-brief** | Each day/week, or on demand | A synthesis in `01-daily/`; also auto-ingests meetings, updates people, and rounds up tasks |
+| **knowledge-build** | "what have we learned about X?" | Distilled, cited knowledge notes in `06-knowledge/` (also runs weekly) |
+
+**Use** — get value back out
+| Skill | Use it when | You get |
+|---|---|---|
+| **recall** | "what do I know about X?", "did we decide Y?" | A direct answer with citations (note + date) and a confidence level |
+| **prioritize** | "what should I focus on?", "plan my day" | A ranked plan: priorities, order, a first step each, and suggested replies |
+| **challenge-decision** | Before a high-stakes call | A red-team of your idea against your own past decisions and meetings |
+
+**Maintain & set up**
+| Skill | Use it when | You get |
+|---|---|---|
+| **vault-tend** | "tidy the vault", "put everything in French", "deduplicate" | Whole-vault maintenance — preview-first, batched, append-only safe |
+| **kickstart-backfill** | Once, on day 1 | A vault pre-filled from 1–6 months of your history |
+
+## A day with it
+
+```
+You:  "Quick note — the onboarding team is struggling with the new qualification script."
+→ braindump files it in 00-inbox/, links [[02-people/Alex Rivera]] and
+  [[03-projects/Onboarding Refresh]], offers to update Alex's note.
+
+You:  (paste a meeting transcript)
+→ meeting-ingest extracts decisions, actions, and participants into 04-meetings/,
+  keeps the Google Doc link, and updates the people involved.
+
+You:  "What should I focus on today?"
+→ prioritize reads your TODO.md, calendar, and active projects and hands back a
+  ranked plan with a first step for each.
+
+You:  "I'm thinking of centralizing tier-1 support in one hub."
+→ challenge-decision scans your past decisions and meetings and red-teams the idea
+  with citations from your own notes.
+```
+
+## The vault
+
+A plain folder of Markdown notes (works great as an [Obsidian](https://obsidian.md) vault,
+synced however you like):
+
+```
+_CLAUDE.md        ← the vault's own brief, read first every session
+TODO.md           ← consolidated action list (task-roundup, two-way checkbox sync)
+00-inbox/         ← raw capture · your MY-PROFILE.md lives here
+01-daily/         ← daily briefs + journal
+02-people/        ← stakeholder CRM (append-only)
+03-projects/      ← active and past projects
+04-meetings/      ← ingested meetings
+05-decisions/     ← decision log (feeds challenge-decision, append-only)
+06-knowledge/     ← durable syntheses, frameworks, lessons
+07-archive/       ← inactive (never deleted, only moved here)
+```
+
+`00-inbox/MY-PROFILE.md` is the keystone: it holds who you are, your priorities, your tone,
+and your **working language**. Every skill reads it first, so the vault sounds like you and
+writes in your language.
+
+## Setup
+
+You drive the system through **Claude** — the skills are `SKILL.md` files that trigger from
+their descriptions, so most of the time you just talk.
+
+1. **Get the files** — clone or download this repo.
+2. **Create your vault** — copy `vault-starter/*` into your notes folder, then fill in
+   `00-inbox/MY-PROFILE.md` (this is what makes it *yours*).
+3. **Give Claude the skills and point them at your vault** — make the `.claude/skills/`
+   available to your Claude workspace and tell it where the vault lives.
+4. **Start working** — tell Claude about a meeting or a decision, or ask
+   *"what should I focus on today?"*. To seed history in one go, run **kickstart-backfill**.
+
+> **Power-user path — Claude Code.** Running this in Claude Code adds Git as a first-class
+> citizen: a pre-commit hook that enforces the note rules and blocks destructive edits to
+> `02-people/` and `05-decisions/`, plus local CLI control. Daily/weekly briefs run on a
+> schedule (native to Cowork-style scheduled tasks; via an external scheduler in Claude Code).
+> Full procedure in [`docs/INSTALL.md`](docs/INSTALL.md) and
+> [`docs/SCHEDULED-TASKS.md`](docs/SCHEDULED-TASKS.md).
+
+> **macOS note:** the `.claude/` folder is hidden in Finder (it starts with a dot). It's there
+> and required — press **⌘⇧.** to reveal it. Don't rename it.
 
 ## Repository layout
 
@@ -49,104 +157,33 @@ SOURCES (via MCP / available tools)         CLAUDE CODE + 12 SKILLS
 ├── QUICKSTART.md
 ├── CHANGELOG.md
 ├── .claude/
-│   ├── skills/                ← the 6 skills (auto-trigger from their description)
-│   │   ├── braindump/SKILL.md
-│   │   ├── meeting-ingest/SKILL.md
-│   │   ├── doc-ingest/SKILL.md
-│   │   ├── daily-brief/SKILL.md
-│   │   ├── people-update/SKILL.md
-│   │   ├── challenge-decision/SKILL.md
-│   │   ├── task-roundup/SKILL.md
-│   │   ├── knowledge-build/SKILL.md
-│   │   ├── recall/SKILL.md
-│   │   ├── prioritize/SKILL.md
-│   │   ├── vault-tend/SKILL.md
-│   │   └── kickstart-backfill/SKILL.md
-│   └── settings.json          ← Claude Code config
+│   ├── skills/                ← the 12 skills (auto-trigger from their description)
+│   │   └── braindump · meeting-ingest · doc-ingest · daily-brief · people-update ·
+│   │      challenge-decision · task-roundup · knowledge-build · recall · prioritize ·
+│   │      vault-tend · kickstart-backfill   (each is a <name>/SKILL.md)
+│   └── settings.json          ← config for the Claude Code path
 ├── hooks/                     ← Git pre-commit vault validation (+ install.sh)
-├── docs/
-│   ├── INSTALL.md
-│   ├── SCHEDULED-TASKS.md
-│   ├── USAGE-PATTERNS.md
-│   ├── ARCHITECTURE.md
-│   └── KICKSTART-PROMPT.md
-├── templates/                 ← note templates (person, project, decision, daily)
-└── vault-starter/             ← copy into your Obsidian vault
+├── docs/                      ← INSTALL · SCHEDULED-TASKS · USAGE-PATTERNS · ARCHITECTURE · …
+├── templates/                 ← note templates (person, project, decision, daily, knowledge, doc)
+└── vault-starter/             ← copy this into your notes vault
     ├── _CLAUDE.md             ← vault system brief (read first)
     ├── 00-inbox/MY-PROFILE.md ← your profile (fill this in)
     └── 01-daily/ … 07-archive/
 ```
 
-## Vault structure
-
-```
-_CLAUDE.md        ← system brief, read first every session
-TODO.md           ← consolidated action list (task-roundup, two-way checkbox sync)
-00-inbox/         ← raw capture · MY-PROFILE.md lives here
-01-daily/         ← daily briefs + journal
-02-people/        ← stakeholder CRM (append-only)
-03-projects/      ← active and past projects
-04-meetings/      ← ingested meetings
-05-decisions/     ← decision log (feeds challenge-decision, append-only)
-06-knowledge/     ← durable syntheses, frameworks, lessons
-07-archive/       ← inactive (never deleted)
-```
-
-## Quick start
-
-See [`docs/INSTALL.md`](docs/INSTALL.md) for the full procedure. In short:
-
-1. Clone this repo and open it in Claude Code.
-2. Copy `vault-starter/*` into your notes vault and fill in `00-inbox/MY-PROFILE.md`.
-3. `git init` the vault and install the hook: `./hooks/install.sh /path/to/vault`.
-4. Try it: `/braindump my priorities this week are X, Y, Z`.
-5. (Optional) Wire `daily-brief` to an external scheduler — see [`docs/SCHEDULED-TASKS.md`](docs/SCHEDULED-TASKS.md).
-
-## The twelve skills
-
-| Skill | When to use | Output |
-|---|---|---|
-| **braindump** | Loose ideas, after an informal chat, in the morning | Tagged, linked note in `00-inbox/` |
-| **meeting-ingest** | After a meeting (transcript, raw notes) | Structured note in `04-meetings/` (decisions, actions, people) |
-| **doc-ingest** | A strategy doc, analysis, report, deck, or article to capture | Note in `06-knowledge/` + links to the relevant projects |
-| **daily-brief** | Daily/weekly (scheduled) or on demand | `01-daily/YYYY-MM-DD.md` synthesis; orchestrates auto-ingest + people updates + task roundup |
-| **people-update** | After a meaningful stakeholder interaction | Append-only update to `02-people/[Name].md` |
-| **challenge-decision** | Before a high-stakes decision | Red-team of your idea against vault history |
-| **task-roundup** | "what's on my plate", or after new action items land | Consolidated `TODO.md` at the vault root, checkboxes synced both ways |
-| **knowledge-build** | "what have we learned about X", or to fill out `06-knowledge/` | Distilled, citeable knowledge notes (also runs weekly) |
-| **recall** | "what do I know about X", "did we decide Y" | An answer with citations + a confidence level |
-| **prioritize** | "what should I focus on", "plan my day" | A ranked plan: priorities, order, how to handle, suggested replies |
-| **vault-tend** | "tidy the vault", "put everything in French", "deduplicate" | Whole-vault maintenance — preview-first, batched, append-only safe |
-| **kickstart-backfill** | Once, on Day 1 | Pre-fills the vault from 1–6 months of history |
-
-## Daily use
-
-```
-/braindump saw the onboarding team is struggling with the new qualification script
-→ creates 00-inbox/...md, links [[02-people/Alex Rivera]] and [[03-projects/Onboarding Refresh]],
-  offers a people-update on Alex
-
-/meeting-ingest  (then paste/attach a transcript)
-→ extracts decisions/actions/people, creates 04-meetings/...md, updates impacted people notes
-
-/challenge-decision I want to centralize tier-1 support in one hub
-→ scans 05-decisions/ and 04-meetings/ for precedents, red-teams with citations from your own notes
-```
-
 ## Maintenance
 
-- **Git**: commit vault changes often; the append-only history is the audit trail. The
-  pre-commit hook enforces AI-first compliance and blocks destructive diffs on
-  `02-people/` and `05-decisions/`.
-- **Weekly review**: run `daily-brief` in weekly mode.
-- **Vault health**: a monthly scheduled check for orphans, stubs, and duplicates.
+- **Git** — commit vault changes often; the append-only history is your audit trail. (In the
+  Claude Code path, the pre-commit hook enforces the rules automatically.)
+- **Weekly review** — run `daily-brief` in weekly mode; it also folds in `knowledge-build`.
+- **Spring cleaning** — `vault-tend` for re-languaging, deduplication, link repair, and tidying.
 
 ## Versioning
 
-[Semantic Versioning](https://semver.org/) with annotated Git tags on `main`. Current
-version is in [`VERSION`](VERSION); changes are logged in [`CHANGELOG.md`](CHANGELOG.md).
-To move an existing vault between versions, see [`docs/UPGRADING.md`](docs/UPGRADING.md);
-to cut a release, see [`docs/RELEASING.md`](docs/RELEASING.md).
+[Semantic Versioning](https://semver.org/), tagged on `main`. The current version is in
+[`VERSION`](VERSION); changes are in [`CHANGELOG.md`](CHANGELOG.md). To move an existing vault
+between versions see [`docs/UPGRADING.md`](docs/UPGRADING.md); to cut a release see
+[`docs/RELEASING.md`](docs/RELEASING.md).
 
 ## Credits
 
