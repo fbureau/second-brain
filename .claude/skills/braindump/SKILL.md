@@ -54,8 +54,12 @@ Parse the braindump to identify:
   - Fuzzy-match against `03-projects/*.md`.
   - Same logic: wikilink or stub.
 
-- **Concepts/frameworks**: if a recurring domain term, wikilink to
-  `06-knowledge/<concept>.md` (stub if needed).
+- **Concepts / entities / tools / teams / jargon**: any *thing* mentioned in the braindump
+  that warrants its own page in your personal wiki — wikilink to `06-knowledge/<slug>.md`.
+  If the page doesn't exist, **create a wiki stub** following the Wiki stub protocol in
+  `.claude/skills/knowledge-build/SKILL.md` (Mode A.2): `type: wiki`, `needs-review: true`,
+  `created-from` set to this braindump, with a 1-line snippet from the braindump in the
+  `## Sources` section. No recurrence threshold — first mention is enough.
 
 ### Step 4 — Light analysis (do NOT over-analyze)
 
@@ -122,8 +126,11 @@ the tone, the hesitations, the "not sure if...". This is raw material.]
    under a `## Braindumps` section. Create the daily note if missing (with
    `type: daily` frontmatter).
 
-2. **Stubs**: for each wikilink to a non-existent note, offer to create the stub
-   (people-update for persons, or a simple stub for projects/concepts).
+2. **Stubs**: for each wikilink to a non-existent note, create the stub:
+   - Persons → offer (then `people-update`).
+   - Projects → simple stub.
+   - `06-knowledge/<slug>` → **wiki stub** per the protocol above (created silently with
+     `needs-review: true` — no need to ask).
 
 3. **People updates**: if a person note exists and the interaction is
    significant, offer to invoke `people-update` to log it.

@@ -64,9 +64,25 @@ Update it whenever context changes (role, projects, integrations). Replace every
 - Key peers:
 - Key sponsors / decision makers:
 
+## Primary communication channels
+
+[Sources `daily-brief` treats as **co-primary** with email/calendar — peer in attention,
+collection breadth, and brief structure. List the tools where most of your day's signal
+actually lives. Example: `[slack]`, `[slack, teams]`. Leave blank to keep the default
+(email/calendar/drive primary, chat secondary).]
+
+- `primary-communication-channels`:
+
 ## Priority chat channels to monitor
 
-[For daily-brief source collection.]
+[Optional whitelist *within* the chat source — must-read channels. Used as a weighting
+hint; not the gate for whether chat is collected.]
+
+-
+
+## Chat channels to ignore
+
+[Explicit blocklist for noisy channels (bots, build alerts, off-topic).]
 
 -
 

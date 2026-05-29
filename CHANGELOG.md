@@ -12,6 +12,53 @@ The current version is in the [`VERSION`](VERSION) file. Each release is an anno
 Git tag (`vX.Y.Z`) on `main`. See [`docs/RELEASING.md`](docs/RELEASING.md) for the process
 and [`docs/UPGRADING.md`](docs/UPGRADING.md) to move an existing vault between versions.
 
+## [3.3.0] - 2026-05-29
+
+### Added
+- **`type: wiki` notes** — `06-knowledge/` now hosts a real **personal wiki** alongside the
+  existing lessons: encyclopedic pages on concepts, entities, tools, teams, processes, and
+  jargon. Stubs are **created on first mention** (no recurrence threshold) by `braindump`,
+  `meeting-ingest`, and `doc-ingest`; pages grow incrementally as more sources mention the
+  same thing. Wiki schema added to `_CLAUDE.md` (`aliases`, `created-from`, mandatory
+  `## Sources` audit trail).
+- **Wiki stub protocol** in `knowledge-build/SKILL.md` (Mode A.2) — the contract the capture
+  skills call to seed a stub with the trigger source recorded. Every fact in the wiki body
+  carries an inline citation; the `## Sources` section is cumulative and never truncated.
+- **`primary-communication-channels`** field in `MY-PROFILE.md` — sources to treat as
+  **co-primary** with email/calendar in `daily-brief`. When `slack` (or another chat tool)
+  is listed, chat collection moves to **broad mode** (DMs received + sent, mentions, threads
+  participated in, channels active in the last 14 days, reactions placed) and the brief gets
+  a dedicated `## Themes from Slack` section that does NOT compete with the top-5 cap.
+- **`chat-channels-to-ignore`** field in `MY-PROFILE.md` — explicit blocklist for noisy/off-topic
+  channels.
+
+### Changed
+- **`knowledge-build` is now two-altitude**: Mode A (wiki, encyclopedic, no recurrence
+  threshold) and Mode B (lessons, current behavior — patterns/anti-patterns/principles,
+  recurrence-gated). Routing logic at preflight: ambiguous requests produce a wiki page first
+  (lower bar, always useful), with a lesson offered if the evidence supports it. Lessons
+  now link to the wiki pages they rest on, and wiki pages link to the lessons that draw
+  on them — the base becomes a connected graph.
+- **`daily-brief` chat collection** is no longer gated on a `priority-chat-channels` whitelist
+  by default; when chat is a primary channel, *all* channels the user is actively using are
+  scanned, themes are clustered across channels, and the brief surfaces them in their own
+  section.
+- **`braindump`**: concept wikilinks always create a `type: wiki` stub on first mention
+  (replaces the prior "if recurring" gating).
+- **`meeting-ingest`**: new step 7.4 — wiki stubs/enrichment for every concept/entity/tool
+  the transcript mentions substantively, citing the meeting as the source.
+- **`doc-ingest`**: step 4 propagation now creates/enriches wiki pages for the concepts the
+  doc describes; lessons remain a separate, recurrence-gated suggestion.
+- **`recall`** now searches all three flavors in `06-knowledge/` (`wiki`, `knowledge`, `doc`)
+  and uses `aliases:` to match a query under any name. Wiki pages are the hubs to pivot through.
+- Vault structure description (`_CLAUDE.md`, `CLAUDE.md`, `README.md`) updated to:
+  `06-knowledge/ ← personal wiki (encyclopedic) + lessons (distilled patterns)`.
+
+### Fixed
+- **Slack signal was being under-collected** when `priority-chat-channels` was empty or thin
+  — daily-brief now defaults to broad collection across active channels when chat is a primary
+  source, so heavy Slack days are no longer drowned out by email/calendar volume.
+
 ## [3.2.0] - 2026-05-22
 
 ### Added

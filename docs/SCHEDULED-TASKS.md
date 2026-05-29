@@ -78,7 +78,11 @@ PHASE 1 — MULTI-SOURCE COLLECTION (step 1 of the SKILL)
 1. Email — received in the window; exclude newsletters/notifications/marketing
 2. Calendar — today's events, past + ongoing
 3. Drive/files — docs created/modified in the window, ESPECIALLY meeting transcripts
-4. Chat — DMs + mentions + important threads in priority channels (see MY-PROFILE.md)
+4. Chat — if listed in `primary-communication-channels` (MY-PROFILE.md): DMs (received + sent),
+   mentions, threads you participated in, AND all channels you've been active in over the
+   last 14 days. Cluster by theme, cap ~10 themes. Render in a dedicated `## Themes from Slack`
+   section (does NOT compete with the top-5 cap). Else: narrow mode — DMs + mentions + priority
+   channels only.
 5. Internal vault — notes already created/modified today
 
 PHASE 2 — TRIAGE (step 2)   PHASE 3 — SYNTHESIS (step 3)
