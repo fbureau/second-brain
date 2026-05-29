@@ -22,6 +22,76 @@ There are two parts, and they're separate:
 
 ---
 
+## 3.2.0 → 3.3.0  ·  Personal wiki + Slack as a co-primary source
+
+**TL;DR:** `06-knowledge/` becomes a real **personal wiki** (encyclopedic pages, grown from
+the first mention) alongside the existing lessons. Slack stops being under-weighted in the
+daily brief when you set one new field. Purely additive — **no vault migration** required.
+
+### What's new
+- **Wiki pages** (`type: wiki`) in `06-knowledge/` — encyclopedic pages on concepts/entities/tools/
+  teams/jargon. Stubs are auto-created on first mention by `braindump`, `meeting-ingest`,
+  `doc-ingest`. Each fact carries an inline citation; `## Sources` is the cumulative trail.
+- **`primary-communication-channels`** field in `MY-PROFILE.md` — list `slack` (or `teams`)
+  here and `daily-brief` will treat chat as co-primary with email/calendar, collect broadly,
+  and render a dedicated `## Themes from Slack` section that doesn't compete with the top-5.
+- **`chat-channels-to-ignore`** field — blocklist for noisy channels.
+
+### Steps
+
+**1. Update the tooling**
+- *Claude Cowork / Obsidian:* re-upload the updated skill files into your workspace:
+  `daily-brief/SKILL.md`, `knowledge-build/SKILL.md`, `braindump/SKILL.md`,
+  `meeting-ingest/SKILL.md`, `doc-ingest/SKILL.md`, `recall/SKILL.md`. Also re-upload the
+  updated `vault-starter/_CLAUDE.md` (only if you want the new `type: wiki` schema in your
+  vault's `_CLAUDE.md` — see step 2).
+- *Claude Code:* `git pull` in this repo. Updated skills auto-pick up.
+
+**2. Add the `type: wiki` schema to your vault's `_CLAUDE.md`**
+Open `vault-starter/_CLAUDE.md` and your vault's `_CLAUDE.md` side by side. Copy the new
+`### type: wiki  (encyclopedic page …)` block from section 4 across, right after the
+`type: knowledge` block. (Skip this step if you never customized `_CLAUDE.md` — just copy
+the new vault-starter version in full.)
+
+**3. Set your primary communication channels**
+Open `00-inbox/MY-PROFILE.md` → **Primary communication channels** and set:
+```
+- `primary-communication-channels`: [slack]      # or [slack, teams], [email] only, etc.
+```
+Optionally fill **Chat channels to ignore** with the noisy ones (bots, build alerts, etc.).
+Effect is immediate on the next `daily-brief` run.
+
+**4. (Optional) Seed your wiki from existing notes**
+Run it once to convert existing concept references into wiki stubs:
+```
+knowledge-build wiki sweep
+```
+It scans `06-knowledge/` wikilinks across the vault, creates stubs for every concept that
+doesn't have a page yet, and records the trigger source for each. Stubs are flagged
+`needs-review: true` — review and enrich at your pace.
+
+**5. (Cowork only) Update your hand-written daily prompt**
+If you run a hand-written daily prompt rather than the SKILL auto-trigger, update PHASE 1
+step 4 (Chat) to broad-mode + Themes-from-Slack rendering — copy from
+[`SCHEDULED-TASKS.md`](SCHEDULED-TASKS.md) line 81. On Claude Code / SKILL auto-trigger this
+is already in the skill — nothing to do.
+
+### You're done when
+- A new term mentioned in a braindump creates a `type: wiki` stub in `06-knowledge/` with
+  `needs-review: true` and the braindump cited in `## Sources`.
+- `daily-brief` produces a `## Themes from Slack` section when chat is busy, separate from
+  the top-5 topics.
+- `recall what is X` returns the wiki page directly when X has a page.
+
+### Rollback
+```bash
+cd /path/to/second-brain && git checkout v3.2.0   # tooling
+```
+Wiki notes you accepted stay in the vault (they're just Markdown). To remove the
+`primary-communication-channels` line, just delete it from `MY-PROFILE.md`.
+
+---
+
 ## 3.1.0 → 3.2.0  ·  Doc ingestion, knowledge base, recall, prioritize, language setting
 
 **TL;DR:** four new skills + a language setting. Purely additive — **no vault migration**.

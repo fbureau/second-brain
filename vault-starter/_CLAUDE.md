@@ -1,6 +1,6 @@
 ---
 type: system-brief
-updated: 2026-05-22
+updated: 2026-05-29
 ai-first: true
 ---
 
@@ -30,7 +30,7 @@ skill loads it at preflight to personalize behavior.
 03-projects/     ← active and past projects
 04-meetings/     ← ingested meetings
 05-decisions/    ← log of important decisions
-06-knowledge/    ← durable syntheses, frameworks, lessons
+06-knowledge/    ← personal wiki (encyclopedic pages) + lessons (distilled patterns)
 07-archive/      ← inactive (never deleted)
 ```
 
@@ -156,7 +156,7 @@ tags: [daily]
 ai-first: true
 ```
 
-### `type: knowledge`
+### `type: knowledge`  (distilled lesson / pattern / framework)
 ```yaml
 date: YYYY-MM-DD              # first crystallized
 updated: YYYY-MM-DD
@@ -166,6 +166,23 @@ confidence: high | medium | speculation
 needs-review: false          # true if created/updated by knowledge-build in auto mode
 ai-first: true
 ```
+
+### `type: wiki`  (encyclopedic page on a concept, entity, tool, team, process, jargon)
+```yaml
+date: YYYY-MM-DD              # stub creation
+updated: YYYY-MM-DD
+type: wiki
+tags: [wiki, <topic-tags>]
+aliases: ["<other names>", "<acronym>"]   # so recall finds it under any name
+confidence: stated | high | medium | speculation
+needs-review: true | false    # true on auto-stub until enriched / confirmed
+created-from: "[[<trigger-note-path>]]"   # the note that first triggered this page
+ai-first: true
+```
+Wiki pages are grown incrementally. Stubs are created automatically on first mention (by
+`braindump`, `meeting-ingest`, `doc-ingest`); every fact in the body cites its source; the
+`## Sources` section is the cumulative audit trail (never truncated). See
+`.claude/skills/knowledge-build/SKILL.md` for the full protocol.
 
 ### `type: doc`  (an ingested produced document)
 ```yaml

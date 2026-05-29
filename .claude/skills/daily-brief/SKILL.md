@@ -25,7 +25,14 @@ description: Generates a daily (or weekly) brief by synthesizing connected sourc
 ### Step 1 — Multi-source collection
 
 Collect from whatever sources are connected (via available tools / MCP servers).
-Run in parallel where possible:
+Run in parallel where possible.
+
+> **Primary vs secondary sources.** Read `primary-communication-channels` from
+> `00-inbox/MY-PROFILE.md`. Anything listed there (`email`, `slack`, `teams`, `calendar`, …)
+> is a **co-primary source**: treat it as a peer of email and calendar in volume of attention,
+> in collection breadth, and in the brief structure. If `slack` (or similar) is listed, do
+> NOT under-weight it just because it's high-volume — chat is where most of the day's signal
+> lives for many users.
 
 #### 1.1 Email
 - Emails received in the window.
@@ -43,11 +50,37 @@ Run in parallel where possible:
 - Filter out: your own minor edits.
 - Keep: new docs received, collaborative docs touched by others, meeting transcripts created.
 
-#### 1.4 Chat (Slack/Teams/etc.)
+#### 1.4 Chat (Slack / Teams / etc.) — co-primary when listed in `primary-communication-channels`
+
+Collect broadly when chat is a primary channel; collect narrowly otherwise.
+
+**Always (whatever the channel's status):**
 - DMs received in the window.
-- Mentions of the user in channels.
-- Important threads in critical channels (defined in `MY-PROFILE.md`).
-- Filter out: emoji-only reactions, bot notifications.
+- DMs **sent** by the user (signal of what the user cared enough to write).
+- Mentions of the user in any channel.
+- Replies in threads the user has participated in (started or replied to) within the window.
+
+**Additionally when chat is a primary channel:**
+- Activity in any channel the user actively follows — defined as: channels where the user
+  has posted, replied, or reacted within the last 14 days, even if not in
+  `priority-chat-channels`. This catches the long tail of where the user actually works.
+- Reactions the user placed on others' messages (signal of interest / agreement).
+- Saved / bookmarked messages.
+- Huddles or calls in chat (if surfaceable).
+
+**Filter out** (both modes):
+- Bot notifications, CI noise, build-status messages.
+- Emoji-only reactions on bot messages.
+- Off-topic channels explicitly excluded in `MY-PROFILE.md` (`chat-channels-to-ignore`).
+
+**Extract per channel/thread**: topic (one line), participants, message count, the user's
+own contribution, any decision/commitment, any unresolved question.
+
+**Volume guardrail.** A busy Slack day can swamp the rest. Aggregate by **topic, not by
+message**: cluster messages across channels/threads into themes (e.g. "onboarding script
+friction" pulled from #onboarding, #cs-team, and a DM with Alex). One theme = one bullet,
+with the threads cited as sources. Cap at ~10 themes; the synthesis in Step 3 will reduce
+further.
 
 #### 1.5 Internal vault
 - Notes created or modified in the window (all sections except `07-archive`).
@@ -88,10 +121,13 @@ Categorize the collected items:
 be **actionable and synthetic**.
 
 Synthesis rules:
-- **Top 3–5 topics** only as main sections (not 15).
+- **Top 3–5 topics** only as main sections (not 15) — these synthesize *across all sources*.
 - **One sentence = one signal** (no vague paraphrase).
-- **Always link** to the source (email, meeting, doc, vault note).
+- **Always link** to the source (email, meeting, doc, vault note, chat thread).
 - **Recency markers** for external claims.
+- **`## Themes from Slack` is separate from the top-5** when chat is a primary channel.
+  Chat themes do NOT compete with email/meeting topics for top-5 slots; they get their own
+  section so high-volume Slack signal isn't drowned out (see Step 4 template).
 
 ### Step 4 — Generate the note
 
@@ -138,6 +174,18 @@ calendar, drive, chat, and internal vault activity. Top themes: [3-5 keywords].
 
 ### [Topic 2]
 [...]
+
+## Themes from Slack
+
+> Only emit this section when `slack` (or another chat tool) is listed in
+> `primary-communication-channels`. Aggregate by **theme**, not by message; one bullet per
+> theme, citing the channels/threads it spans. This section is independent of the top-5 cap.
+
+- **[Theme 1]** — observed in #channel-a, #channel-b, DM with [[02-people/...]] — N messages,
+  the user participated in M. Signal: [one sentence].
+- **[Theme 2]** — [...]
+
+(If the day was light on chat: a one-liner like "Slack quiet today" is fine.)
 
 ## Weak signals to dig into
 
@@ -341,7 +389,7 @@ Then surface the result at the top of the brief: feed `## Pending follow-ups` fr
 
 ```
 ✓ Daily brief generated: 01-daily/2026-05-22.md
-✓ Sources analyzed: Email (12), Calendar (4 events), Drive (3 docs), Chat (8 threads)
+✓ Sources analyzed: Email (12), Calendar (4 events), Drive (3 docs), Chat — primary (47 msgs across 9 channels, clustered into 5 themes)
 
 📥 AUTO-INGESTION
 ✓ 3 meetings auto-ingested (needs-review: true):
@@ -373,12 +421,17 @@ The vault updated itself.
 
 Read these from `00-inbox/MY-PROFILE.md`:
 
-- **Priority chat channels** to monitor — weight signals from them.
+- **`primary-communication-channels`** — sources to treat as co-primary with email/calendar
+  (e.g. `[slack]`, `[teams, slack]`). When set, the matching Step 1 collector goes into
+  *broad* mode and the brief renders the corresponding dedicated section (`## Themes from Slack`).
+- **Priority chat channels** — a narrower whitelist *within* the chat source for must-read
+  channels; still useful as a hint, but no longer the gate for whether chat is collected.
+- **`chat-channels-to-ignore`** — explicit blocklist for noisy/off-topic channels.
 - **Critical stakeholders** — prioritize in the "People touched" section.
 - **Active projects** (`status: active` in `03-projects/*`) — weight related signals.
 - **Brief time / weekly time** — when the scheduled runs happen.
 - **Tone** — direct, no "great progress today!" filler.
-- **Top topics cap** — default 5.
+- **Top topics cap** — default 5 (does NOT include `## Themes from Slack`).
 
 ## Anti-patterns to avoid
 

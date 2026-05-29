@@ -40,10 +40,15 @@ Identify the **entities** (people, projects, topics, dates) and the **intent**:
 
 ### Step 2 — Search, distilled-first
 Search in this order (cheapest, highest-signal first):
-1. **`06-knowledge/`** — distilled answers may already exist.
+1. **`06-knowledge/`** — three flavors live here, search all three:
+   - `type: wiki` — encyclopedic page on the thing; usually the most direct hit for
+     "what is X / who is team Y / how does Z work". Check `aliases:` in the frontmatter too.
+   - `type: knowledge` — distilled lesson/pattern on the thing.
+   - `type: doc` — an ingested document that may already contain the answer.
 2. The folder that matches the intent: `02-people/` (person), `05-decisions/` (decision),
    `03-projects/` (status), `04-meetings/` (what was said), `01-daily/` (recent activity), `00-inbox/`.
-3. Follow wikilinks to adjacent notes for corroboration.
+3. Follow wikilinks to adjacent notes for corroboration. Wiki pages are the hubs of the graph
+   — pivot through them.
 
 Use filename/heading/tag/wikilink structure to navigate, not just full-text grep.
 

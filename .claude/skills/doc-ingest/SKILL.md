@@ -115,8 +115,14 @@ confidence are below. [Note if the source is external / its reliability.]
 - **Daily note**: append under a `## Docs ingested` section (create if missing).
 - **People**: if the doc is authored by or about a stakeholder, log a factual timeline line.
 - **Action items**: handled by `task-roundup` (anchors already set).
-- **Knowledge**: if the doc introduces a durable concept/framework, suggest `knowledge-build`
-  to fold it into the broader knowledge base.
+- **Wiki stubs / enrichment**: for each concept, entity, tool, team, or piece of jargon the
+  doc introduces or describes substantively, **create or enrich** the matching wiki page
+  `06-knowledge/<slug>.md` per the Wiki stub protocol in
+  `.claude/skills/knowledge-build/SKILL.md` (Mode A.2/A.4). New stubs use
+  `created-from: "[[06-knowledge/<this-doc-note>]]"`; enrichments append to `## What we know`
+  and `## Sources` with the doc's date. This is what makes the personal wiki grow.
+- **Lessons**: if the doc introduces a durable *pattern, framework, or principle* (not just
+  a thing), suggest `knowledge-build` Lessons mode to fold it into a `type: knowledge` note.
 
 ### Step 5 — Report
 ```
