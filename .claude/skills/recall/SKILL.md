@@ -38,17 +38,24 @@ Identify the **entities** (people, projects, topics, dates) and the **intent**:
 - **Status** — "where does [project/decision] stand".
 - **Existence** — "is there anything on / have I ever".
 
-### Step 2 — Search, distilled-first
+### Step 2 — Search, hub-first
 Search in this order (cheapest, highest-signal first):
-1. **`06-knowledge/`** — three flavors live here, search all three:
+1. **`06-knowledge/_INDEX.md`** — the root index. Use it to scope: which domain does the
+   query belong to? Which hub(s) are relevant?
+2. **The matching domain hub** `06-knowledge/<domain>.md` — its `## Summary` is often the
+   complete answer; its listings point to the right wiki/lesson/doc.
+3. **Individual `06-knowledge/` notes** — four flavors live there:
    - `type: wiki` — encyclopedic page on the thing; usually the most direct hit for
      "what is X / who is team Y / how does Z work". Check `aliases:` in the frontmatter too.
-   - `type: knowledge` — distilled lesson/pattern on the thing.
-   - `type: doc` — an ingested document that may already contain the answer.
-2. The folder that matches the intent: `02-people/` (person), `05-decisions/` (decision),
+   - `type: knowledge` — distilled lesson/pattern.
+   - `type: doc` (in `_sources/`) — an ingested document that may already contain the answer.
+   - `type: index` — already covered in steps 1-2.
+4. The folder that matches the intent: `02-people/` (person), `05-decisions/` (decision),
    `03-projects/` (status), `04-meetings/` (what was said), `01-daily/` (recent activity), `00-inbox/`.
-3. Follow wikilinks to adjacent notes for corroboration. Wiki pages are the hubs of the graph
-   — pivot through them.
+5. Follow wikilinks to adjacent notes for corroboration.
+
+If `_INDEX.md` or hubs don't exist yet (pre-bootstrap vault), fall back to scanning
+`06-knowledge/` flat — but suggest `knowledge-build curator --bootstrap` in the answer.
 
 Use filename/heading/tag/wikilink structure to navigate, not just full-text grep.
 

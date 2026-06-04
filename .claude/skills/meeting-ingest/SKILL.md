@@ -247,18 +247,21 @@ For each project referenced in `03-projects/`:
 If a decision is **hard-to-reverse or one-way**, also create a dedicated note in
 `05-decisions/YYYY-MM-DD-<slug>.md`. These notes are the database for `challenge-decision`.
 
-#### 7.4 Wiki stubs for new concepts / entities
+#### 7.4 Wiki stubs for new concepts / entities (+ curator incremental)
 Scan the transcript and the extracted note for **things** the user might want to look up
 later — concepts, tools, teams, processes, jargon, vendors. For each that does NOT already
 exist as `06-knowledge/<slug>.md`:
 - Create a wiki stub per the **Wiki stub protocol** in
   `.claude/skills/knowledge-build/SKILL.md` (Mode A.2). `type: wiki`, `needs-review: true`,
+  `domain: <inferred>` (from project / tags / MY-PROFILE knowledge-domains; else `unsorted`),
   `created-from: "[[04-meetings/<this-meeting>]]"`, one verbatim 1-line snippet from the
   transcript in `## Sources`.
 - Backlink from the meeting note's `## Links → Related wiki`.
-- If the meeting just enriches an existing wiki page (the entity is already there),
-  **append** the new facts with their inline citation to that page instead of creating a
-  new one — never silently overwrite (see Mode A.4).
+- **Call curator incremental** (Mode C.1 of `knowledge-build`) so the new wiki page lands in
+  the right `06-knowledge/<domain>.md` hub and the root `_INDEX.md` refreshes. Silent for
+  `auto-maintained: true` hubs.
+- If the meeting just enriches an existing wiki page, **append** new facts with citation to
+  that page (Mode A.4) and call curator incremental for `## Recent activity`.
 
 In **auto mode** (called by daily-brief), stubs are created silently with `needs-review:
 true` — they're surfaced in the brief for the user to confirm/enrich.

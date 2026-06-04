@@ -58,8 +58,11 @@ Parse the braindump to identify:
   that warrants its own page in your personal wiki — wikilink to `06-knowledge/<slug>.md`.
   If the page doesn't exist, **create a wiki stub** following the Wiki stub protocol in
   `.claude/skills/knowledge-build/SKILL.md` (Mode A.2): `type: wiki`, `needs-review: true`,
-  `created-from` set to this braindump, with a 1-line snippet from the braindump in the
-  `## Sources` section. No recurrence threshold — first mention is enough.
+  `domain: <inferred>` (from braindump domain / tags / MY-PROFILE knowledge-domains; else
+  `unsorted`), `created-from` set to this braindump, with a 1-line snippet from the
+  braindump in the `## Sources` section. No recurrence threshold — first mention is enough.
+  After creating, **call curator incremental** (Mode C.1) to route the new page into its
+  domain hub.
 
 ### Step 4 — Light analysis (do NOT over-analyze)
 

@@ -216,9 +216,14 @@ calendar, drive, chat, and internal vault activity. Top themes: [3-5 keywords].
 [Links to ingested meetings — meeting-ingest appends here]
 ```
 
-> **Weekly mode also runs `knowledge-build`**: after writing the review, do a conservative
-> sweep (see `.claude/skills/knowledge-build/SKILL.md`) — propose new/updated `06-knowledge/`
-> notes flagged `needs-review: true`, and list them in the review under `## Knowledge updates`.
+> **Weekly mode also runs `knowledge-build` (two phases)**:
+> 1. **Lessons sweep** — conservative pass that proposes new/updated `06-knowledge/` lesson
+>    notes flagged `needs-review: true`. List them in the review under `## Knowledge updates`.
+> 2. **Curator sweep** (Mode C.2 of knowledge-build) — rebuilds auto-maintained hub
+>    listings, refreshes `_INDEX.md`, flags orphans / near-duplicates / aging stubs /
+>    stale wikis, and proposes new hubs when 3+ notes cluster on an unhubbed domain.
+>    Structural changes always preview and ask. Surface the health counters and any pending
+>    proposals at the top of the weekly review under `## Knowledge garden`.
 
 **Weekly format** (different — synthesis-focused vs. collection):
 

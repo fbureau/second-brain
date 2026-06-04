@@ -89,6 +89,23 @@ to `07-archive/` (add `status: archived`). Confirm the list; never auto-archive 
 Any vault-wide change the user describes ("add a `priority` tag to all active projects",
 "standardize date formats"). Same loop: scope → preview → confirm → batched apply → report.
 
+### 8. Knowledge garden
+A focused maintenance pass on `06-knowledge/`. Delegates to `knowledge-build curator` (Mode C)
+under the standing preview→confirm→apply loop, with extra reporting:
+- Run the **curator sweep** (Mode C.2): rebuild auto-maintained hub listings, refresh
+  `_INDEX.md`, detect orphans, near-duplicates, stubs awaiting enrichment, stale wiki pages.
+- Propose **structural moves**: any `type: doc` still sitting at the root of `06-knowledge/`
+  (legacy from before the `_sources/` convention) → move into `_sources/` and rewrite the
+  inbound wikilinks. Any vault-meta artifact (`kickstart-backfill-*`, `vault-health-*`) in
+  `06-knowledge/` → propose archival.
+- Propose **new hubs** for unhubbed domain clusters with ≥ 3 notes (Mode C.2 step 3).
+- Propose **merges** for near-duplicate wiki/lesson pages.
+- Update `## Knowledge domains` in `MY-PROFILE.md` if the user confirms newly proposed domains.
+- Report: hubs rebuilt, notes moved, orphans flagged, merges proposed, stubs aging out.
+
+This is the recurring "tidy 06-knowledge" pass. Run it monthly or when `_INDEX.md` health
+counters cross thresholds (the brief surfaces them).
+
 ## Report
 
 ```

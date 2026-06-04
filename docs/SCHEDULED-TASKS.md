@@ -150,6 +150,13 @@ Method:
 8. Energy & focus: where did energy go; aligned with MY-PROFILE.md priorities?
 9. Implicit plan for next week
 10. List stubs and incomplete notes to process
+11. Run knowledge-build LESSONS sweep: conservative pass that proposes new/updated
+    06-knowledge/ lesson notes flagged needs-review: true; list under "## Knowledge updates".
+12. Run knowledge-build CURATOR sweep (Mode C.2): rebuild auto-maintained domain hubs,
+    refresh 06-knowledge/_INDEX.md, detect orphans, near-duplicates, aging stubs (>14d
+    needs-review), stale wikis (>90d). Propose new hubs when 3+ notes cluster on an
+    unhubbed domain. Structural changes preview-first. Surface health counters under
+    "## Knowledge garden".
 
 Output: 01-daily/YYYY-WW-weekly.md (ISO week number), using the SKILL's weekly format.
 Link from this note to the 7 daily notes of the week.

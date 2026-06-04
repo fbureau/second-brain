@@ -71,7 +71,7 @@ right one runs.
 | **people-update** | After a meaningful interaction with someone | An append-only update to that person's note in `02-people/` |
 | **task-roundup** | "what's on my plate?" | One `TODO.md` at the vault root, checkboxes synced both ways with the source notes |
 | **daily-brief** | Each day/week, or on demand | A synthesis in `01-daily/`; also auto-ingests meetings, updates people, and rounds up tasks |
-| **knowledge-build** | "fais une fiche sur X", "what have we learned about X?" | Your personal wiki — encyclopedic pages on concepts/teams/tools/jargon (`type: wiki`, grown from the first mention) — plus distilled lessons (`type: knowledge`), both in `06-knowledge/`, both fully cited |
+| **knowledge-build** | "fais une fiche sur X", "what have we learned about X?", "curate / knowledge garden" | Your personal wiki (`type: wiki`, grown from first mention) + distilled lessons (`type: knowledge`) + a **curator** that maintains domain index hubs (`type: index`) and a root `_INDEX.md`, detects orphans, near-duplicates, aging stubs. Sources land in `06-knowledge/_sources/`. |
 
 **Use** — get value back out
 | Skill | Use it when | You get |
@@ -130,7 +130,7 @@ TODO.md           ← consolidated action list (task-roundup, two-way checkbox s
 03-projects/      ← active and past projects
 04-meetings/      ← ingested meetings
 05-decisions/     ← decision log (feeds challenge-decision, append-only)
-06-knowledge/     ← personal wiki (encyclopedic) + lessons (distilled patterns)
+06-knowledge/     ← wiki + lessons + domain index hubs (`_INDEX.md` root, `_sources/` for ingested docs)
 07-archive/       ← inactive (never deleted, only moved here)
 ```
 

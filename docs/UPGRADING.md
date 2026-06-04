@@ -22,6 +22,100 @@ There are two parts, and they're separate:
 
 ---
 
+## 3.3.0 → 3.4.0  ·  Knowledge layer (domain hubs, `_INDEX.md`, `_sources/`) + curator
+
+**TL;DR:** `06-knowledge/` gains a navigable shape — domain index hubs, a root `_INDEX.md`,
+and an `_sources/` subfolder for ingested docs — plus a **curator** in `knowledge-build` that
+maintains it. One interactive bootstrap migrates your existing vault. Additive — old notes
+work; you opt in by running bootstrap once.
+
+### What's new
+- **Domain hubs** (`type: index`) at `06-knowledge/<domain>.md`. Each hub lists every wiki,
+  lesson, and source doc tagged with the matching `domain:` field.
+- **Root `06-knowledge/_INDEX.md`** — entry point that `recall` queries first.
+- **`06-knowledge/_sources/` subfolder** — ingested docs (`type: doc`) move here so the root
+  of `06-knowledge/` stays readable.
+- **`knowledge-build` curator** — incremental on every capture, weekly sweep via daily-brief
+  weekly, bootstrap on demand.
+- **`domain:` field** required on every new wiki/lesson/doc; the capture skills infer it.
+- **`## Knowledge domains` field** in `MY-PROFILE.md`.
+
+### Steps
+
+**1. Update the tooling**
+- *Claude Cowork:* re-upload the updated skill files into your workspace:
+  `knowledge-build/SKILL.md` (the big one), `daily-brief/SKILL.md`, `braindump/SKILL.md`,
+  `meeting-ingest/SKILL.md`, `doc-ingest/SKILL.md`, `recall/SKILL.md`, `vault-tend/SKILL.md`.
+  Also re-upload the updated `vault-starter/_CLAUDE.md` and `vault-starter/00-inbox/MY-PROFILE.md`
+  if you want the new schemas + `## Knowledge domains` field in your vault.
+- *Claude Code:* `git pull` in this repo.
+
+**2. Update your vault's `_CLAUDE.md`**
+Open `vault-starter/_CLAUDE.md` and your vault's `_CLAUDE.md` side by side. Copy across:
+- The new `### type: index` block in Section 4.
+- The `domain:` line added to `type: wiki`, `type: knowledge`, `type: doc` schemas.
+- The path note above `type: doc` (`_sources/`).
+- The updated vault structure tree in Section 2.
+- The new Section 9 *Knowledge layer & curator*.
+- The 3 new lines in Section 11 *What you NEVER do* (auto-maintained hubs, doc at root, domain tag).
+- Section 5 *Naming conventions*: the 4 new lines (Wiki / Domain hubs / Root index / Source
+  documents).
+
+**3. Declare your knowledge domains** in `00-inbox/MY-PROFILE.md`
+Add a `## Knowledge domains` section listing your 5–8 top-level domains (the curator can
+propose more later). Example for a CS Change Manager:
+```
+- salesforce: Booksy's CS platform (Service Cloud, Agentforce, routing, go-live).
+- booksy: Booksy-internal context (org, strategy, vision, brand).
+- change-management: change rollout patterns, lessons, frameworks.
+- cs-ops: CS day-to-day ops, KPIs, processes, escalations.
+- vendor-stack: third-party tools (Zowie, Amazon Connect, Boost, Chargebee, ...).
+- gtm-ops: GTM transformation, service-cloud GTM ways of working.
+```
+
+**4. Run the bootstrap migration** (one shot)
+```
+knowledge-build curator --bootstrap
+```
+The curator runs in batches with confirmations:
+1. Creates `06-knowledge/_sources/`.
+2. **Lists every `type: doc` at the root of `06-knowledge/`** and asks before moving them
+   into `_sources/`. Rewrites inbound wikilinks.
+3. Reads `## Knowledge domains` from your `MY-PROFILE.md`; proposes additional domains
+   inferred from your existing tag clusters.
+4. **Tags `domain:` on every wiki/lesson/doc** that doesn't have one yet — in batches of
+   20, with top-3 candidates per note. You confirm/correct.
+5. **Creates the domain hubs** (`06-knowledge/<domain>.md`) with `auto-maintained: true`.
+6. **Proposes archival** for vault-meta artifacts sitting in `06-knowledge/`
+   (`kickstart-backfill-*`, old `vault-health-*`).
+7. **Writes `06-knowledge/_INDEX.md`** and archives the old `README.md` if it's anemic.
+
+Review and commit:
+```bash
+cd /path/to/your/vault && git add -A && git commit -m "Bootstrap knowledge curator (v3.4.0)"
+```
+
+**5. (Cowork only) Add the weekly curator phase**
+If you run a hand-written *weekly* prompt rather than the SKILL auto-trigger, add one line
+after the lessons sweep:
+`Then run knowledge-build curator sweep: rebuild auto-maintained hubs, refresh _INDEX.md, flag orphans / near-duplicates / aging stubs, propose hubs/merges; preview structural changes.`
+
+### You're done when
+- `06-knowledge/` shows `_INDEX.md` at top, `_sources/` subfolder, your domain hubs, then
+  individual wikis/lessons — visibly less cluttered than before.
+- `recall what is X` answers via the matching hub first (faster, more relevant).
+- A new braindump mentioning a fresh concept silently creates a wiki stub *and* lands it in
+  the right hub.
+
+### Rollback
+```bash
+cd /path/to/second-brain && git checkout v3.3.0   # tooling
+```
+Bootstrap changes you accepted (notes moved into `_sources/`, hubs created) stay in the
+vault. To revert the vault changes: `git revert <bootstrap-commit>` in your vault repo.
+
+---
+
 ## 3.2.0 → 3.3.0  ·  Personal wiki + Slack as a co-primary source
 
 **TL;DR:** `06-knowledge/` becomes a real **personal wiki** (encyclopedic pages, grown from
