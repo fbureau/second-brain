@@ -12,6 +12,66 @@ The current version is in the [`VERSION`](VERSION) file. Each release is an anno
 Git tag (`vX.Y.Z`) on `main`. See [`docs/RELEASING.md`](docs/RELEASING.md) for the process
 and [`docs/UPGRADING.md`](docs/UPGRADING.md) to move an existing vault between versions.
 
+## [3.4.0] - 2026-06-03
+
+### Added
+- **`type: index` notes — domain hubs and the root `_INDEX.md`.** `06-knowledge/` is no
+  longer a flat dump: a hub at `06-knowledge/<domain>.md` lists every wiki, lesson, and
+  source doc tagged with the matching `domain:` field; the root `06-knowledge/_INDEX.md`
+  lists the hubs + recent activity + health stats and is the entry point `recall` queries
+  first. Inspired by `tobi/qmd`'s "context layers at the path level" idea, applied through
+  index notes since our retrieval layer (Claude) is already semantic.
+- **`knowledge-build` Curator (Mode C)** — the new organizing layer. Three sub-modes:
+  - **Incremental**: every wiki/lesson creation, enrichment, or doc ingestion silently
+    updates the matching hub's listings and refreshes the root `_INDEX.md` counters.
+  - **Sweep**: runs weekly via `daily-brief` weekly mode (after the lessons pass) or on
+    demand. Rebuilds auto-maintained hub listings, detects orphans (no inbound links),
+    proposes new hubs when ≥ 3 notes cluster on an unhubbed domain, proposes merges for
+    near-duplicates, flags stubs awaiting enrichment (>14 days `needs-review: true`) and
+    stale wiki pages (>90 days no update). Structural changes always preview and ask.
+  - **Bootstrap**: one-shot migration for existing vaults — moves `type: doc` notes into
+    `_sources/`, tags every wiki/lesson/doc with `domain:`, creates the hubs, archives
+    vault-meta artifacts (`kickstart-backfill-*`, `vault-health-*`) sitting in `06-knowledge/`,
+    writes the root `_INDEX.md`.
+- **`vault-tend` Knowledge garden (Operation 8)** — focused 06-knowledge/ maintenance pass
+  that delegates to the curator sweep with extra reporting (structural moves, hub
+  proposals, merge proposals).
+- **`domain:` frontmatter field** on `type: wiki`, `type: knowledge`, `type: doc` —
+  canonical domain slug that routes to a hub. Inferred from project/tags/MY-PROFILE at
+  creation; `unsorted` if unknown.
+- **`## Knowledge domains` section in `MY-PROFILE.md`** — user declares their domain
+  taxonomy (5–8 slugs); the curator can propose additions when clusters grow.
+- **`auto-maintained:` field on `type: index`** — `true` lets the curator rewrite the
+  listing sections; `false` puts you in control.
+
+### Changed
+- **`06-knowledge/_sources/` subfolder for ingested docs.** `doc-ingest` now writes
+  `type: doc` notes to `06-knowledge/_sources/YYYY-MM-DD-<slug>.md` instead of the root.
+  The root of `06-knowledge/` is reserved for wikis, lessons, and hubs — so the flat list
+  stays readable as the vault grows.
+- **`recall` is now hub-first.** Query order: root `_INDEX.md` → matching domain hub →
+  individual wiki/lesson/doc notes → other folders. Falls back to flat scan if hubs
+  don't exist yet, and suggests `knowledge-build curator --bootstrap` in that case.
+- **`braindump`, `meeting-ingest`, `doc-ingest`** all add `domain:` to the wiki stubs they
+  create and call **curator incremental** so the new pages land in their hubs without manual
+  intervention.
+- **`daily-brief` weekly mode** now runs the curator sweep after the lessons sweep and
+  renders a `## Knowledge garden` section with health counters and pending proposals.
+- Vault structure description (`_CLAUDE.md`, `CLAUDE.md`, `README.md`) updated for the new
+  06-knowledge layout. `vault-starter/_CLAUDE.md` gains Section 9 *Knowledge layer & curator*
+  and Section 5 naming conventions for hubs / `_INDEX.md` / `_sources/`.
+
+### Migration (v3.3.0 → v3.4.0)
+Additive — old notes work, but to get the value you run **once**: `knowledge-build curator
+--bootstrap`. It's interactive, preview-first, batched. Full procedure in
+`docs/UPGRADING.md`. After bootstrap, every subsequent capture updates the hubs
+automatically.
+
+### Fixed
+- **`06-knowledge/` looked like a junk drawer at 30+ files** with three altitudes mixed
+  (dated docs / evergreen wikis / one-offs) and no signposting. Hubs + `_INDEX.md` +
+  `_sources/` give it a navigable shape; the curator keeps it that way.
+
 ## [3.3.0] - 2026-05-29
 
 ### Added

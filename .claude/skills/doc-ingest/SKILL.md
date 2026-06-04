@@ -53,7 +53,8 @@ Read the document. For long docs, work section by section. Distinguish the autho
 own paraphrase. Mark clearly what is the document's assertion vs. established fact.
 
 ### Step 3 — Generate the note
-**Path**: `06-knowledge/YYYY-MM-DD-<slug>.md` (slug reflects the topic, not the format).
+**Path**: `06-knowledge/_sources/YYYY-MM-DD-<slug>.md` (NOT at the root of `06-knowledge/`
+— that's reserved for wikis / lessons / hubs). Slug reflects the topic, not the format.
 
 ```markdown
 ---
@@ -62,6 +63,7 @@ doc-date: YYYY-MM-DD          # the document's own date, if known (else "unknown
 type: doc
 doc-type: strategy|analysis|report|deck|spec|research|external-article
 tags: [doc, <topic-tags>]
+domain: <domain-slug>         # routes to 06-knowledge/<domain>.md hub; infer from project / tags / MY-PROFILE knowledge-domains
 source: "<verbatim URL or path/title>"
 project: "[[03-projects/...]]"      # if project-linked
 related-people: ["[[02-people/...]]"]
@@ -119,14 +121,19 @@ confidence are below. [Note if the source is external / its reliability.]
   doc introduces or describes substantively, **create or enrich** the matching wiki page
   `06-knowledge/<slug>.md` per the Wiki stub protocol in
   `.claude/skills/knowledge-build/SKILL.md` (Mode A.2/A.4). New stubs use
-  `created-from: "[[06-knowledge/<this-doc-note>]]"`; enrichments append to `## What we know`
-  and `## Sources` with the doc's date. This is what makes the personal wiki grow.
+  `created-from: "[[06-knowledge/_sources/<this-doc-note>]]"`; enrichments append to
+  `## What we know` and `## Sources` with the doc's date. This is what makes the personal
+  wiki grow.
+- **Curator (incremental)**: call `knowledge-build` curator incremental update so the
+  doc lands in the matching `06-knowledge/<domain>.md` hub's `## Source documents` section
+  and the root `_INDEX.md` refreshes. Silent for `auto-maintained: true` hubs.
 - **Lessons**: if the doc introduces a durable *pattern, framework, or principle* (not just
   a thing), suggest `knowledge-build` Lessons mode to fold it into a `type: knowledge` note.
 
 ### Step 5 — Report
 ```
-✓ Doc ingested: 06-knowledge/2026-05-22-market-analysis-emea.md (doc-type: analysis)
+✓ Doc ingested: 06-knowledge/_sources/2026-05-22-market-analysis-emea.md (doc-type: analysis, domain: marketing)
+✓ Hub updated: 06-knowledge/marketing.md (+1 source listed)
 ✓ Source recorded: <url>
 ✓ 6 key claims extracted (2 high, 3 medium, 1 speculation)
 ✓ Linked to [[03-projects/Onboarding Refresh]] (timeline updated)

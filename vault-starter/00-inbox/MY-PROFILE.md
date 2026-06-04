@@ -73,6 +73,18 @@ actually lives. Example: `[slack]`, `[slack, teams]`. Leave blank to keep the de
 
 - `primary-communication-channels`:
 
+## Knowledge domains
+
+[The canonical domains of your knowledge base. Each becomes a domain hub at
+`06-knowledge/<domain>.md` that lists all wiki pages, lessons, and source docs tagged with
+the matching `domain:` field. Keep this list narrow (5–8 domains) — coarse enough that hubs
+stay useful, fine enough that a note has an obvious home. The curator (knowledge-build) can
+propose new domains when 3+ notes cluster on an unhubbed topic.]
+
+- <domain-slug-1>: <one-line description>
+- <domain-slug-2>: <one-line description>
+-
+
 ## Priority chat channels to monitor
 
 [Optional whitelist *within* the chat source — must-read channels. Used as a weighting
