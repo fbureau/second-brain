@@ -19,8 +19,8 @@ and [`docs/UPGRADING.md`](docs/UPGRADING.md) to move an existing vault between v
   longer a flat dump: a hub at `06-knowledge/<domain>.md` lists every wiki, lesson, and
   source doc tagged with the matching `domain:` field; the root `06-knowledge/_INDEX.md`
   lists the hubs + recent activity + health stats and is the entry point `recall` queries
-  first. Inspired by `tobi/qmd`'s "context layers at the path level" idea, applied through
-  index notes since our retrieval layer (Claude) is already semantic.
+  first. Classic Map-of-Content / index-note pattern from PKM, adapted to AI-native
+  retrieval.
 - **`knowledge-build` Curator (Mode C)** — the new organizing layer. Three sub-modes:
   - **Incremental**: every wiki/lesson creation, enrichment, or doc ingestion silently
     updates the matching hub's listings and refreshes the root `_INDEX.md` counters.

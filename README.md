@@ -18,10 +18,13 @@ Inspired by [COG-second-brain](https://github.com/huytieu/COG-second-brain) and
 
 ## The problem it solves
 
-Claude has no memory across sessions. Close the tab and the context is gone. So this system
-makes the **vault** the memory: every durable fact, decision, and interaction is written to a
-note, not left in chat history. Next session — or in two years — Claude reads the vault and
-picks up exactly where you left off, with citations.
+Claude does have some memory — Cowork persists your workspace, Claude.ai has a Memory
+feature, Claude Code can resume sessions — but none of it scales to a personal knowledge
+base growing over months and years, and none of it is yours to grep, cite, version, or
+move. So this system makes the **vault** the durable memory: every fact, decision, and
+interaction is written to a Markdown note in a Git-tracked folder *you own*. Next session
+— or in two years, or in another tool — Claude reads the vault and picks up where you
+left off, with citations.
 
 You don't file notes by hand. You just *work*, and the skills do the capturing, linking, and
 organizing for you.
