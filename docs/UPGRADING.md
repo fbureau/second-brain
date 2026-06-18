@@ -22,6 +22,68 @@ There are two parts, and they're separate:
 
 ---
 
+## 3.4.0 → 4.0.0  ·  Transcript-first meetings + postmortem mode + curator self-verification
+
+**TL;DR:** Three quality-leak fixes that didn't exist as concepts before.
+- `meeting-ingest` now reads the **transcript** tab of Drive meeting artifacts, not the
+  summary tab (which was the silent default and was losing ~half the signal).
+- `challenge-decision` gains a **postmortem mode** that fires when a decision flips to
+  `status: reversed`, runs a bounded 3-step learning loop, and proposes targeted updates
+  across every wiki/lesson that rested on the now-wrong hypothesis.
+- `knowledge-build` curator sweep gains a **self-verification loop** — it now reaches a
+  stable state before exit instead of running one pass and hoping.
+
+Additive — no destructive migration. The new behaviors fire on new events; existing notes
+are untouched.
+
+### Steps
+
+**1. Update the tooling**
+- *Claude Cowork:* re-upload the updated skill files: `meeting-ingest/SKILL.md`,
+  `challenge-decision/SKILL.md`, `knowledge-build/SKILL.md`, `daily-brief/SKILL.md`.
+- *Claude Code:* `git pull` in this repo.
+
+**2. (Optional) Re-process old auto-ingested meetings**
+If you have auto-ingested meetings in `04-meetings/` from before v4.0 that you suspect were
+ingested from the summary tab, re-invoke `meeting-ingest` manually on each (Drive link or
+the calendar event). The skill enters "post-auto validation" mode, re-reads from the
+transcript if available, and updates the note with the richer source. The original
+`(auto-logged)` markers stay intact.
+
+This is purely opportunistic — no need to do it in bulk. Focus on meetings whose decisions
+or lessons matter most.
+
+**3. (Optional) Run postmortems on past reversed decisions**
+For decisions in `05-decisions/` that are already `status: reversed` from before v4.0 (the
+auto-trigger only fires on *new* flips), invoke manually if you want the learning loop:
+```
+postmortem on [[05-decisions/2025-09-...]]
+```
+The skill produces the manifest + previewed edits across the vault. Accept the ones you
+care about.
+
+**4. Nothing else to do**
+- The new `transcript-source` and `confidence` fields on `type: meeting` are optional —
+  old meetings without them keep working.
+- The curator self-verification loop activates automatically on the next weekly sweep.
+- The daily-brief reversed-decision auto-trigger activates the next time you run a brief.
+
+### You're done when
+- A new meeting auto-ingested by daily-brief shows `transcript-source: verbatim` (or
+  `summary-fallback` with the explicit limitation callout if the transcript was missing).
+- Flipping a decision to `status: reversed` and running tomorrow's daily-brief surfaces a
+  `## Decisions reversed — pending postmortem` section with the manifest.
+- The weekly review's `## Knowledge garden` section now reports how many passes the
+  curator took to stabilize.
+
+### Rollback
+```bash
+cd /path/to/second-brain && git checkout v3.4.0
+```
+No vault changes to revert — v4.0 is purely additive on the tooling side.
+
+---
+
 ## 3.3.0 → 3.4.0  ·  Knowledge layer (domain hubs, `_INDEX.md`, `_sources/`) + curator
 
 **TL;DR:** `06-knowledge/` gains a navigable shape — domain index hubs, a root `_INDEX.md`,

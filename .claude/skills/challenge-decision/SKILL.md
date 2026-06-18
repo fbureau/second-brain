@@ -1,20 +1,48 @@
 ---
 name: challenge-decision
-description: Red-teams a decision or plan the user is considering by searching their own vault for contradictions (past decisions, meetings, lessons, failures). Produces a critical analysis with vault citations. Use when the user says "challenge this", "red team", "stress test", "before I decide", "I'm thinking of X" on a high-stakes topic, or explicitly "challenge-decision".
+description: Two modes around a decision. RED-TEAM (pre-decision): pressure-test a decision or plan against the vault's history before committing. POSTMORTEM (post-decision, since v4.0): when a decision flipped to status:reversed, run a learning loop — extract the lesson, find every other vault note that rests on the same hypothesis, and propose updates to wikis/lessons. Use when the user says "challenge this", "red team", "stress test", "before I decide", "I'm thinking of X" (red-team), or "postmortem", "what went wrong", or auto-detected by daily-brief when a 05-decisions/ note flips to reversed (postmortem).
 ---
 
 # Skill: Challenge Decision
 
+This skill operates in **two modes** around a decision:
+
+- **Red-team** (pre-decision) — pressure-test a decision being considered, against the
+  vault's history. The original purpose.
+- **Postmortem** (post-decision, since v4.0) — when a decision has flipped to
+  `status: reversed`, run a structured learning loop: extract the lesson, find every other
+  vault note that rests on the same hypothesis, propose updates so the vault learns.
+
+Same skill, same philosophy (no agreeableness, mandatory vault citations, honest about
+silence). The mode is determined at activation.
+
 ## When to activate
 
+**Red-team mode**
 - The user explicitly says: "challenge", "red team", "stress test", "challenge-decision".
 - The user states a **high-stakes** decision or plan: "I'm thinking of...", "I'm going to...", "we should...".
 - The user asks "what do you think?" about a business decision.
+- The target decision (if it exists in `05-decisions/`) has `status: proposed | committed`.
+
+**Postmortem mode**
+- The user says: "postmortem", "what went wrong", "learn from this", "we reversed X — now what".
+- The target decision in `05-decisions/` has `status: reversed`.
+- **Auto-trigger by daily-brief**: when a decision flipped to `status: reversed` since the
+  last brief, daily-brief invokes this skill in postmortem mode (auto-marked
+  `needs-review: true`).
 
 **Do NOT use challenge-decision when:**
 - The topic is minor or trivial → answer normally.
 - The topic is purely technical (code, configuration) → answer normally.
-- The decision is already made and executed → use `meeting-ingest` or `people-update` to log it.
+- The decision is already committed and executing successfully → use `meeting-ingest` or
+  `people-update` to log it (red-team is for pre-commit, postmortem is for reversed).
+
+### Mode routing
+1. If the target decision is explicit and lives in `05-decisions/`: read its `status:`.
+   `reversed` → postmortem; `proposed | committed | implemented` → red-team.
+2. If the user named a mode keyword ("postmortem" / "challenge"), trust the keyword.
+3. If ambiguous: ask one short question ("red-team this decision before you commit, or
+   postmortem the reversal?") before proceeding.
 
 ## Philosophy
 
@@ -38,7 +66,10 @@ This skill forces the user to confront the current decision with their own histo
    - From the argument given at invocation.
    - Otherwise, infer from recent conversation (ask for confirmation).
 
-## Process
+## Process — Red-team mode
+
+This section is the red-team flow (pre-decision). For the postmortem flow (post-reversal),
+see *Postmortem mode* below.
 
 ### Step 1 — Frame the decision
 
@@ -243,6 +274,187 @@ N blind spots, N patterns]. Verdict: [supports|warns|silent].
 Strong recommendation: explicitly address the 3 counter-evidence items before proceeding.
 
 Want me to dig into a particular angle? Or log the decision directly if you decide to proceed?
+```
+
+## Postmortem mode (since v4.0)
+
+Triggered when a `05-decisions/` note has flipped to `status: reversed` — either manually
+("postmortem on this decision") or automatically by daily-brief on the day the status flips.
+
+The goal is not to assign blame. It's to make the vault **learn** so the same hypothesis
+doesn't quietly recur in three other places.
+
+### Why a loop
+A reversed decision rarely lives alone. The hypothesis that turned out wrong usually shows
+up in: other decisions that cited the same assumption, wiki pages stating it as fact, lessons
+written when the assumption was still believed, and project plans built on top of it. The
+job is to find every load-bearing reference and update it — in one pass that converges, not
+endless wandering.
+
+### The 3-step loop
+
+```
+                ┌───────────────────────────────────┐
+                │ 1. Extract the lesson             │
+                │    (what was the hypothesis,      │
+                │     what reversed it, when)       │
+                └─────────────────┬─────────────────┘
+                                  ▼
+                ┌───────────────────────────────────┐
+                │ 2. Cross-reference the vault      │
+                │    (decisions, wikis, lessons,    │
+                │     meetings citing the           │
+                │     hypothesis)                   │
+                └─────────────────┬─────────────────┘
+                                  ▼
+                ┌───────────────────────────────────┐
+                │ 3. Propose updates                │
+                │    (wikis, lessons, decisions     │
+                │     status, hub recent activity)  │
+                └─────────────────┬─────────────────┘
+                                  ▼
+                       preview → ask → apply
+```
+
+Bounded: each step has a concrete exit condition. The loop terminates when step 3 has been
+applied or declined — never re-invoked silently.
+
+### Step P1 — Extract the lesson
+
+Read the reversed `05-decisions/` note end-to-end. Identify:
+- **Original hypothesis**: the load-bearing assumption that turned out wrong. State it in one
+  sentence, verbatim from the original note where possible.
+- **What reversed it**: which evidence, event, or downstream finding flipped the call. Cite
+  the meeting, doc, or daily note where it surfaced.
+- **Cost / scope of impact**: what had to be undone, what stays, what changed for downstream
+  work. One paragraph max.
+- **The durable lesson**: distill in one sentence the rule a future-you would want to apply.
+  This sentence is what propagates to wikis and lessons in Step P3.
+
+### Step P2 — Cross-reference the vault
+
+Find every load-bearing reference to the original hypothesis:
+
+1. **Other `05-decisions/`** — search for decisions that cite the same hypothesis (text
+   match + semantic match on the lesson sentence). Flag them. If any is `status: committed
+   | implemented`, it's a candidate for re-review.
+2. **Wiki pages (`type: wiki`)** — search for pages whose `## What we know` or `## Summary`
+   states the (now-wrong) hypothesis as fact. List them with the offending line + a
+   citation.
+3. **Lessons (`type: knowledge`)** — search for lessons that derived from the hypothesis or
+   rest on it. These are highest-priority updates — a wrong lesson keeps propagating.
+4. **Meetings (`04-meetings/`)** — find recent meetings where the hypothesis was discussed.
+   Mostly for context, not for update; they're already historical record.
+5. **Domain hubs (`type: index`)** — note which hub(s) the impacted pages belong to. The
+   curator will refresh `## Recent activity` automatically on Step P3.
+6. **Projects (`03-projects/`)** — any active project whose plan rests on the hypothesis?
+   Flag for the user; don't auto-rewrite a project (those are user-owned).
+
+Output a short manifest:
+```
+Cross-references found:
+- 2 decisions: [[2025-09-...]] (committed → re-review), [[2025-11-...]] (implemented)
+- 3 wiki pages: [[06-knowledge/qualification-script]] (line 14), [[06-knowledge/sf-routing]] (line 8), [[06-knowledge/agentforce]] (line 22)
+- 1 lesson: [[06-knowledge/onboarding-handoff-lessons]] (`## What we know` bullet 2)
+- 4 meetings referenced (context only, no update)
+- 1 active project: [[03-projects/CS Refresh ES]] (rests on the hypothesis — needs your call)
+```
+
+### Step P3 — Propose updates
+
+For each item from P2, produce a concrete edit preview the user can accept/reject. Group by
+target file. Use append-only conventions where applicable (decisions, lessons).
+
+- **Wiki pages** — append a dated correction to `## What we know` with citation back to the
+  reversed decision, mark the superseded statement explicitly: `2026-06-18: supersedes the
+  earlier claim that "<hypothesis>" — see [[05-decisions/2026-04-12-...]] (reversed). The
+  correct framing is: "<distilled lesson>". (confidence: high, source: reversal)`. Add the
+  reversed decision to the wiki's `## Sources`.
+- **Lessons** — same append-only correction in `## What we know` + a new entry in
+  `## Evidence` linking the reversed decision. If the lesson is now fundamentally wrong
+  (not just nuanced), set `confidence: speculation` and `needs-review: true` so a human
+  decides whether to retire it (`vault-tend archive` or rewrite).
+- **Other decisions** — if any committed/implemented decision rests on the same
+  hypothesis, propose a `## Update — 2026-06-18` block on its timeline (append-only)
+  flagging the reversal upstream, with the user's call to make.
+- **New `type: knowledge` lesson** — if no existing lesson captures the durable rule from
+  Step P1, propose creating one in `06-knowledge/<slug>-lessons.md` (or enriching the
+  nearest existing one). `confidence: high`, `domain:` inferred, evidence = the reversed
+  decision + cross-referenced wikis. The curator incremental update places it in the
+  matching hub.
+- **The reversed decision itself** — append `## Lesson — YYYY-MM-DD` with the distilled
+  sentence and a link to the new/enriched lesson, so the decision now self-documents the
+  outcome.
+
+**Preview-first, batched, human-in-the-loop**. Show the user the full set of proposed edits
+before applying anything. Apply in one transaction (so a partial-failure can be reverted).
+After apply, call `knowledge-build` curator incremental for each touched note so hubs and
+`_INDEX.md` refresh.
+
+### Auto mode (daily-brief postmortem auto-trigger)
+
+When daily-brief detects a decision flipped to `status: reversed` in the window:
+1. Invoke this skill in postmortem mode for that decision.
+2. Run Steps P1 and P2 fully, produce the manifest.
+3. **Stop at P3**: do NOT auto-apply edits. Surface the proposal in the brief under
+   `## Decisions reversed — pending postmortem` with the manifest and the previewed edits.
+4. Mark the analysis note (one created in `06-knowledge/<slug>-postmortem.md` or appended
+   to the reversed decision) with `needs-review: true`.
+5. The user runs Step P3 manually next morning, with the previews ready.
+
+This keeps the autonomous pipeline conservative — auto-detection and auto-analysis, but
+edits across the vault remain a human decision.
+
+### Postmortem note template
+
+When postmortem produces a standalone artifact (rather than just inline lesson updates),
+write `06-knowledge/<decision-slug>-postmortem.md`:
+
+```markdown
+---
+date: YYYY-MM-DD
+type: knowledge
+tags: [knowledge, postmortem, <domain>]
+domain: <domain-slug>
+confidence: high
+needs-review: true | false
+ai-first: true
+---
+
+## For future Claude
+
+Postmortem of [[05-decisions/<decision>]] (reversed YYYY-MM-DD). Extracts the durable
+lesson, lists vault references that rested on the reversed hypothesis, and points to the
+proposed/applied updates.
+
+## The hypothesis that reversed
+
+<one sentence, verbatim where possible>
+
+## What reversed it
+
+<one paragraph, citing the trigger>
+
+## The durable lesson
+
+<one sentence, the rule for future-you>
+
+## Vault references found
+
+<the P2 manifest>
+
+## Updates proposed / applied
+
+- ✓ Wiki updates: <list with paths>
+- ✓ Lesson enriched / created: <path>
+- ⏳ User decision needed: <projects, committed decisions to re-review>
+
+## Links
+
+- Reversed decision: [[05-decisions/...]]
+- Domain hub: [[06-knowledge/<domain>]]
+- Updated wikis: [[06-knowledge/...]]
+- Updated/created lesson: [[06-knowledge/...]]
 ```
 
 ## Anti-patterns to avoid

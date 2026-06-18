@@ -30,6 +30,38 @@ description: Ingests a meeting transcript (video-call transcript, raw notes, tra
    - **Manual**: the user invokes it explicitly → standard behavior.
    - **Auto**: invoked by daily-brief orchestration → adapted behavior (see "Auto mode").
 
+## Source priority — transcript-first, summary fallback
+
+Google Meet (and most call platforms) produce **two** Drive artifacts after a meeting:
+
+- A **transcript tab/file** — full verbatim of what was said. This is the ground truth.
+- A **summary / AI notes tab** — a model-generated digest, default tab in Drive's preview.
+  This is lossy: it drops dynamics, side-discussions, contested exchanges, the exact
+  wording of decisions, and most action-item nuance.
+
+**Rule:** when ingesting from a Drive doc / Meet artifact, you ALWAYS read the **transcript**
+first. The summary is a fallback, not a default.
+
+### Decision tree
+1. **Transcript available** (transcript tab populated, or a separate `*-transcript.docx` /
+   `*.vtt` next to the recording in Drive) → use the transcript verbatim as the source.
+   Record `transcript-source: verbatim` in frontmatter.
+2. **Transcript missing but summary available** → fall back to the summary. Mark the meeting
+   note with degraded confidence:
+   - `confidence: medium` in frontmatter.
+   - `transcript-source: summary-fallback` in frontmatter.
+   - **"For future Claude" preamble must state explicitly**: `*Source: summary tab (transcript
+     unavailable). Information loss expected — dynamics, exact decision wording, and
+     side-discussions are not captured.*`
+   - `needs-review: true` (the user may want to re-process if the transcript appears later).
+3. **Neither available** → do not ingest. Flag in the brief for manual handling.
+
+### Why this matters
+Summaries elide ~40-60% of useful signal: the framing of disagreement, the exact phrasing of
+commitments, the moments of hesitation that reveal real risk. `challenge-decision` and
+`people-update` rely on those nuances. Defaulting to the summary tab is the single biggest
+quiet quality leak in the orchestration — don't take it.
+
 ## Auto mode (invoked by daily-brief)
 
 When this skill is invoked by `daily-brief` orchestration (not directly by the user):
@@ -51,6 +83,12 @@ Auto-ingest ONLY if ALL of these are true:
 - ✅ NOT already ingested (cross-check `04-meetings/`).
 
 If any condition fails → do NOT ingest. daily-brief flags it for manual validation.
+
+**Source choice (auto mode)**: the transcript-first rule (see *Source priority*) applies the
+same way in auto mode. If only the summary is available, daily-brief still ingests but with
+the degraded markers (`confidence: medium`, `transcript-source: summary-fallback`,
+`needs-review: true`) and a one-line callout in the brief: *"N meetings ingested from
+summary only — transcript missing."*
 
 ### "Post-auto validation" mode
 When the user later invokes `meeting-ingest` on an already auto-ingested note
@@ -161,6 +199,8 @@ project: "[[03-projects/...]]"      # optional if cross-cutting
 meeting-type: 1-1|team-sync|stakeholder|external|townhall
 duration: <min>
 source: "<verbatim link to the transcript / Google Doc / recording, or 'pasted transcript'>"
+transcript-source: verbatim | summary-fallback   # which Drive tab/file was ingested
+confidence: high | medium                        # medium when transcript-source: summary-fallback
 ai-first: true
 ---
 
