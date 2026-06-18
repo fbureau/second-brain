@@ -12,6 +12,62 @@ The current version is in the [`VERSION`](VERSION) file. Each release is an anno
 Git tag (`vX.Y.Z`) on `main`. See [`docs/RELEASING.md`](docs/RELEASING.md) for the process
 and [`docs/UPGRADING.md`](docs/UPGRADING.md) to move an existing vault between versions.
 
+## [4.0.0] - 2026-06-18
+
+### Added
+- **`meeting-ingest` transcript-first source priority.** Drive meeting artifacts ship with
+  two tabs — a verbatim transcript and an AI-generated summary. The summary is the default
+  tab and is lossy (~40-60% signal loss: dynamics, exact decision wording, side-discussions,
+  hesitation). `meeting-ingest` now ALWAYS reads the transcript first and falls back to the
+  summary only when the transcript is unavailable, marking the note `confidence: medium`,
+  `transcript-source: summary-fallback`, `needs-review: true`, with the limitation called out
+  in the "For future Claude" preamble. New frontmatter fields on `type: meeting`:
+  `transcript-source` and `confidence`. Auto mode applies the same rule.
+- **`challenge-decision` postmortem mode.** Pendant to the existing red-team mode. Triggered
+  when a `05-decisions/` note flips to `status: reversed` — either manually ("postmortem on
+  this decision") or auto-detected by daily-brief on the day of the flip. Runs a bounded
+  3-step learning loop:
+  1. **Extract the lesson** — hypothesis, what reversed it, durable rule.
+  2. **Cross-reference the vault** — every decision, wiki, lesson, project that rested on
+     the reversed hypothesis. Produces a load-bearing-references manifest.
+  3. **Propose updates** — append-only dated corrections on impacted wikis/lessons, status
+     flags on dependent decisions, optionally a new `type: knowledge` lesson capturing the
+     rule. Preview-first, batched, human-in-the-loop.
+  Postmortem writes a standalone artifact at `06-knowledge/<decision-slug>-postmortem.md`
+  (curator routes it to the matching domain hub via the `domain:` field). Auto mode runs
+  steps P1–P2 only; P3 (the cross-vault edits) always awaits human approval.
+- **`daily-brief` reversed-decision auto-trigger (Step 6.7).** Detects decisions that
+  flipped to `status: reversed` since the last brief and invokes
+  `challenge-decision` in postmortem mode for each. Surfaces the manifests + proposed
+  edits in a conditional `## Decisions reversed — pending postmortem` section.
+- **`knowledge-build` curator self-verification loop (Mode C.2 step 9).** The weekly
+  sweep now reaches a stable state before exit: snapshot → verification pass → if zero
+  diff, exit; otherwise re-iterate on the unstable hubs. Bounded at 3 passes total; if
+  still unstable, the unstable hubs are flagged under `## Health → Curator unstable` in
+  `_INDEX.md` (a bug signal, not a loop runaway). The report says how many passes it took
+  to stabilize.
+
+### Changed
+- `challenge-decision` skill description now declares two modes (red-team + postmortem)
+  and the new auto-trigger surface. The pre-existing red-team flow is now labeled
+  `## Process — Red-team mode` for clarity; semantics unchanged.
+- `meeting-ingest` schema for `type: meeting` adds `transcript-source` and `confidence`.
+
+### Migration (v3.4.0 → v4.0.0)
+Additive — no schema breakage for existing meetings (the new fields are optional and
+default sensibly). For existing reversed decisions in the vault, the postmortem auto-trigger
+only fires on flips *after* the upgrade — to retroactively run postmortems on older
+reversals, invoke `challenge-decision postmortem` manually on each. Full procedure in
+`docs/UPGRADING.md`.
+
+### Fixed
+- **Quiet quality leak in auto-ingested meetings**: defaulting to the Drive summary tab
+  was silently degrading every downstream analysis that depended on meetings (people
+  timelines, decision evidence, lesson extraction). Now caught at the source.
+- **Curator drift**: the sweep was a single pass — a hub whose constituent notes changed
+  during the pass could be left in an inconsistent state until the next weekly run. The
+  self-verification loop closes this.
+
 ## [3.4.0] - 2026-06-03
 
 ### Added

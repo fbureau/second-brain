@@ -165,6 +165,17 @@ calendar, drive, chat, and internal vault activity. Top themes: [3-5 keywords].
 - [Committed action] — source: [[email/meeting/chat]] — deadline: YYYY-MM-DD
 - [Decision by X impacting project Y] — source: [...]
 
+## Decisions reversed — pending postmortem
+
+> Render only if Step 6.7 detected one or more decisions flipped to `status: reversed` this
+> window. Otherwise omit the section entirely.
+
+- [[05-decisions/<slug>]] — reversed YYYY-MM-DD.
+  - Hypothesis: <one sentence>
+  - Distilled lesson: <one sentence>
+  - Vault references found: N decisions, N wikis, N lessons (manifest in [[06-knowledge/<slug>-postmortem]])
+  - Proposed updates: ready for your review — accept all / cherry-pick / dismiss.
+
 ## Top topics of the day
 
 ### [Topic 1]
@@ -384,6 +395,31 @@ stamp only — never touch Compiled truth in auto mode.
 
 Then surface the result at the top of the brief: feed `## Pending follow-ups` from the
 **Overdue** and **Today** buckets (with the `[[TODO]]` backlinks), and flag the overdue count.
+
+### Step 6.7 — Reversed-decision postmortem auto-trigger (since v4.0)
+
+Scan `05-decisions/` for any note whose `status:` changed to `reversed` **since the last
+brief** (compare against the previous daily/weekly's `updated:` window). For each detected
+flip:
+
+1. Invoke `challenge-decision` in **postmortem mode** for that decision (auto). The skill
+   runs Steps P1 and P2 fully — extracts the hypothesis, cross-references the vault — and
+   produces the previewed edits for Step P3.
+2. Postmortem auto-mode **never applies the cross-vault edits**. It surfaces them as a
+   manifest in this brief under a new section `## Decisions reversed — pending postmortem`,
+   with the proposed wiki/lesson updates listed inline for human approval.
+3. The postmortem analysis note (`06-knowledge/<decision-slug>-postmortem.md` or appended
+   to the reversed decision) is created with `needs-review: true`.
+
+If no decision flipped since the last brief, skip this step silently (don't render an
+empty section).
+
+Detection rule of thumb (auto-conservative):
+- A decision is "flipped this window" if its file's git history shows the `status:` field
+  changed to `reversed` between the previous brief's window-end and now, **or** if a
+  timeline entry titled `### YYYY-MM-DD — Reversed` was appended within the window.
+- Don't re-trigger on decisions already `reversed` *before* the last brief — those were
+  already handled (or skipped) previously. The postmortem fires once per flip.
 
 ### Step 7 — Propagation
 

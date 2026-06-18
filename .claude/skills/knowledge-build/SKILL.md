@@ -288,7 +288,19 @@ Full pass over `06-knowledge/`:
 7. **Stale wiki pages.** `updated:` more than 90 days ago AND no inbound activity → flag.
 8. **Refresh `_INDEX.md`** end-to-end (hubs list with counts, recent activity, health stats,
    unsorted lists).
-9. **Report** what was rebuilt, proposed, and flagged.
+9. **Self-verification loop** (since v4.0) — the sweep must reach a stable state before exit:
+   1. Snapshot the state of each `auto-maintained: true` hub + `_INDEX.md` after step 8.
+   2. Re-run steps 2 and 8 once (a "verification pass").
+   3. **Compare**: if the verification pass produces *zero* changes to any hub or
+      `_INDEX.md`, the sweep is stable → exit and report.
+   4. If the verification pass *did* produce changes, the previous pass was incomplete. Run
+      another full pass (steps 2–8) on the hubs that changed, then re-verify.
+   5. **Budget**: max 3 passes total (1 initial + up to 2 re-iterations). If still not
+      stable, stop and flag the unstable hubs in the report under `## Health → Curator
+      unstable` with the diff between the last two passes — that's a bug signal, not a
+      reason to keep looping.
+10. **Report** what was rebuilt, proposed, flagged — and how many passes it took to stabilize.
+
 
 ### C.3 Bootstrap (one-shot)
 

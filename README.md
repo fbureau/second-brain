@@ -65,7 +65,7 @@ right one runs.
 | Skill | Use it when | You get |
 |---|---|---|
 | **braindump** | A loose thought, an idea, a stray observation | A tagged, linked note in `00-inbox/` |
-| **meeting-ingest** | You have a meeting transcript or raw notes | A structured note in `04-meetings/` (decisions, actions, people) + the source link |
+| **meeting-ingest** | You have a meeting transcript or raw notes | A structured note in `04-meetings/` (decisions, actions, people) — **always reads the transcript tab first**, falls back to the summary tab with a degraded-confidence flag when the transcript is missing |
 | **doc-ingest** | A strategy doc, analysis, report, deck, or article | A note in `06-knowledge/` with the source (e.g. Google Doc) kept, linked to projects |
 
 **Organize** — mostly automatic, runs while you work
@@ -81,7 +81,7 @@ right one runs.
 |---|---|---|
 | **recall** | "what do I know about X?", "did we decide Y?" | A direct answer with citations (note + date) and a confidence level |
 | **prioritize** | "what should I focus on?", "plan my day" | A ranked plan: priorities, order, a first step each, and suggested replies |
-| **challenge-decision** | Before a high-stakes call | A red-team of your idea against your own past decisions and meetings |
+| **challenge-decision** | Before a high-stakes call (red-team) — or when a decision flips to `status: reversed` (postmortem) | Red-team mode: pressure-tests the call against your vault's history. Postmortem mode: extracts the lesson from the reversal, finds every wiki/lesson resting on the now-wrong hypothesis, proposes targeted updates so the vault learns. |
 
 **Maintain & set up**
 | Skill | Use it when | You get |
