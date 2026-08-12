@@ -29,26 +29,28 @@ The system is inspired by two open-source projects.
 - "Search before create" to avoid duplicates.
 
 **Dropped:**
-- The large slash-command surface (folded into the six skills).
+- The large slash-command surface (folded into a small set of skills).
 - External integrations (kept generic via MCP / available tools).
 - Heavy custom scripting (kept minimal; Git hooks do the lightweight validation).
 
-## The migration: from Cowork to Claude Code
+## Two surfaces: Cowork and Claude Code
 
-This system originally ran on a scheduled-task assistant (Cowork). It moved to
-**Claude Code** to get:
+The system originally ran as hand-written scheduled-task prompts in Cowork; the v3.0
+migration turned those prompts into portable skills (`.claude/skills/*/SKILL.md`).
+Today both surfaces are supported (see the README's Setup): **Cowork** is the
+conversational default — skills trigger from what you say, scheduled tasks are native.
+**Claude Code** is the power-user path, and adds:
 
 | Capability | Why it matters here |
 |---|---|
 | Native Git | Commit on every vault change; the append-only history becomes a real audit trail. |
-| Skills (`.claude/skills/`) | Auto-trigger from a description; fast to edit and test locally. |
 | Pre/post-commit hooks | Continuous vault-coherence validation (AI-first, append-only). |
-| Multi-file analysis | Cross-note reasoning across `02-people/*.md`, `05-decisions/*.md`, etc. |
+| Local CLI control | Headless runs, scripting, and full control over models and context. |
 | No platform limits | You run sensitive 1-1 analyses yourself, whenever. |
 
-The one thing Claude Code lacks is a **native scheduler**. The daily/weekly
-automations therefore run via an external scheduler — see `SCHEDULED-TASKS.md`.
-The trade-off is deliberate: a tool you live in beats a more "automated" tool you ignore.
+What Claude Code lacks is a **native scheduler**: the daily/weekly automations run via
+an external scheduler — see `SCHEDULED-TASKS.md`. The trade-off is deliberate: a tool
+you live in beats a more "automated" tool you ignore.
 
 ## Design choices
 
@@ -63,7 +65,7 @@ A tested sweet spot. Fewer → classification friction. More → cognitive overl
 | `03-projects/` | The second pillar — concrete initiatives. |
 | `04-meetings/` | Separate from daily because meetings have their own life (re-referenced over time). |
 | `05-decisions/` | Critical: the database that feeds `challenge-decision`. |
-| `06-knowledge/` | Crystallized cross-project lessons (rare but precious). |
+| `06-knowledge/` | The knowledge layer (since v3.4): wiki pages grown from first mention, distilled lessons, domain hubs + `_INDEX.md`, ingested docs in `_sources/`. |
 | `07-archive/` | "Inactive but kept" — NEVER delete. |
 
 ### Why not strict PARA
@@ -99,22 +101,22 @@ On sensitive notes (people, decisions), overwriting is dangerous:
 Append-only enforces a discipline that pays off long-term. The pre-commit hook
 guards it mechanically.
 
-### Why six skills
-Full coverage with minimal surface:
+### Why twelve skills, no more
+The surface started at six (v3.0) and grew to twelve as real, recurring needs emerged
+(v3.1–v3.2) — the principle is unchanged: full coverage with minimal surface, one skill
+per job.
 
-| Skill | Use case |
+| Group | Skills |
 |---|---|
-| braindump | Fast unstructured capture |
-| meeting-ingest | Structured capture (transcript) |
-| daily-brief | Periodic automated synthesis + orchestration |
-| people-update | Strategic CRM |
-| challenge-decision | Anti-bias on high-stakes decisions |
-| kickstart-backfill | One-shot Day-1 seeding |
+| Capture | braindump · meeting-ingest · doc-ingest |
+| Organize (mostly automatic) | people-update · task-roundup · daily-brief (conductor) · knowledge-build |
+| Use | recall · prioritize · challenge-decision |
+| Maintain & set up | vault-tend · kickstart-backfill |
 
-Other skills can be derived from these. Future examples: `prep-1to1` (daily-brief
-focused on one person), `quarterly-review` (daily-brief over a 3-month window),
-`project-status` (meeting-ingest applied to one project). Add a skill only when a
-real, recurring need emerges.
+Anything else can be derived from these with a plain prompt — e.g. `prep-1to1` is
+recall + people-update over one person, `quarterly-review` is daily-brief over a
+3-month window. Add a thirteenth skill only when a real, recurring need emerges that
+a prompt can't cover.
 
 ### Why Git hooks now (the source project avoided them)
 The source project skipped Git hooks because the old tool synced via cloud storage

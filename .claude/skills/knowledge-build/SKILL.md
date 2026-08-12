@@ -427,6 +427,10 @@ cluster grows.]
 - N stubs awaiting enrichment (>14 days `needs-review: true`).
 - N stale wiki pages (>90 days no update, no activity).
 - N near-duplicates flagged for review.
+
+[When a category is non-empty, list the offending notes in a matching subsection right
+below: `### Orphans`, `### Stubs to enrich`, `### Stale wikis`, `### Near-duplicates`,
+`### Curator unstable` (sweep step 9). Omit empty subsections.]
 ```
 
 ## Connect (across all modes)

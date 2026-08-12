@@ -135,7 +135,9 @@ notes follow suit. Preview the count of EN→FR notes before starting.
 
 ### Very large vault
 Work folder by folder, oldest-first, committing per folder. Offer to stop after each so the
-user can sanity-check before continuing.
+user can sanity-check before continuing. In Claude Code, fan out parallel subagents for the
+read-only scan/preview phase (one per folder) — modern models handle this well and it cuts
+the sweep time; keep the apply phase sequential and batch-committed.
 
 ### Running from a health report
 If a `06-knowledge/vault-health-*.md` exists, offer to action its findings (orphans, stubs,

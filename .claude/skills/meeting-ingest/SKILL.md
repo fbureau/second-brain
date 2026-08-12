@@ -19,7 +19,8 @@ description: Ingests a meeting transcript (video-call transcript, raw notes, tra
 
 ## Preflight
 
-1. **Read `_CLAUDE.md`** (rules, structure, conventions).
+1. **Read `_CLAUDE.md`** (rules, structure, conventions) and `00-inbox/MY-PROFILE.md`
+   (working language, `sensitive-meetings` list, per-skill preferences).
 2. **Get the real timestamp** of processing time.
 3. **Determine the meeting date** (priority: from the transcript / calendar invite; fallback: ask).
 4. **Capture the source link** — if the transcript comes from a Google Doc, a recording, or a
@@ -306,13 +307,13 @@ exist as `06-knowledge/<slug>.md`:
 In **auto mode** (called by daily-brief), stubs are created silently with `needs-review:
 true` — they're surfaced in the brief for the user to confirm/enrich.
 
-#### 7.4 Daily note
-Append to `01-daily/YYYY-MM-DD.md` (ingestion date) under `## Meetings ingested`:
+#### 7.5 Daily note
+Append to `01-daily/YYYY-MM-DD.md` (ingestion date) under `## Meetings ingested today`:
 ```
 - [[04-meetings/<slug>]] — [meeting-type] with [main participants]
 ```
 
-#### 7.5 Action items
+#### 7.6 Action items
 Keep the action items in the meeting note (with `^t-id` anchors). The ones the user
 owns are consolidated into the vault-root `TODO.md` by `task-roundup` (and by
 `daily-brief`'s roundup phase) — no need to duplicate them anywhere else.

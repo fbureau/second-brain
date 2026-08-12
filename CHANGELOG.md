@@ -9,8 +9,91 @@ All notable changes to this project are documented here. The format is based on
 - **PATCH** — fixes and documentation tweaks, no behavior change.
 
 The current version is in the [`VERSION`](VERSION) file. Each release is an annotated
-Git tag (`vX.Y.Z`) on `main`. See [`docs/RELEASING.md`](docs/RELEASING.md) for the process
+Git tag (`X.Y.Z`, no `v` prefix) on `main`. See [`docs/RELEASING.md`](docs/RELEASING.md) for the process
 and [`docs/UPGRADING.md`](docs/UPGRADING.md) to move an existing vault between versions.
+
+## [4.1.0] - 2026-08-12
+
+Repo-wide audit release: a multi-agent audit (cross-file consistency, skill integrity,
+shell correctness, docs freshness, template↔schema alignment, model-era prompt quality)
+surfaced ~50 defects; every confirmed one is fixed here. Additive — no vault migration.
+
+### Added
+- **Pre-commit hook: deletion & rename protection.** Deleting a note in `02-people/` or
+  `05-decisions/` — the most destructive diff of all — used to pass the hook silently
+  (`--diff-filter=ACM` excluded deletions). Now blocked; a move to `07-archive/` (the
+  sanctioned retirement path) passes; a rename anywhere else is blocked. Deleting a vault
+  note in other folders warns (archive instead).
+- **Templates `meeting.md` and `wiki.md`** — the two note types skills produce most that
+  had no standalone template (meeting includes the v4.0 `transcript-source`/`confidence`
+  fields).
+- **`vault-starter/06-knowledge/` ships the knowledge layout** — seeded `_INDEX.md`,
+  `_sources/` (with README), a modernized folder README (wiki/lessons/hubs/sources), and
+  `domain:` on the example note. A fresh vault no longer starts pre-bootstrap.
+- **`_CLAUDE.md`**: v4.0 meeting fields (`ingested`, `transcript-source`, `confidence`) in
+  the `type: meeting` schema; orchestrator list gains the reversed-decision postmortem
+  trigger; structure diagram gains `TODO.md`; "Other system types" note (decision-challenge,
+  weekly-review, todo-dashboard, profile, backfill-report); `languages` on `type: person`.
+- **`daily-brief` weekly template** gains the `## Knowledge garden` and `## Knowledge
+  updates` sections its own weekly-mode instructions referenced.
+- **`SCHEDULED-TASKS.md` Task 1** gains the transcript-first rule (PHASE 5) and a new
+  PHASE 6.7 (reversed-decision postmortem) — the scheduled prompt had missed both v4.0
+  behaviors; Task 2 now runs the curator self-verification loop.
+
+### Changed
+- **Pre-commit hook correctness**: checks now validate the **staged blob** (`git show :file`)
+  instead of the working tree (partial stages are validated as committed); non-ASCII
+  filenames (accented people names) no longer skip every check (`core.quotePath=off`);
+  renames no longer bypass checks (`--no-renames`); backfilled monthly headers
+  (`### YYYY-MM (Backfilled — aggregated)`) and suffixed markers (`(Backfilled, no
+  transcript)`) are now protected; CRLF notes are no longer falsely rejected.
+- **`install.sh`** resolves the hooks dir via `git rev-parse --git-path hooks` — works in
+  worktrees and submodules where `.git` is a file.
+- **`.gitignore`**: `.obsidian/` patterns now match at any depth (`**/` prefix) so a nested
+  vault's workspace noise is actually ignored.
+- **`settings.json`**: `git commit --no-verify` now prompts (ask) instead of riding the
+  blanket `git commit` allow.
+- **Daily-note section names unified**: braindump → `## Braindumps of the day`,
+  meeting-ingest → `## Meetings ingested today`, doc-ingest → `## Docs ingested today` —
+  the skills, the daily template, and the folder README previously disagreed, which would
+  have produced duplicate sections.
+- **`task-roundup`**: scans `03-projects/` (its own TODO template already showed a
+  project-sourced task); people `Follow-up:` lines are collected only in checkbox form
+  (people-update now writes them as checkboxes); never assigns a new anchor to mirror
+  lines that reference an existing anchor via wikilink (prevented duplicate tasks from
+  daily-brief's `## Pending follow-ups` mirror).
+- **`challenge-decision`**: mode routing for `status: implemented` decisions aligned with
+  the activation rules (red-team only when reconsidering; otherwise log).
+- **`meeting-ingest`**: duplicate step `7.4` renumbered (Daily note → 7.5, Action items
+  → 7.6).
+- **Preflights**: braindump, meeting-ingest, people-update, and challenge-decision now
+  read `00-inbox/MY-PROFILE.md`, matching the "every skill reads it" contract.
+- **Docs de-staled**: the five remaining "six skills" claims (QUICKSTART, INSTALL ×3,
+  USAGE-PATTERNS ×2, ARCHITECTURE ×2, CLAUDE.md intro) now say twelve; INSTALL's sanity
+  check lists all 12; ARCHITECTURE's migration section reflects the Cowork-primary /
+  Claude Code-power-user positioning and the current 06-knowledge layer.
+- **Tag scheme documented as it actually is**: tags are `X.Y.Z` (no `v` prefix) —
+  RELEASING.md, CHANGELOG header, and UPGRADING's four rollback commands (which would
+  have failed as written) corrected.
+- **Model recommendations refreshed** (SCHEDULED-TASKS): Sonnet 5 for briefs (Opus 5 for
+  the weekly review if available), Haiku 4.5 for mechanical scans; note that `--model`
+  aliases track the latest in each family.
+- **Stale People Check** restriction uses the real `relationship:` enum (`manager`, not
+  `manager-of-mine`) in SCHEDULED-TASKS and MY-PROFILE.
+- **`vault-tend`**: large-vault scans can fan out parallel subagents (read-only phase).
+- `_CLAUDE.md` rule 3.7 scoped: append-only applies to sensitive notes + wiki `## Sources`
+  (taken literally, the old wording forbade legitimate edits like wiki enrichment and
+  checkbox sync); "see Section 11" → "see Section 9" (curator).
+
+### Fixed
+- `templates/doc.md`, `templates/knowledge.md`, and the starter example note were missing
+  the `domain:` field required since v3.4.
+- `recall`'s worked example used a `.md`-suffixed wikilink, contradicting the extensionless
+  convention every other skill relies on.
+- `kickstart-backfill` announced "4 phases" but defines five; Phase 5 heading normalized.
+- `knowledge-build`'s `_INDEX.md` template now documents the `## Health` listing
+  subsections its own sweep steps (orphans, stubs, curator-unstable) write to.
+- QUICKSTART: duplicated sentence removed; docs listing includes UPGRADING and RELEASING.
 
 ## [4.0.0] - 2026-06-18
 

@@ -13,13 +13,18 @@ set -euo pipefail
 src_dir="$(cd "$(dirname "$0")" && pwd)"
 target_repo="${1:-$(git rev-parse --show-toplevel)}"
 
-if [[ ! -d "$target_repo/.git" ]]; then
-  echo "✗ $target_repo is not a Git repository (no .git/)."
+# Resolve the real hooks dir via git — works for regular repos, worktrees, and
+# submodules (where .git is a file, not a directory).
+if ! hooks_dir="$(git -C "$target_repo" rev-parse --git-path hooks 2>/dev/null)"; then
+  echo "✗ $target_repo is not a Git repository."
   echo "  Run 'git init' there first."
   exit 1
 fi
-
-dest="$target_repo/.git/hooks/pre-commit"
+case "$hooks_dir" in
+  /*) dest="$hooks_dir/pre-commit" ;;
+  *)  dest="$target_repo/$hooks_dir/pre-commit" ;;
+esac
+mkdir -p "$(dirname "$dest")"
 ln -sf "$src_dir/pre-commit" "$dest" 2>/dev/null || cp "$src_dir/pre-commit" "$dest"
 chmod +x "$dest"
 

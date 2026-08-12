@@ -39,7 +39,9 @@ silence). The mode is determined at activation.
 
 ### Mode routing
 1. If the target decision is explicit and lives in `05-decisions/`: read its `status:`.
-   `reversed` → postmortem; `proposed | committed | implemented` → red-team.
+   `reversed` → postmortem; `proposed | committed` → red-team; `implemented` → red-team
+   only if the user is reconsidering it (weighing an unwind or a course change) — if
+   it's executing successfully, log the update instead (see "Do NOT use" above).
 2. If the user named a mode keyword ("postmortem" / "challenge"), trust the keyword.
 3. If ambiguous: ask one short question ("red-team this decision before you commit, or
    postmortem the reversal?") before proceeding.
@@ -60,7 +62,8 @@ This skill forces the user to confront the current decision with their own histo
 
 ## Preflight
 
-1. **Read `_CLAUDE.md`** (rules, structure).
+1. **Read `_CLAUDE.md`** (rules, structure) and `00-inbox/MY-PROFILE.md` (working
+   language, critical stakeholders, per-skill preferences).
 2. **Get the real timestamp.**
 3. **Identify the decision to challenge**:
    - From the argument given at invocation.

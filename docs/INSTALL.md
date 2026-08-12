@@ -2,7 +2,7 @@
 
 Full setup in 4 steps (~30-45 min the first time).
 
-This repo is the **tooling** for an AI-first personal knowledge system: six Claude Code
+This repo is the **tooling** for an AI-first personal knowledge system: twelve Claude Code
 skills, note templates, Git hooks, and a `vault-starter/` you copy into your actual
 notes vault. You drive it with **Claude Code** (CLI, desktop, or web).
 
@@ -39,17 +39,18 @@ is what persists.
    - `CLAUDE.md` — the project brief and the non-negotiable AI-first rules.
    - `.claude/settings.json` — permissions (read/write/edit, git status/add/commit/diff/log
      are pre-allowed; `git push`, `rm`, `git reset` prompt for confirmation).
-   - `.claude/skills/*/SKILL.md` — the six skills, which auto-trigger from their
+   - `.claude/skills/*/SKILL.md` — the twelve skills, which auto-trigger from their
      `description`.
 
 3. Sanity check — ask Claude Code:
 
    ```
-   Read CLAUDE.md and list the six skills you have available.
+   Read CLAUDE.md and list the twelve skills you have available.
    ```
 
-   You should get back: braindump, meeting-ingest, daily-brief, people-update,
-   challenge-decision, kickstart-backfill.
+   You should get back: braindump, meeting-ingest, doc-ingest, daily-brief,
+   people-update, challenge-decision, task-roundup, knowledge-build, recall,
+   prioritize, vault-tend, kickstart-backfill.
 
 ## Step 2 — Set up the vault (15 min)
 
@@ -169,7 +170,7 @@ A typical setup once you get there:
 
 ## Final checklist
 
-- [ ] Repo cloned; Claude Code reads `CLAUDE.md`, `.claude/settings.json`, and the six skills.
+- [ ] Repo cloned; Claude Code reads `CLAUDE.md`, `.claude/settings.json`, and the twelve skills.
 - [ ] Vault folder created from `vault-starter/` (eight folders + `_CLAUDE.md`).
 - [ ] `VAULT_PATH` set in `CLAUDE.md`.
 - [ ] `MY-PROFILE.md` filled in with your real context.

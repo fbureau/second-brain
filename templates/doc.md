@@ -4,6 +4,7 @@ doc-date: YYYY-MM-DD          # the document's own date (or "unknown")
 type: doc
 doc-type: strategy|analysis|report|deck|spec|research|external-article
 tags: [doc, <topic-tags>]
+domain: <domain-slug>         # routes to the 06-knowledge/<domain>.md hub
 source: "<verbatim URL or path/title>"
 project: "[[03-projects/...]]"
 related-people: ["[[02-people/...]]"]

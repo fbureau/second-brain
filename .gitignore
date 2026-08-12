@@ -1,9 +1,9 @@
-# --- Obsidian vault noise (if the vault lives in this repo) ---
-.obsidian/workspace
-.obsidian/workspace.json
-.obsidian/workspace-mobile.json
-.obsidian/cache
-.obsidian/.DS_Store
+# --- Obsidian vault noise (if the vault lives in this repo, at any depth) ---
+**/.obsidian/workspace
+**/.obsidian/workspace.json
+**/.obsidian/workspace-mobile.json
+**/.obsidian/cache
+**/.obsidian/.DS_Store
 .trash/
 
 # --- OS / editor cruft ---

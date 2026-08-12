@@ -16,7 +16,8 @@
     "ask": [
       "Bash(git push:*)",
       "Bash(rm:*)",
-      "Bash(git reset:*)"
+      "Bash(git reset:*)",
+      "Bash(git commit --no-verify:*)"
     ]
   }
 }

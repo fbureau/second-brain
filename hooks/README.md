@@ -15,14 +15,18 @@ The single `pre-commit` script runs three checks on staged Markdown notes:
    - a `## For future Claude` preamble.
 
 2. **Append-only history** — for notes in `02-people/` and `05-decisions/`, the
-   commit is **rejected** if it deletes:
-   - a dated timeline entry header (`### YYYY-MM-DD …`), or
-   - a protected `(auto-logged)` / `(Backfilled)` marker.
+   commit is **rejected** if it:
+   - deletes the note itself (moving it to `07-archive/` is the sanctioned path and
+     passes; a rename anywhere else is blocked),
+   - deletes **or rewrites** a dated timeline entry header (`### YYYY-MM-DD …`, or a
+     backfilled monthly `### YYYY-MM (Backfilled — aggregated)`), or
+   - removes a protected `(auto-logged)` / `(Backfilled…)` marker.
 
    Editing `Compiled truth`, `Open threads`, or frontmatter (e.g. updating
    `last-interaction`) is still allowed — only history destruction is blocked.
    Toggling a task checkbox (`- [ ]` → `- [x] … ✅ <date>`) and appending a `^t-id`
    anchor are line edits, not deletions, so `task-roundup` sync passes the hook.
+   Deleting a note in the other vault folders warns (non-blocking) — archive instead.
 
 3. **Frontmatter sanity** — rejects unterminated frontmatter; warns (non-blocking)
    on empty wikilinks `[[ ]]`.

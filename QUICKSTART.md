@@ -6,9 +6,9 @@ Get running in ~15 minutes.
 
 ```
 CLAUDE.md            ← conventions Claude reads every session
-.claude/skills/      ← the 6 skills (auto-trigger from their description)
+.claude/skills/      ← the 12 skills (auto-trigger from their description)
 hooks/               ← Git pre-commit vault validation
-docs/                ← INSTALL, SCHEDULED-TASKS, USAGE-PATTERNS, ARCHITECTURE, KICKSTART-PROMPT
+docs/                ← INSTALL, SCHEDULED-TASKS, USAGE-PATTERNS, ARCHITECTURE, KICKSTART-PROMPT, UPGRADING, RELEASING
 templates/           ← note templates
 vault-starter/       ← copy into your notes vault (fill in 00-inbox/MY-PROFILE.md)
 ```
@@ -41,8 +41,6 @@ Full details: [`docs/INSTALL.md`](docs/INSTALL.md).
 ```
 
 (You don't have to type the command — describing what you want triggers the right skill.)
-
-(You can also just describe what you want — the skills auto-trigger.)
 
 ## 4. First reflex
 

@@ -32,16 +32,21 @@ launchd (macOS), a wake schedule, or a CI scheduler.
 
 | Task | Cadence | Suggested model | Skill | Output |
 |---|---|---|---|---|
-| Daily Brief | Mon–Fri, end of day | **Sonnet** | daily-brief (daily mode) | `01-daily/YYYY-MM-DD.md` |
-| Weekly Review | Monday mid-morning | **Sonnet** (Opus if available) | daily-brief (weekly mode) | `01-daily/YYYY-WW-weekly.md` |
-| Vault Health | Monthly, 1st (or next weekday) | **Haiku** | health audit | `06-knowledge/vault-health-YYYY-MM.md` |
-| Stale People Check | Friday late afternoon | **Haiku** | people staleness scan | flag in Friday's daily note |
+| Daily Brief | Mon–Fri, end of day | **Sonnet 5** | daily-brief (daily mode) | `01-daily/YYYY-MM-DD.md` |
+| Weekly Review | Monday mid-morning | **Sonnet 5** (Opus 5 if available) | daily-brief (weekly mode) | `01-daily/YYYY-WW-weekly.md` |
+| Vault Health | Monthly, 1st (or next weekday) | **Haiku 4.5** | health audit | `06-knowledge/vault-health-YYYY-MM.md` |
+| Stale People Check | Friday late afternoon | **Haiku 4.5** | people staleness scan | flag in Friday's daily note |
 
 ### Why these models
-- **Sonnet** for the briefs: they *reason* (multi-source synthesis, weak-signal and
+- **Sonnet 5** for the briefs: they *reason* (multi-source synthesis, weak-signal and
   cross-time pattern detection). A smaller model produces flat briefs and misses signals.
-- **Haiku** for health/staleness: mechanical work (list, count, filter by date).
+  The weekly review benefits from **Opus 5** if your plan includes it — it's the run
+  that does cross-week pattern detection and the knowledge sweeps.
+- **Haiku 4.5** for health/staleness: mechanical work (list, count, filter by date).
   Plenty capable and far cheaper.
+- The `--model sonnet` / `--model haiku` / `--model opus` aliases below track the
+  latest model in each family (Sonnet 5, Haiku 4.5, Opus 5 as of 2026-08). Pin a full
+  model ID instead if you want run-to-run reproducibility.
 
 ### Example crontab
 
@@ -95,6 +100,9 @@ For each transcript detected today:
   NOT in sensitive-meetings (MY-PROFILE.md) ✓, not already ingested ✓
 - If it passes: auto-invoke meeting-ingest in auto mode
   (ingestion-mode: auto, needs-review: true; hard-to-reverse decisions → flag needs-validation)
+- TRANSCRIPT-FIRST: read the verbatim transcript tab/file, NEVER the Drive summary tab.
+  If only the summary exists, ingest with transcript-source: summary-fallback,
+  confidence: medium, needs-review: true, and call it out in the brief.
 - If it fails: flag for manual validation in the report
 - CAP: max 5 auto-ingests per run
 
@@ -115,6 +123,14 @@ Run the task-roundup procedure (.claude/skills/task-roundup/SKILL.md):
   set source line to "[x] ✅ <today>"; checked in source → check in TODO.md)
 - Refresh TODO.md, bucketed by due date
 - Completing a task in 02-people/ or 05-decisions/ = checkbox toggle + ✅ stamp ONLY
+
+PHASE 6.7 — REVERSED-DECISION POSTMORTEM (step 6.7 — since v4.0)
+Scan 05-decisions/ for notes whose status flipped to `reversed` since the last brief:
+- For each flip: invoke challenge-decision in POSTMORTEM mode (auto). It runs P1
+  (extract the lesson) and P2 (cross-reference the vault) and previews the P3 edits.
+- NEVER auto-apply the cross-vault edits. Surface the manifest + previewed edits in
+  the brief under "## Decisions reversed — pending postmortem" (needs-review: true).
+- No flip in the window → skip silently (no empty section).
 
 PHASE 7 — PROPAGATION (step 7)   PHASE 8 — REPORT (step 8)
 Report: 📥 auto-ingestion · ⏸ awaiting validation · ✅ tasks (overdue/today/waiting) · 🎯 synthesis (top 3-5, weak signals, near deadlines)
@@ -155,8 +171,9 @@ Method:
 12. Run knowledge-build CURATOR sweep (Mode C.2): rebuild auto-maintained domain hubs,
     refresh 06-knowledge/_INDEX.md, detect orphans, near-duplicates, aging stubs (>14d
     needs-review), stale wikis (>90d). Propose new hubs when 3+ notes cluster on an
-    unhubbed domain. Structural changes preview-first. Surface health counters under
-    "## Knowledge garden".
+    unhubbed domain. Structural changes preview-first. Run the self-verification loop
+    (max 3 passes; flag unstable hubs under "## Health → Curator unstable"). Surface
+    health counters — and how many passes stabilization took — under "## Knowledge garden".
 
 Output: 01-daily/YYYY-WW-weekly.md (ISO week number), using the SKILL's weekly format.
 Link from this note to the 7 daily notes of the week.
@@ -198,7 +215,7 @@ End-of-week staleness scan with staleness-flag updates.
 
 PHASE 1 — SCAN 02-people/
 - days_since = today - last-interaction
-- Restrict to relationship: direct-report | peer | manager-of-mine
+- Restrict to relationship: direct-report | peer | manager
 - Skip relationship: external | external-alumni
 
 PHASE 2 — UPDATE FRONTMATTER (write allowed, frontmatter ONLY)

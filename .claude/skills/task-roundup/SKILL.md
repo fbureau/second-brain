@@ -60,11 +60,13 @@ An action line, anywhere in the vault, looks like:
 - Owner is someone else and it doesn't block you → ignore.
 
 ### Where actions live
-Scan these for checkboxes:
+Scan these for checkboxes (only `- [ ]` / `- [x]` lines count as actions):
 - `04-meetings/` → `## Action items`
 - `05-decisions/` → `## Execution plan`
 - `01-daily/` → `## Pending follow-ups`
-- `02-people/` → `Follow-up:` lines in timeline entries / `## Open threads`
+- `02-people/` → checkbox `- [ ] Follow-up:` lines in timeline entries / `## Open threads`
+  (a plain `- Follow-up:` bullet without a checkbox is FYI-only and is not collected)
+- `03-projects/` → any action line you own (e.g. in `## Timeline` or next steps)
 - `00-inbox/` → braindump `## Suggested follow-up`
 
 ## Process
@@ -79,6 +81,10 @@ For every kept action line **without** a `^t-` anchor, append one: `… ^t-ab12c
   (it removes no dated timeline header and no `(auto-logged)`/`(Backfilled)` marker).
 - Generate IDs randomly; verify uniqueness across the vault before writing.
 - **Never** modify or remove an existing `^t-` anchor.
+- **Never assign a new anchor to a mirror line** — a line that already references an
+  anchor via a wikilink (`[[…#^t-…]]`), e.g. the entries daily-brief mirrors into the
+  daily `## Pending follow-ups`. Those are views of an existing task: reconcile through
+  the referenced anchor; creating a second anchor would duplicate the task in TODO.md.
 
 ### Step 3 — Build / refresh TODO.md
 Regenerate the body of `TODO.md` (vault root) from the collected actions, grouped by

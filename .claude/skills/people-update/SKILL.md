@@ -31,7 +31,8 @@ note. If no = vault rot.
 
 ## Preflight
 
-1. **Read `_CLAUDE.md`** (rules, the person type schema).
+1. **Read `_CLAUDE.md`** (rules, the person type schema) and `00-inbox/MY-PROFILE.md`
+   (working language, critical stakeholders, per-skill preferences).
 2. **Get the real timestamp.**
 3. **Get context**: the new interaction, source (meeting / email / chat / observation), nature.
 4. **Determine the invocation mode**:
@@ -170,7 +171,8 @@ Person note for [Name], [role] at [company/team]. First interaction logged on [d
 - Source: [[04-meetings/...]] / email / chat / observation
 - What: [1-3 factual sentences about what happened]
 - Observation: [interpretation, hypothesis, detected signal]
-- Follow-up: [action if applicable]
+- [ ] Follow-up: [action if applicable — checkbox form so task-roundup picks it up;
+  plain `- Follow-up:` (no checkbox) for FYI-only notes]
 
 ## Open threads
 
@@ -196,7 +198,7 @@ Add ONE entry to the "Timeline" section:
   Looking for a sponsor to push a training redesign.
 - Observation: 2nd time this month they've raised this proactively. Signal they want
   to make it a project.
-- Follow-up: decide whether to put it in their Q3 development plan
+- [ ] Follow-up: decide whether to put it in their Q3 development plan — owner: me
 ```
 
 ⚠️ **Append-only**: NEVER delete an existing timeline entry. If old info is
