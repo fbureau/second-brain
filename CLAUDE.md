@@ -6,7 +6,7 @@
 ## What this is
 
 This repository is the **tooling** for an AI-first personal knowledge system:
-six skills (`.claude/skills/`), note templates, docs, Git hooks, and a
+twelve skills (`.claude/skills/`), note templates, docs, Git hooks, and a
 `vault-starter/` you copy into your actual notes vault.
 
 The **vault** is a separate folder of Markdown notes (an Obsidian vault, synced

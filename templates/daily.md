@@ -56,6 +56,10 @@ email, calendar, drive, chat, and internal vault activity. [Top themes summary.]
 
 [Append-only section for the meeting-ingest skill]
 
+## Docs ingested today
+
+[Append-only section for the doc-ingest skill]
+
 ---
 
 → Previous: [[YYYY-MM-DD]]

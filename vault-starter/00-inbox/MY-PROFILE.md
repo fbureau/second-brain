@@ -168,5 +168,5 @@ To exclude someone from auto-logging (confidentiality), add their name here:
 - **Auto-archive proposed**: 180 days (monthly vault health suggests it)
 
 Stale People Check restrictions:
-- Applies to: `relationship: direct-report | peer | manager-of-mine`
+- Applies to: `relationship: direct-report | peer | manager`
 - Skipped for: `relationship: external | external-alumni`

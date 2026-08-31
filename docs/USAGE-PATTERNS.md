@@ -2,7 +2,7 @@
 
 How to live with your second brain day to day. Concrete workflows for Claude Code.
 
-The six skills (`braindump`, `meeting-ingest`, `daily-brief`, `people-update`, `challenge-decision`, `kickstart-backfill`) auto-trigger from their descriptions. You can also invoke any of them by name or as a slash command (e.g. `/braindump`, `/meeting-ingest`, `/challenge-decision`). Natural language that matches a skill's description works just as well.
+The twelve skills (`braindump`, `meeting-ingest`, `doc-ingest`, `daily-brief`, `people-update`, `challenge-decision`, `task-roundup`, `knowledge-build`, `recall`, `prioritize`, `vault-tend`, `kickstart-backfill`) auto-trigger from their descriptions. You can also invoke any of them by name or as a slash command (e.g. `/braindump`, `/meeting-ingest`, `/challenge-decision`). Natural language that matches a skill's description works just as well.
 
 ## The typical daily pattern
 
@@ -161,8 +161,9 @@ Three habits that make the vault pay off beyond capture:
 ```
 /doc-ingest   (then paste/link a strategy doc, analysis, report, or article)
 ```
-→ A `06-knowledge/` note with the source recorded, claims dated and confidence-rated, linked
-to the relevant project. The document twin of `/meeting-ingest`.
+→ A note in `06-knowledge/_sources/` with the source recorded, claims dated and
+confidence-rated, linked to the relevant project and its domain hub. The document twin
+of `/meeting-ingest`.
 
 **Let the knowledge base build itself**
 ```
@@ -313,7 +314,7 @@ This is the only recurring cost. 4 hours a year for a system that maintains itse
 
 ### Months 1-3: Build the habit
 
-- Focus: use the six skills, even imperfectly
+- Focus: use the skills, even imperfectly
 - Vault should reach 50-100 notes
 - You identify your real patterns
 

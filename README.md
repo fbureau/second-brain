@@ -181,7 +181,7 @@ their descriptions, so most of the time you just talk.
 │   └── settings.json          ← config for the Claude Code path
 ├── hooks/                     ← Git pre-commit vault validation (+ install.sh)
 ├── docs/                      ← INSTALL · SCHEDULED-TASKS · USAGE-PATTERNS · ARCHITECTURE · …
-├── templates/                 ← note templates (person, project, decision, daily, knowledge, doc)
+├── templates/                 ← note templates (person, project, decision, daily, meeting, wiki, knowledge, doc)
 └── vault-starter/             ← copy this into your notes vault
     ├── _CLAUDE.md             ← vault system brief (read first)
     ├── 00-inbox/MY-PROFILE.md ← your profile (fill this in)

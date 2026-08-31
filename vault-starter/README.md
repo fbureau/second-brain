@@ -16,7 +16,9 @@ AI-first structure the skills expect.
 ├── 03-projects/            ← Active and past projects
 ├── 04-meetings/            ← Ingested, structured meetings
 ├── 05-decisions/           ← Log of important decisions
-├── 06-knowledge/           ← Durable syntheses, frameworks, lessons
+├── 06-knowledge/           ← Knowledge layer: wiki + lessons + domain hubs
+│   ├── _INDEX.md           ← Root index (entry point, curator-maintained)
+│   └── _sources/           ← Ingested docs (type: doc)
 └── 07-archive/             ← Inactive (never deleted)
 ```
 
@@ -66,6 +68,9 @@ Once Claude Code can see your vault and the skills are in place:
 - Daily: `01-daily/YYYY-MM-DD.md`
 - Meetings: `04-meetings/YYYY-MM-DD-slug.md`
 - Decisions: `05-decisions/YYYY-MM-DD-slug.md`
+- Wiki / lessons: `06-knowledge/<slug>.md` (undated — evergreen)
+- Domain hubs: `06-knowledge/<domain>.md` · root index: `06-knowledge/_INDEX.md`
+- Source docs: `06-knowledge/_sources/YYYY-MM-DD-slug.md`
 
 ## Important note
 

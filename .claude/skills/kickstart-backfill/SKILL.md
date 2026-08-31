@@ -39,7 +39,7 @@ capture the user's **existing mental model**:
 
 Aim for **30–60 notes total**, not 500. Quality > volume.
 
-## Process in 4 phases
+## Process in 5 phases
 
 ### Phase 1 — Stakeholder mapping (15 min)
 
@@ -186,7 +186,7 @@ For the meetings the user identifies as strategically important (max 10):
 **Anti-pattern**: don't create 50 meeting notes for the window. Only the key
 meetings (stakeholder reviews, manager 1-1s, major decisions).
 
-## Phase 5 — Knowledge baseline (5 min)
+### Phase 5 — Knowledge baseline (5 min, optional)
 
 If the user allows, create 1–3 `06-knowledge/` notes to crystallize emerging patterns:
 - Observed anti-patterns.

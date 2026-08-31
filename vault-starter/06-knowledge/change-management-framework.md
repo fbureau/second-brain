@@ -3,7 +3,9 @@ date: YYYY-MM-DD
 updated: YYYY-MM-DD
 type: knowledge
 tags: [knowledge, change-management, framework]
+domain: change-management
 confidence: high
+needs-review: false
 ai-first: true
 ---
 

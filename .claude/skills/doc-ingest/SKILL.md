@@ -114,7 +114,7 @@ confidence are below. [Note if the source is external / its reliability.]
 ### Step 4 — Propagate
 - **Project**: append to the linked project's `## Timeline` and, if the doc proposes
   decisions, its `## Key decisions`. Update the project's `updated:`.
-- **Daily note**: append under a `## Docs ingested` section (create if missing).
+- **Daily note**: append under the `## Docs ingested today` section (create if missing).
 - **People**: if the doc is authored by or about a stakeholder, log a factual timeline line.
 - **Action items**: handled by `task-roundup` (anchors already set).
 - **Wiki stubs / enrichment**: for each concept, entity, tool, team, or piece of jargon the

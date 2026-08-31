@@ -3,6 +3,7 @@ date: YYYY-MM-DD
 updated: YYYY-MM-DD
 type: knowledge
 tags: [knowledge, <topic-tags>]
+domain: <domain-slug>         # routes to the 06-knowledge/<domain>.md hub
 confidence: high|medium|speculation
 needs-review: false
 ai-first: true

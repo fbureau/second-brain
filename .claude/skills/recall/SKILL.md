@@ -106,7 +106,7 @@ pushed back on regional-autonomy grounds.
 **Evidence**:
 - [[05-decisions/2026-03-08-centralize-tier1]] — decision, reversibility: hard-to-reverse
 - [[04-meetings/2026-03-05-stakeholder-sync]] — Jordan Park opposed (as of 2026-03)
-- [[06-knowledge/regional-autonomy-constraints.md]] — recurring constraint, confidence high
+- [[06-knowledge/regional-autonomy-constraints]] — recurring constraint, confidence high
 
 **Confidence**: high — a logged decision plus two corroborating notes.
 

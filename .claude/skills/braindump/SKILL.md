@@ -19,7 +19,8 @@ description: Fast capture of unstructured, stream-of-consciousness thoughts. Cla
 
 ## Preflight
 
-1. **Read `_CLAUDE.md`** at the vault root (AI-first rules, structure, conventions).
+1. **Read `_CLAUDE.md`** at the vault root (AI-first rules, structure, conventions) and
+   `00-inbox/MY-PROFILE.md` (working language, active domains, knowledge domains).
 2. **Get the real timestamp** from an available tool, or ask the user the time if unavailable.
 3. **List existing notes** in `02-people/` and `03-projects/` so you can detect references.
 
@@ -126,8 +127,8 @@ the tone, the hesitations, the "not sure if...". This is raw material.]
 ### Step 6 — Propagation
 
 1. **Daily note**: append a link to this braindump in `01-daily/YYYY-MM-DD.md`
-   under a `## Braindumps` section. Create the daily note if missing (with
-   `type: daily` frontmatter).
+   under the `## Braindumps of the day` section. Create the daily note if missing
+   (with `type: daily` frontmatter).
 
 2. **Stubs**: for each wikilink to a non-existent note, create the stub:
    - Persons → offer (then `people-update`).

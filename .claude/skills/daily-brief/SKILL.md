@@ -205,7 +205,10 @@ calendar, drive, chat, and internal vault activity. Top themes: [3-5 keywords].
 
 ## Pending follow-ups
 
-[Fed from the Overdue + Today buckets of [[TODO]]. Each links back to its source note.]
+[Fed from the Overdue + Today buckets of [[TODO]]. Each links back to its source note.
+These lines are MIRRORS of existing tasks — they carry the source anchor in the wikilink
+and never get a new `^t-id` of their own (task-roundup reconciles through the referenced
+anchor).]
 - [ ] [Action] — [[TODO]] → [[<source-note>#^t-id]] — due YYYY-MM-DD
 - [ ] [Action] — [[<source-note>#^t-id]] — due YYYY-MM-DD
 
@@ -225,6 +228,10 @@ calendar, drive, chat, and internal vault activity. Top themes: [3-5 keywords].
 ## Meetings ingested today
 
 [Links to ingested meetings — meeting-ingest appends here]
+
+## Docs ingested today
+
+[Links to ingested documents — doc-ingest appends here]
 ```
 
 > **Weekly mode also runs `knowledge-build` (two phases)**:
@@ -251,6 +258,16 @@ ai-first: true
 
 Weekly review for week [WW] of [YYYY]. Covers [start date] → [end date]. Compiled
 from 7 daily briefs + a direct vault scan.
+
+## Knowledge garden
+
+[Weekly mode only — output of the curator sweep: health counters, passes to stabilize,
+pending proposals (new hubs, merges, stubs aging out). Omit if the sweep didn't run.]
+
+## Knowledge updates
+
+[Weekly mode only — lessons proposed/updated by the lessons sweep, flagged
+`needs-review: true`, for you to confirm.]
 
 ## Themes of the week
 

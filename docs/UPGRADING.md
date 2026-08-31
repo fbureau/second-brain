@@ -22,6 +22,42 @@ There are two parts, and they're separate:
 
 ---
 
+## 4.0.0 → 4.1.0  ·  Audit release (hook hardening, doc fixes, template alignment)
+
+**TL;DR:** A repo-wide audit fixed ~50 defects: the pre-commit hook now blocks note
+deletion/renames in append-only folders and validates the staged content (including
+accented filenames); templates gained the missing `domain:` field plus new `meeting.md`
+and `wiki.md`; the vault-starter ships the 06-knowledge layout; docs were de-staled.
+Additive — **no vault migration**.
+
+### Steps
+
+**1. Update the tooling** — `git pull` (Claude Code) or re-upload the changed files (Cowork).
+
+**2. Re-install the hook if your vault COPIED it.** `install.sh` symlinks when possible
+(symlinked hooks pick up the new version automatically), but falls back to copying:
+
+```bash
+# from the tooling repo — safe to re-run either way:
+./hooks/install.sh /path/to/your/vault
+```
+
+**3. Nothing else to do.** New starter files (`_INDEX.md`, `_sources/`) only affect fresh
+vaults; existing vaults get the same layout via `knowledge-build curator --bootstrap`.
+Optionally add `domain:` to any of your notes created from the old `doc`/`knowledge`
+templates — the curator flags them as unsorted otherwise.
+
+### You're done when
+- `git rm` on a note in `02-people/` is blocked by the hook with "move to 07-archive/ instead".
+- A note named with accents (e.g. `02-people/José García.md`) triggers the hook checks.
+
+### Rollback
+```bash
+cd /path/to/second-brain && git checkout 4.0.0
+```
+
+---
+
 ## 3.4.0 → 4.0.0  ·  Transcript-first meetings + postmortem mode + curator self-verification
 
 **TL;DR:** Three quality-leak fixes that didn't exist as concepts before.
@@ -78,7 +114,7 @@ care about.
 
 ### Rollback
 ```bash
-cd /path/to/second-brain && git checkout v3.4.0
+cd /path/to/second-brain && git checkout 3.4.0
 ```
 No vault changes to revert — v4.0 is purely additive on the tooling side.
 
@@ -171,7 +207,7 @@ after the lessons sweep:
 
 ### Rollback
 ```bash
-cd /path/to/second-brain && git checkout v3.3.0   # tooling
+cd /path/to/second-brain && git checkout 3.3.0   # tooling
 ```
 Bootstrap changes you accepted (notes moved into `_sources/`, hubs created) stay in the
 vault. To revert the vault changes: `git revert <bootstrap-commit>` in your vault repo.
@@ -241,7 +277,7 @@ is already in the skill — nothing to do.
 
 ### Rollback
 ```bash
-cd /path/to/second-brain && git checkout v3.2.0   # tooling
+cd /path/to/second-brain && git checkout 3.2.0   # tooling
 ```
 Wiki notes you accepted stay in the vault (they're just Markdown). To remove the
 `primary-communication-channels` line, just delete it from `MY-PROFILE.md`.
@@ -357,7 +393,7 @@ cd /path/to/your/vault && git add -A && git commit -m "Backfill task anchors + T
 
 ### Rollback
 ```bash
-cd /path/to/second-brain && git checkout v3.0.0          # tooling
+cd /path/to/second-brain && git checkout 3.0.0          # tooling
 cd /path/to/your/vault   && git revert <backfill-commit> # vault (anchors are harmless if kept)
 ```
 

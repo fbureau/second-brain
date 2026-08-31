@@ -4,7 +4,7 @@ How versions are cut for this repo. Lightweight on purpose.
 
 ## Scheme
 
-[Semantic Versioning](https://semver.org/) — `vMAJOR.MINOR.PATCH`:
+[Semantic Versioning](https://semver.org/) — `MAJOR.MINOR.PATCH` (tags carry **no `v` prefix**: `3.4.0`, `4.0.0`):
 
 | Bump | When | Examples |
 |---|---|---|
@@ -13,7 +13,7 @@ How versions are cut for this repo. Lightweight on purpose.
 | **PATCH** | Fixes and doc tweaks, no behavior change | wording fixes, hook bugfix, doc clarifications |
 
 The single source of the current number is the [`VERSION`](../VERSION) file. Every
-release is an **annotated Git tag** `vX.Y.Z` on `main`.
+release is an **annotated Git tag** `X.Y.Z` on `main`.
 
 ## Release process
 
@@ -27,9 +27,10 @@ release is an **annotated Git tag** `vX.Y.Z` on `main`.
 6. **Tag and push:**
    ```bash
    git checkout main && git pull
-   git tag -a v3.1.0 -m "v3.1.0 — <one-line summary>"
-   git push origin v3.1.0
+   git tag -a 4.1.0 -m "v4.1.0 — <one-line summary>"
+   git push origin 4.1.0
    ```
+   (The tag *name* has no `v` prefix; the human-readable tag *message* keeps it.)
 
 ## Conventions
 
@@ -37,11 +38,11 @@ release is an **annotated Git tag** `vX.Y.Z` on `main`.
 - The tag message mirrors the CHANGELOG section's headline.
 - `VERSION` on `main` always equals the latest released tag (or the in-flight number on a
   release branch).
-- Hotfix on an old line: branch from the tag (`git checkout -b hotfix/x.y.z vX.Y.0`), fix,
-  bump PATCH, tag `vX.Y.1`.
+- Hotfix on an old line: branch from the tag (`git checkout -b hotfix/x.y.z X.Y.0`), fix,
+  bump PATCH, tag `X.Y.1`.
 
 ## History anchor
 
-`v3.0.0` was tagged retroactively on the Claude Code migration merge. Earlier versions
-(`v1.0.0`, `v2.0.0`) are the pre-migration Cowork-era releases, recorded in the CHANGELOG
+`3.0.0` was tagged retroactively on the Claude Code migration merge. Earlier versions
+(`1.0.0`, `2.0.0`) are the pre-migration Cowork-era releases, recorded in the CHANGELOG
 for continuity; they predate this repository's tagged history.
