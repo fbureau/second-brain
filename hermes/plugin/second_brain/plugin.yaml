@@ -1,0 +1,22 @@
+name: second_brain
+version: 4.2.0
+description: >-
+  Second Brain vault tools — write AI-first notes (braindumps, people, meetings, wiki
+  stubs) into an Obsidian vault while the plugin enforces the vault contract
+  (frontmatter, preamble, append-only history, wikilinks, task anchors).
+provides_tools:
+  - sb_brief
+  - sb_search
+  - sb_read
+  - sb_find_person
+  - sb_create_note
+  - sb_append_timeline
+  - sb_append_section
+  - sb_daily_append
+  - sb_new_action
+  - sb_curate
+  - sb_commit
+provides_hooks:
+  - on_session_start
+# Vault location: plugins.entries.second_brain.settings.vault_path in config.yaml,
+# or the SECOND_BRAIN_VAULT environment variable, or run Hermes with cwd = the vault.

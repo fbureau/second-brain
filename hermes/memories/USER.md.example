@@ -1,0 +1,5 @@
+Second brain vault: __VAULT_PATH__ — always operate on it through the second_brain tools (sb_*); start any vault task with sb_brief.
+§
+The vault is the user's memory; this file only holds pointers. Profile and preferences live in the vault at 00-inbox/MY-PROFILE.md; conventions in _CLAUDE.md.
+§
+Working language for note bodies: __LANG__. The "For future Claude" preamble stays English.

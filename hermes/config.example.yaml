@@ -1,0 +1,31 @@
+# Second Brain — settings to merge into ~/.hermes/config.yaml
+# (keys verified against hermes-agent's cli-config.yaml.example, 2026-09).
+# Prefer `hermes config set <key> <value>` for single keys; this file documents the whole set.
+
+model:
+  # Any provider works. For a local model via Ollama, pick it with `hermes model` (or set
+  # your OpenAI-compatible endpoint under providers) — and raise the context window: the
+  # skills + tool schemas + a few notes need ≥ 32k tokens (Ollama defaults to 4k).
+  default: "ollama/hermes4:14b"   # example — replace with what `hermes model` shows
+
+terminal:
+  # Run tool commands inside the vault so relative paths and git resolve there.
+  cwd: "/path/to/your/vault"
+
+plugins:
+  entries:
+    second_brain:
+      settings:
+        vault_path: "/path/to/your/vault"   # or export SECOND_BRAIN_VAULT in ~/.hermes/.env
+
+skills:
+  external_dirs:
+    - "${SECOND_BRAIN_REPO}/hermes/skills"   # read-only; install.sh symlinks them instead if you prefer
+
+compression:
+  enabled: true
+  threshold: 0.50            # compact at 50% of the model's context — keeps small models sharp
+
+memory:
+  memory_enabled: true       # MEMORY.md/USER.md hold pointers only; the vault is the memory
+  user_profile_enabled: true

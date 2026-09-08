@@ -22,6 +22,38 @@ There are two parts, and they're separate:
 
 ---
 
+## 4.1.0 → 4.2.0  ·  Hermes Agent edition (plugin + short skills)
+
+**TL;DR:** a new `hermes/` folder lets a local model operate the vault through a plugin that
+enforces the note contract in code. Nothing changes for Claude Cowork / Claude Code users —
+additive, **no vault migration**.
+
+### Steps
+
+**1. Update the tooling** — `git pull`.
+
+**2. (Optional) Install the Hermes edition**
+```bash
+./hermes/install.sh /path/to/your/vault
+hermes config set plugins.entries.second_brain.settings.vault_path /path/to/your/vault
+hermes config set terminal.cwd /path/to/your/vault
+hermes plugins doctor second_brain
+```
+Full guide: `docs/HERMES.md`.
+
+**3. (Optional) Add `AGENTS.md` to your vault** — `cp vault-starter/AGENTS.md /path/to/your/vault/`
+so any AGENTS.md-aware agent reads `_CLAUDE.md` first. Harmless for Claude.
+
+### You're done when
+- `hermes plugins list` shows `second_brain` enabled and `/braindump …` creates a committed note in `00-inbox/`.
+
+### Rollback
+```bash
+cd /path/to/second-brain && git checkout 4.1.0
+```
+
+---
+
 ## 4.0.0 → 4.1.0  ·  Audit release (hook hardening, doc fixes, template alignment)
 
 **TL;DR:** A repo-wide audit fixed ~50 defects: the pre-commit hook now blocks note

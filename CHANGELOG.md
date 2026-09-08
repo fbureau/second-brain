@@ -12,6 +12,36 @@ The current version is in the [`VERSION`](VERSION) file. Each release is an anno
 Git tag (`X.Y.Z`, no `v` prefix) on `main`. See [`docs/RELEASING.md`](docs/RELEASING.md) for the process
 and [`docs/UPGRADING.md`](docs/UPGRADING.md) to move an existing vault between versions.
 
+## [4.2.0] - 2026-09-08
+
+### Added
+- **Hermes Agent edition (`hermes/`)** — run the second brain with a local model. A plugin
+  (`hermes/plugin/second_brain/`) exposes the vault contract as 11 typed `sb_*` tools:
+  `sb_brief`, `sb_search`, `sb_read`, `sb_find_person`, `sb_create_note`, `sb_append_timeline`,
+  `sb_append_section`, `sb_daily_append`, `sb_new_action`, `sb_curate`, `sb_commit`. Every
+  write goes through `vault/notes.py`, which generates frontmatter/path/preamble from an
+  executable mirror of `_CLAUDE.md` §4 (`vault/schemas.py`), validates enums, never overwrites,
+  and appends only — so a small model cannot violate the AI-first rules. `sb_curate` is the
+  deterministic half of the curator (hub listings, recent activity, `_INDEX.md` counts).
+- **Three Hermes skills** (`hermes/skills/`): `braindump`, `people-update`, `knowledge-stub` —
+  ≤ 40-line procedures in agentskills.io format with Hermes metadata (`requires_toolsets`).
+  Analysis stays with the model; plumbing moved into the tools.
+- **`hermes/install.sh`**, `SOUL.md`, `config.example.yaml`, `memories/USER.md.example` —
+  idempotent install into `~/.hermes/` (symlinks, seeds, `.env`, vault git hook).
+- **Conformance suite** (`hermes/tests/`, stdlib `unittest`): every generated note is committed
+  through `hooks/pre-commit` in a scratch vault — the hook is the shared judge of both editions.
+- **`vault-starter/AGENTS.md`** — entry point for agents that auto-load `AGENTS.md` (Hermes):
+  read `_CLAUDE.md` and `MY-PROFILE.md` first, or call `sb_brief`.
+- **`docs/HERMES.md`** — architecture, install, roadmap (phase 2: maintenance + source digests +
+  daily digest cron; phase 3: memory provider for passive recall).
+
+### Changed
+- README and `CLAUDE.md` describe the third path (Cowork · Claude Code · Hermes).
+
+### Migration (v4.1.0 → v4.2.0)
+Tooling only; nothing changes in existing vaults. Optionally copy `vault-starter/AGENTS.md`
+into your vault if you run an AGENTS.md-aware agent. See `docs/UPGRADING.md`.
+
 ## [4.1.0] - 2026-08-12
 
 Repo-wide audit release: a multi-agent audit (cross-file consistency, skill integrity,

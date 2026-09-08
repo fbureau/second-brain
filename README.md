@@ -11,7 +11,8 @@ and explore the knowledge graph in Obsidian while Claude reads and writes the sa
 
 Built for **Claude Cowork** (you work with Claude in conversation; the skills trigger
 automatically). It also runs in **Claude Code** for power users who want Git and a local CLI
-— see [Setup](#setup).
+— see [Setup](#setup) — and, since v4.2, on **Hermes Agent** with a local model through a
+plugin that enforces the vault rules in code — see [`docs/HERMES.md`](docs/HERMES.md).
 
 Inspired by [COG-second-brain](https://github.com/huytieu/COG-second-brain) and
 [obsidian-second-brain](https://github.com/eugeniughelbur/obsidian-second-brain).
@@ -162,6 +163,11 @@ their descriptions, so most of the time you just talk.
 > Full procedure in [`docs/INSTALL.md`](docs/INSTALL.md) and
 > [`docs/SCHEDULED-TASKS.md`](docs/SCHEDULED-TASKS.md).
 
+> **Local-model path — Hermes Agent.** `./hermes/install.sh <vault>` installs a plugin whose
+> tools generate compliant notes (frontmatter, preamble, append-only, anchors) so a small local
+> model only supplies content and judgment. Three skills in phase 1 (braindump, people-update,
+> knowledge-stub); the heavy analysis skills stay on Claude. See [`docs/HERMES.md`](docs/HERMES.md).
+
 > **macOS note:** the `.claude/` folder is hidden in Finder (it starts with a dot). It's there
 > and required — press **⌘⇧.** to reveal it. Don't rename it.
 
@@ -180,6 +186,7 @@ their descriptions, so most of the time you just talk.
 │   │      vault-tend · kickstart-backfill   (each is a <name>/SKILL.md)
 │   └── settings.json          ← config for the Claude Code path
 ├── hooks/                     ← Git pre-commit vault validation (+ install.sh)
+├── hermes/                    ← Hermes Agent edition: plugin (sb_* tools), short skills, install, tests
 ├── docs/                      ← INSTALL · SCHEDULED-TASKS · USAGE-PATTERNS · ARCHITECTURE · …
 ├── templates/                 ← note templates (person, project, decision, daily, meeting, wiki, knowledge, doc)
 └── vault-starter/             ← copy this into your notes vault
