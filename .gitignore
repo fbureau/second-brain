@@ -29,3 +29,7 @@ tmp/
 
 # NOTE: vault notes themselves (00-inbox/ ... 07-archive/) are NOT ignored.
 # Versioning the vault is the whole point — the append-only history lives in Git.
+
+# --- Python bytecode (hermes plugin / tests) ---
+__pycache__/
+*.pyc
