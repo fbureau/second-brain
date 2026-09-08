@@ -10,7 +10,7 @@ import os
 import re
 from pathlib import Path
 
-from . import frontmatter, gitops, index, links, notes, schemas, search, tasks  # noqa: F401
+from . import activity as activity_mod, frontmatter, gitops, index, links, maintain, notes, schemas, search, tasks  # noqa: F401
 from .notes import VaultError  # noqa: F401
 
 ENV_VAR = "SECOND_BRAIN_VAULT"
@@ -118,3 +118,12 @@ class Vault:
 
     def commit(self, message: str):
         return gitops.commit(self.root, message)
+
+    def maintain(self, scope: str = "all", apply: bool = True):
+        return maintain.run(self.root, scope, apply)
+
+    def set_task_state(self, anchor: str, done: bool):
+        return maintain.set_task_state(self.root, anchor, done)
+
+    def activity(self, since_hours: int = 24, limit: int = 40):
+        return activity_mod.activity(self.root, since_hours, limit)

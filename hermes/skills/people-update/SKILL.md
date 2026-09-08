@@ -3,7 +3,7 @@ name: people-update
 description: Log an interaction or observation about a person into their 02-people/ note (append-only timeline, compiled truth updated sparingly), or create a new person note after confirmation. Use when the user says "people update", "note on <name>", "update <name>'s note", "add person", or describes a meaningful interaction with someone.
 version: 4.2.0
 author: fbureau
-license: UNLICENSED
+license: MIT
 metadata:
   hermes:
     tags: [second-brain, crm, people]

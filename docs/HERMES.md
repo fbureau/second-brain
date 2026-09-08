@@ -74,6 +74,40 @@ Expected: `sb_brief` → `sb_find_person("Alex")` → (ask if none) → `sb_crea
 `sb_daily_append` → `sb_commit`. The note in `00-inbox/` has frontmatter, an English preamble,
 wikilinks; `git log` in the vault shows the commit; the hook accepted it.
 
+## Phase 2 — maintenance, sources, digest
+
+**Plumbing vs judgment, per skill.** The tools do the bookkeeping; the model keeps the analysis:
+
+| Skill | The tool does | The model does |
+|---|---|---|
+| `task-roundup` | `sb_maintain(scope=tasks)`: scan every action line, assign `^t-` anchors, reconcile checked boxes both ways (TODO.md ↔ source, mirrors in daily notes included), regenerate the buckets, flag removed sources and zombie tasks | decide the `needs_judgment` cases: unassigned owners, removed sources, zombies, and (scope `all`) near-duplicate pages and hub proposals |
+| curator | `sb_maintain(scope=curator)`: rebuild `auto-maintained` hubs from scratch, refresh `_INDEX.md` (hubs, sources, unsorted, health with orphans / stubs / stale / near-duplicates), run the v4.0 self-verification loop (max 3 passes) | write summaries, decide merges, approve new hubs |
+| staleness | set/clear `staleness-flag` on direct-reports, peers and managers (30d / 60d), frontmatter only | nothing — it is bookkeeping |
+| `daily-digest` | `sb_calendar`, `sb_drive_changes`, `sb_slack`, `sb_jira`, `sb_vault_activity` return compact digests (a busy Slack day becomes ~15 lines); `(auto-logged)` people entries are formatted by `sb_append_timeline` | the synthesis: TL;DR, top topics across sources, weak signals, what to ingest |
+| `meeting-ingest` | `sb_drive_doc` applies the **transcript-first** rule (Transcript tab → `verbatim`; summary tab → `summary-fallback` with a warning; else whole doc) and returns the text; `sb_create_note type=meeting` carries `transcript-source`/`confidence` | filter noise, extract decisions / actions / tensions / dynamics, judge reversibility |
+
+**Sources need credentials in `~/.hermes/.env`** (the tools hide themselves otherwise):
+
+| Source | Variables | How to get them |
+|---|---|---|
+| Google Calendar / Drive / Docs | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REFRESH_TOKEN` | a Desktop OAuth client in Google Cloud Console + one consent run (scopes `calendar.readonly`, `drive.readonly`, `documents.readonly`) — the refresh token is long-lived |
+| Slack | `SLACK_BOT_TOKEN` (`xoxb-…`: `channels:history`, `channels:read`, `groups:history`, `im:history`, `users:read`), optional `SLACK_USER_ID` for mentions | a Slack app installed in your workspace |
+| Jira Cloud | `JIRA_BASE_URL`, `JIRA_EMAIL`, `JIRA_API_TOKEN` | id.atlassian.com → API tokens |
+
+The connectors are stdlib `urllib` clients; each `digest_*` function is pure and unit-tested on fixtures.
+Real API calls were not exercised in CI — the first `sb_calendar()` in your session is the integration test.
+
+**Cron.** `hermes/cron/jobs.sh` registers two jobs — `sb-daily-digest` (weekdays 19:00, skills daily-digest +
+meeting-ingest, delivered where you want) and `sb-maintenance` (daily 07:30, task-roundup with `sb_maintain(scope=all)`,
+which reports its open questions instead of deciding them because nobody is watching):
+
+```bash
+MODEL_MID=ollama/hermes4:14b DELIVER=slack ./hermes/cron/jobs.sh
+```
+
+Model per job is a flag (`--model`, `--provider`): use the smallest model that passes your smoke test for
+maintenance, a stronger one for the digest.
+
 ## Vault location resolution
 
 `plugins.entries.second_brain.settings.vault_path` → `SECOND_BRAIN_VAULT` env → the current
@@ -84,9 +118,9 @@ directory or a parent containing `_CLAUDE.md`. When none resolves, the `sb_*` to
 
 | Phase | Release | Content |
 |---|---|---|
-| 1 (this) | 4.2.0 | plugin core, 3 skills, install, conformance tests |
-| 2 | 4.3.0 | `sb_maintain` (task-roundup sync + curator refresh + staleness, with a short LLM pass on ambiguous cases), source digests (Calendar, Drive, Slack, Jira), `daily-digest` cron delivered to Slack, `meeting-ingest` transcript-first |
-| 3 | 4.4.0 | `sb-vault` memory provider (passive recall via `prefetch`), `weekly-review`, reliability measurements |
+| 1 | 4.2.0 | plugin core, 3 skills (braindump, people-update, knowledge-stub), install, conformance tests |
+| 2 | 4.2.0 | `sb_maintain` (TODO sync both ways + curator sweep with self-verification + staleness + health, `needs_judgment` for the model), source digests (Calendar, Drive with transcript-first Docs reading, Slack, Jira), skills `daily-digest`, `meeting-ingest`, `task-roundup`, cron jobs |
+| 3 | 4.3.0 | `sb-vault` memory provider (passive recall via `prefetch`), `weekly-review`, reliability measurements |
 
 ## Troubleshooting
 

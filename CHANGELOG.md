@@ -16,7 +16,8 @@ and [`docs/UPGRADING.md`](docs/UPGRADING.md) to move an existing vault between v
 
 ### Added
 - **Hermes Agent edition (`hermes/`)** — run the second brain with a local model. A plugin
-  (`hermes/plugin/second_brain/`) exposes the vault contract as 11 typed `sb_*` tools:
+  (`hermes/plugin/second_brain/`) exposes the vault contract as typed `sb_*` tools (19 in all, across two toolsets); the
+  core eleven are
   `sb_brief`, `sb_search`, `sb_read`, `sb_find_person`, `sb_create_note`, `sb_append_timeline`,
   `sb_append_section`, `sb_daily_append`, `sb_new_action`, `sb_curate`, `sb_commit`. Every
   write goes through `vault/notes.py`, which generates frontmatter/path/preamble from an
@@ -32,8 +33,23 @@ and [`docs/UPGRADING.md`](docs/UPGRADING.md) to move an existing vault between v
   through `hooks/pre-commit` in a scratch vault — the hook is the shared judge of both editions.
 - **`vault-starter/AGENTS.md`** — entry point for agents that auto-load `AGENTS.md` (Hermes):
   read `_CLAUDE.md` and `MY-PROFILE.md` first, or call `sb_brief`.
-- **`docs/HERMES.md`** — architecture, install, roadmap (phase 2: maintenance + source digests +
-  daily digest cron; phase 3: memory provider for passive recall).
+- **Maintenance as code** (`vault/maintain.py`, tool `sb_maintain`): task-roundup sync both ways
+  (anchors, TODO.md buckets, mirror-aware, removed-source flags), curator sweep with the v4.0
+  self-verification loop, staleness flags, health audit. Judgment calls come back as
+  `needs_judgment` (unassigned owners, zombies, near-duplicates, hub proposals) for the model.
+  `sb_toggle_task` marks a task done by anchor; `sb_vault_activity` lists recent vault changes.
+- **Source digests** (`sources/`, toolset `second_brain_sources`): Google Calendar, Drive changes with
+  transcript detection, Google Docs reading with the **transcript-first rule in code**
+  (`sb_drive_doc` → `transcript_source`), Slack clustered per channel + DMs + mentions, Jira Cloud.
+  Stdlib clients, credentials from `~/.hermes/.env`, tools hidden when credentials are missing.
+- **Three more Hermes skills**: `daily-digest` (synthesis + auto-logged people + TODO refresh, returns
+  the digest for delivery), `meeting-ingest` (transcript-first, propagation, ask before decision notes),
+  `task-roundup` (resolves the maintenance tool's open cases).
+- **`hermes/cron/jobs.sh`** — `sb-daily-digest` (weekdays 19:00) and `sb-maintenance` (daily 07:30) with
+  per-job model and delivery target.
+- **`docs/HERMES.md`** — architecture, install, phase 2 (plumbing vs judgment table, credentials, cron),
+  roadmap (phase 3: memory provider for passive recall, weekly review).
+- **`LICENSE`** — MIT.
 
 ### Changed
 - README and `CLAUDE.md` describe the third path (Cowork · Claude Code · Hermes).

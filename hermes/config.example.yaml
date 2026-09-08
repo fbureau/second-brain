@@ -29,3 +29,8 @@ compression:
 memory:
   memory_enabled: true       # MEMORY.md/USER.md hold pointers only; the vault is the memory
   user_profile_enabled: true
+
+# Source credentials go in ~/.hermes/.env (not here). The source tools appear only when set:
+#   GOOGLE_CLIENT_ID=… GOOGLE_CLIENT_SECRET=… GOOGLE_REFRESH_TOKEN=…   # Calendar, Drive, Docs
+#   SLACK_BOT_TOKEN=xoxb-…  SLACK_USER_ID=U…                          # Slack (+ mentions of you)
+#   JIRA_BASE_URL=https://<site>.atlassian.net JIRA_EMAIL=… JIRA_API_TOKEN=…

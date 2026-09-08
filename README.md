@@ -214,3 +214,7 @@ between versions see [`docs/UPGRADING.md`](docs/UPGRADING.md); to cut a release 
 Patterns drawn from:
 - [COG-second-brain](https://github.com/huytieu/COG-second-brain) — people CRM, numbered structure, role packs.
 - [obsidian-second-brain](https://github.com/eugeniughelbur/obsidian-second-brain) — AI-first rules, the challenge pattern, append-only flow.
+
+## License
+
+MIT — see [`LICENSE`](LICENSE). Your vault is your own; this repository is only the tooling.

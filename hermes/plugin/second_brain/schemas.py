@@ -129,5 +129,89 @@ SB_COMMIT = {
         "required": ["message"]},
 }
 
-ALL = [SB_BRIEF, SB_SEARCH, SB_READ, SB_FIND_PERSON, SB_CREATE_NOTE, SB_APPEND_TIMELINE, SB_APPEND_SECTION,
-       SB_DAILY_APPEND, SB_NEW_ACTION, SB_CURATE, SB_COMMIT]
+SB_MAINTAIN = {
+    "name": "sb_maintain",
+    "description": "Run the deterministic maintenance pass: sync every action item into TODO.md both ways (assign "
+                   "anchors, reconcile checked boxes, bucket by due date), rebuild domain hubs and _INDEX.md, refresh "
+                   "staleness flags, audit health. Returns a report plus needs_judgment — the cases only you can decide "
+                   "(unassigned owners, removed sources, zombie tasks, near-duplicates, hub proposals). Use apply=false "
+                   "for a dry run.",
+    "parameters": {"type": "object", "properties": {
+        "scope": {"type": "string", "description": "all | tasks | curator | staleness | health (default all)"},
+        "apply": {"type": "boolean", "description": "Write changes (default true)."}},
+        "required": []},
+}
+
+SB_TOGGLE_TASK = {
+    "name": "sb_toggle_task",
+    "description": "Mark a task done (or reopen it) in its SOURCE note by anchor, stamping ✅ date. Use when the user "
+                   "says they finished something that has a ^t-id; then sb_maintain(scope=tasks) refreshes TODO.md.",
+    "parameters": {"type": "object", "properties": {
+        "anchor": {"type": "string", "description": "The 6-char anchor (with or without ^t-)."},
+        "done": {"type": "boolean", "description": "true = done (default), false = reopen"}},
+        "required": ["anchor"]},
+}
+
+SB_VAULT_ACTIVITY = {
+    "name": "sb_vault_activity",
+    "description": "Notes created or modified in the vault during the window (git history + mtimes). The 'internal "
+                   "vault' source of the daily digest.",
+    "parameters": {"type": "object", "properties": {
+        "since_hours": {"type": "integer", "description": "Window in hours (default 24)."},
+        "limit": {"type": "integer"}},
+        "required": []},
+}
+
+SB_CALENDAR = {
+    "name": "sb_calendar",
+    "description": "Google Calendar events of a day as a compact digest (time, title, duration, attendees, Meet). "
+                   "Use for the daily digest and to cross-check meetings before ingesting transcripts.",
+    "parameters": {"type": "object", "properties": {
+        "day": {"type": "string", "description": "YYYY-MM-DD (default today)."}},
+        "required": []},
+}
+
+SB_DRIVE_CHANGES = {
+    "name": "sb_drive_changes",
+    "description": "Google Drive files modified in the window, compact, with meeting transcripts flagged. Use for the "
+                   "daily digest; hand transcript ids to sb_drive_doc / meeting-ingest.",
+    "parameters": {"type": "object", "properties": {
+        "since_hours": {"type": "integer", "description": "Window in hours (default 24)."}},
+        "required": []},
+}
+
+SB_DRIVE_DOC = {
+    "name": "sb_drive_doc",
+    "description": "Read a Google Doc as text applying the transcript-first rule: the 'Transcript' tab if present "
+                   "(transcript_source=verbatim), else a summary tab (summary-fallback → confidence: medium, "
+                   "needs-review: true), else the whole document. Use before ingesting a meeting from Drive.",
+    "parameters": {"type": "object", "properties": {
+        "file_or_url": {"type": "string", "description": "Drive file id or docs.google.com URL."},
+        "max_chars": {"type": "integer", "description": "Truncate after N chars (default 60000)."}},
+        "required": ["file_or_url"]},
+}
+
+SB_SLACK = {
+    "name": "sb_slack",
+    "description": "Slack activity in the window, clustered per channel (volume, top posters, your posts, threads), plus "
+                   "DMs and mentions of you. Compact — the raw messages never enter the context.",
+    "parameters": {"type": "object", "properties": {
+        "since_hours": {"type": "integer", "description": "Window in hours (default 24)."},
+        "ignore_channels": {"type": "array", "items": {"type": "string"}, "description": "Channels to skip (from MY-PROFILE chat-channels-to-ignore)."}},
+        "required": []},
+}
+
+SB_JIRA = {
+    "name": "sb_jira",
+    "description": "Jira issues that moved in the window (assigned to / reported by / watched by you), compact with "
+                   "status counts. Optional custom JQL.",
+    "parameters": {"type": "object", "properties": {
+        "since_hours": {"type": "integer", "description": "Window in hours (default 24)."},
+        "jql": {"type": "string", "description": "Override JQL (default: my issues updated in the window)."}},
+        "required": []},
+}
+
+ALL_VAULT = [SB_BRIEF, SB_SEARCH, SB_READ, SB_FIND_PERSON, SB_CREATE_NOTE, SB_APPEND_TIMELINE, SB_APPEND_SECTION,
+             SB_DAILY_APPEND, SB_NEW_ACTION, SB_CURATE, SB_COMMIT, SB_MAINTAIN, SB_TOGGLE_TASK, SB_VAULT_ACTIVITY]
+ALL_SOURCES = [SB_CALENDAR, SB_DRIVE_CHANGES, SB_DRIVE_DOC, SB_SLACK, SB_JIRA]
+ALL = ALL_VAULT + ALL_SOURCES

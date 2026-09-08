@@ -3,7 +3,9 @@ version: 4.2.0
 description: >-
   Second Brain vault tools — write AI-first notes (braindumps, people, meetings, wiki
   stubs) into an Obsidian vault while the plugin enforces the vault contract
-  (frontmatter, preamble, append-only history, wikilinks, task anchors).
+  (frontmatter, preamble, append-only history, wikilinks, task anchors); run the
+  deterministic maintenance (TODO sync, curator, staleness, health); pull compact
+  digests from Calendar, Drive (transcript-first), Slack and Jira.
 provides_tools:
   - sb_brief
   - sb_search
@@ -16,7 +18,20 @@ provides_tools:
   - sb_new_action
   - sb_curate
   - sb_commit
+  - sb_maintain
+  - sb_toggle_task
+  - sb_vault_activity
+  - sb_calendar
+  - sb_drive_changes
+  - sb_drive_doc
+  - sb_slack
+  - sb_jira
 provides_hooks:
   - on_session_start
+# Toolsets: `second_brain` (vault) and `second_brain_sources` (Calendar/Drive/Slack/Jira).
 # Vault location: plugins.entries.second_brain.settings.vault_path in config.yaml,
 # or the SECOND_BRAIN_VAULT environment variable, or run Hermes with cwd = the vault.
+# Source tools appear only when their credentials are set in ~/.hermes/.env:
+#   GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REFRESH_TOKEN   (Calendar, Drive, Docs)
+#   SLACK_BOT_TOKEN [, SLACK_USER_ID]                                (Slack)
+#   JIRA_BASE_URL, JIRA_EMAIL, JIRA_API_TOKEN                        (Jira Cloud)

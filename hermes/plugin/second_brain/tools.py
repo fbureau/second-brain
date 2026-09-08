@@ -2,8 +2,10 @@
 from __future__ import annotations
 
 import json
+import os
 from typing import Callable
 
+from .sources import SourceError, calendar, drive, jira, slack
 from .vault import Vault, VaultError
 
 _vault_path_getter: Callable[[], str | None] = lambda: None  # set by register()
@@ -26,13 +28,22 @@ def _guard(fn):
     def wrapper(args: dict, **kwargs) -> str:
         try:
             return _ok(fn(args or {}))
-        except VaultError as e:
+        except (VaultError, SourceError) as e:
             return _ok({"error": str(e)})
         except Exception as e:  # never raise into the agent loop
             return _ok({"error": f"{type(e).__name__}: {e}"})
     wrapper.__name__ = fn.__name__
     return wrapper
 
+
+def _int(v, default):
+    try:
+        return int(v) if v not in (None, "") else default
+    except (TypeError, ValueError):
+        return default
+
+
+# ----------------------------------------------------------------------------- vault
 
 @_guard
 def sb_brief(args):
@@ -42,18 +53,15 @@ def sb_brief(args):
 @_guard
 def sb_search(args):
     v = _vault()
-    hits = v.search(args["query"], folder=args.get("folder"), note_type=args.get("type"),
-                    limit=int(args.get("limit") or 8))
+    hits = v.search(args["query"], folder=args.get("folder"), note_type=args.get("type"), limit=_int(args.get("limit"), 8))
     return {"query": args["query"], "results": hits, "silence": not hits}
 
 
 @_guard
 def sb_read(args):
-    v = _vault()
-    fm, body = v.read_note(args["path"])
-    limit = int(args.get("max_chars") or 6000)
-    truncated = len(body) > limit
-    return {"path": args["path"], "frontmatter": fm, "body": body[:limit], "truncated": truncated}
+    fm, body = _vault().read_note(args["path"])
+    limit = _int(args.get("max_chars"), 6000)
+    return {"path": args["path"], "frontmatter": fm, "body": body[:limit], "truncated": len(body) > limit}
 
 
 @_guard
@@ -63,9 +71,8 @@ def sb_find_person(args):
 
 @_guard
 def sb_create_note(args):
-    v = _vault()
-    res = v.create_note(args["type"], args.get("fields") or {}, args.get("preamble", ""),
-                        args.get("sections") or {}, slug=args.get("slug"), name=args.get("name"))
+    res = _vault().create_note(args["type"], args.get("fields") or {}, args.get("preamble", ""),
+                               args.get("sections") or {}, slug=args.get("slug"), name=args.get("name"))
     res["next"] = ("create stubs for missing_links (wiki: sb_create_note type=wiki; people: ask the user first), "
                    "then sb_daily_append, then sb_commit") if res["missing_links"] else "sb_daily_append, then sb_commit"
     return res
@@ -73,8 +80,7 @@ def sb_create_note(args):
 
 @_guard
 def sb_append_timeline(args):
-    return _vault().append_timeline(args["path"], args["title"], args["lines"], date=args.get("date"),
-                                    marker=args.get("marker"))
+    return _vault().append_timeline(args["path"], args["title"], args["lines"], date=args.get("date"), marker=args.get("marker"))
 
 
 @_guard
@@ -89,9 +95,8 @@ def sb_daily_append(args):
 
 @_guard
 def sb_new_action(args):
-    v = _vault()
-    return {"line": v.new_action(args["text"], owner=args.get("owner") or "me", due=args.get("due"),
-                                 source_tag=args.get("source_tag") or "daily")}
+    return {"line": _vault().new_action(args["text"], owner=args.get("owner") or "me", due=args.get("due"),
+                                        source_tag=args.get("source_tag") or "daily")}
 
 
 @_guard
@@ -104,9 +109,76 @@ def sb_commit(args):
     return _vault().commit(args["message"])
 
 
-HANDLERS = {
+@_guard
+def sb_maintain(args):
+    apply = args.get("apply", True)
+    apply = apply if isinstance(apply, bool) else str(apply).lower() not in ("false", "0", "no")
+    res = _vault().maintain(args.get("scope") or "all", apply)
+    res["next"] = ("resolve each needs_judgment item (ask the user when it is their call), then sb_commit"
+                   if res.get("needs_judgment") else "sb_commit")
+    return res
+
+
+@_guard
+def sb_toggle_task(args):
+    done = args.get("done", True)
+    done = done if isinstance(done, bool) else str(done).lower() not in ("false", "0", "no")
+    return _vault().set_task_state(str(args["anchor"]).replace("^t-", ""), done)
+
+
+@_guard
+def sb_vault_activity(args):
+    return _vault().activity(_int(args.get("since_hours"), 24), _int(args.get("limit"), 40))
+
+
+# ----------------------------------------------------------------------------- sources
+
+@_guard
+def sb_calendar(args):
+    v = _vault()
+    raw = calendar.fetch_day(args.get("day"))
+    return calendar.digest_events(raw)
+
+
+@_guard
+def sb_drive_changes(args):
+    raw = drive.fetch_changes(_int(args.get("since_hours"), 24))
+    return drive.digest_changes(raw)
+
+
+@_guard
+def sb_drive_doc(args):
+    fid = str(args["file_or_url"]).strip()
+    if "/d/" in fid:
+        fid = fid.split("/d/")[1].split("/")[0]
+    return drive.read_doc(fid, _int(args.get("max_chars"), 60000))
+
+
+@_guard
+def sb_slack(args):
+    raw = slack.fetch_activity(_int(args.get("since_hours"), 24))
+    ignore = args.get("ignore_channels") or []
+    return slack.digest_activity(raw, ignore=ignore)
+
+
+@_guard
+def sb_jira(args):
+    raw = jira.fetch_issues(_int(args.get("since_hours"), 24), jql=args.get("jql"))
+    return jira.digest_issues(raw)
+
+
+VAULT_HANDLERS = {
     "sb_brief": sb_brief, "sb_search": sb_search, "sb_read": sb_read, "sb_find_person": sb_find_person,
-    "sb_create_note": sb_create_note, "sb_append_timeline": sb_append_timeline,
-    "sb_append_section": sb_append_section, "sb_daily_append": sb_daily_append, "sb_new_action": sb_new_action,
-    "sb_curate": sb_curate, "sb_commit": sb_commit,
+    "sb_create_note": sb_create_note, "sb_append_timeline": sb_append_timeline, "sb_append_section": sb_append_section,
+    "sb_daily_append": sb_daily_append, "sb_new_action": sb_new_action, "sb_curate": sb_curate, "sb_commit": sb_commit,
+    "sb_maintain": sb_maintain, "sb_toggle_task": sb_toggle_task, "sb_vault_activity": sb_vault_activity,
 }
+SOURCE_HANDLERS = {"sb_calendar": sb_calendar, "sb_drive_changes": sb_drive_changes, "sb_drive_doc": sb_drive_doc,
+                   "sb_slack": sb_slack, "sb_jira": sb_jira}
+SOURCE_ENV = {"sb_calendar": "google", "sb_drive_changes": "google", "sb_drive_doc": "google", "sb_slack": "slack", "sb_jira": "jira"}
+HANDLERS = {**VAULT_HANDLERS, **SOURCE_HANDLERS}
+
+
+def source_available(kind: str) -> bool:
+    from .sources import REQUIRED_ENV
+    return all(os.environ.get(k) for k in REQUIRED_ENV[kind])

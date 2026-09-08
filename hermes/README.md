@@ -7,9 +7,11 @@ supplies content and judgment.
 
 ```
 hermes/
-├── plugin/second_brain/     ← Hermes plugin: 11 `sb_*` tools + on_session_start hook
-│   └── vault/               ← the vault contract as code (stdlib-only, testable without Hermes)
-├── skills/                  ← braindump · people-update · knowledge-stub (≤ 40 lines each)
+├── plugin/second_brain/     ← Hermes plugin: 19 `sb_*` tools in two toolsets + on_session_start hook
+│   ├── vault/               ← the vault contract as code (stdlib-only, testable without Hermes) + maintenance
+│   └── sources/             ← Calendar · Drive/Docs (transcript-first) · Slack · Jira → compact digests
+├── skills/                  ← braindump · people-update · knowledge-stub · daily-digest · meeting-ingest · task-roundup
+├── cron/jobs.sh             ← `hermes cron create` for the daily digest and the maintenance run
 ├── SOUL.md                  ← agent identity: the rules code cannot enforce
 ├── config.example.yaml      ← settings to merge into ~/.hermes/config.yaml
 ├── memories/USER.md.example ← pointers only — the vault is the memory
@@ -43,6 +45,9 @@ Full guide, architecture and roadmap: [`docs/HERMES.md`](../docs/HERMES.md).
 | `sb_new_action` | task line with a fresh, unique `^t-` anchor |
 | `sb_curate` | curator incremental: hub listing (sorted), recent activity, `_INDEX.md` counts |
 | `sb_commit` | `git commit` — the vault's pre-commit hook is the final judge |
+| `sb_maintain` | TODO.md sync both ways, curator sweep (self-verifying), staleness flags, health — returns `needs_judgment` for the model |
+| `sb_toggle_task` / `sb_vault_activity` | mark a task done in its source note by anchor; what changed in the vault recently |
+| `sb_calendar` / `sb_drive_changes` / `sb_drive_doc` / `sb_slack` / `sb_jira` | toolset `second_brain_sources` — compact digests; `sb_drive_doc` picks the Transcript tab first |
 
 ## Tests
 

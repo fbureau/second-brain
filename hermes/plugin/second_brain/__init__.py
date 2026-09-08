@@ -17,6 +17,7 @@ from . import schemas, tools
 from .vault import ENV_VAR, Vault, VaultError
 
 TOOLSET = "second_brain"
+SOURCES_TOOLSET = "second_brain_sources"
 log = logging.getLogger("second_brain")
 
 
@@ -37,9 +38,16 @@ def register(ctx) -> None:
         except VaultError:
             return False
 
-    for schema in schemas.ALL:
+    for schema in schemas.ALL_VAULT:
         ctx.register_tool(name=schema["name"], toolset=TOOLSET, schema=schema,
                           handler=tools.HANDLERS[schema["name"]], check_fn=vault_available)
+
+    # Source digests live in their own toolset and hide themselves when credentials are absent.
+    for schema in schemas.ALL_SOURCES:
+        kind = tools.SOURCE_ENV[schema["name"]]
+        ctx.register_tool(name=schema["name"], toolset=SOURCES_TOOLSET, schema=schema,
+                          handler=tools.HANDLERS[schema["name"]],
+                          check_fn=(lambda k=kind: vault_available() and tools.source_available(k)))
 
     def on_session_start(session_id=None, model=None, platform=None, **kwargs):
         try:
