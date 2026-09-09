@@ -17,7 +17,7 @@ in their head. So the Hermes edition moves the **plumbing into code** and keeps 
 | Bookkeeping (hub listings, `_INDEX.md` counts, anchors, staleness) | done by the model | done by code (`sb_curate`, `sb_new_action`, `sb_append_timeline`) |
 | Analysis (classification, extraction, insight, dynamics, recall, synthesis) | model | **model** — unchanged |
 | Skill length | 150–500 lines | ≤ 40 lines: which tools, in what order, what to judge |
-| Scope | 12 skills incl. red-team, postmortem, curator sweep, vault-tend | 13 skills — full parity since 4.3.0 |
+| Scope | 12 skills incl. red-team, postmortem, curator sweep, vault-tend | 13 skills — full parity |
 
 Token economy follows: a capture costs one `sb_brief` (~500 tokens) + one short skill + a few
 tool calls, instead of reading `_CLAUDE.md`, `MY-PROFILE.md` and a 200-line skill.
@@ -81,7 +81,7 @@ Expected: `sb_brief` → `sb_find_person("Alex")` → (ask if none) → `sb_crea
 `sb_daily_append` → `sb_commit`. The note in `00-inbox/` has frontmatter, an English preamble,
 wikilinks; `git log` in the vault shows the commit; the hook accepted it.
 
-## Phase 2 — maintenance, sources, digest
+## Maintenance, sources and the daily digest
 
 **Plumbing vs judgment, per skill.** The tools do the bookkeeping; the model keeps the analysis:
 
@@ -107,7 +107,7 @@ Real API calls were not exercised in CI — the first `sb_calendar()` in your se
 **Cron.** `hermes/cron/jobs.sh` registers three jobs — `sb-daily-digest` (weekdays 19:00, skills daily-digest +
 meeting-ingest, delivered where you want), `sb-maintenance` (daily 07:30, task-roundup with `sb_maintain(scope=all)`,
 which reports its open questions instead of deciding them because nobody is watching), and `sb-weekly-review`
-(Mondays 09:00, the week's synthesis, added in 4.3.0):
+(Mondays 09:00, the week's synthesis):
 
 ```bash
 MODEL_MID=ollama/hermes4:14b DELIVER=slack ./hermes/cron/jobs.sh
@@ -116,7 +116,7 @@ MODEL_MID=ollama/hermes4:14b DELIVER=slack ./hermes/cron/jobs.sh
 Model per job is a flag (`--model`, `--provider`): use the smallest model that passes your smoke test for
 maintenance, a stronger one for the digest.
 
-## Phases 3 & 4 — passive recall, parity, and a number for the whole claim
+## Passive recall, parity, and a number for the whole claim
 
 ### Passive recall (`sb_vault` memory provider)
 
@@ -177,14 +177,21 @@ refused by `vault.notes.safe_path` for every path-taking tool.
 directory or a parent containing `_CLAUDE.md`. When none resolves, the `sb_*` tools are hidden
 (`check_fn`) and `on_session_start` logs a warning.
 
-## Roadmap
+## How it was built
 
-| Phase | Release | Content |
-|---|---|---|
-| 1 | 4.2.0 | plugin core, 3 skills (braindump, people-update, knowledge-stub), install, conformance tests |
-| 2 | 4.2.0 | `sb_maintain` (TODO sync both ways + curator sweep with self-verification + staleness + health, `needs_judgment` for the model), source digests (Calendar, Drive with transcript-first Docs reading, Slack, Jira), skills `daily-digest`, `meeting-ingest`, `task-roundup`, cron jobs |
-| 3 | 4.3.0 | `sb_vault` memory provider (passive recall via `prefetch`), `weekly-review`, the guardrail scorecard |
-| 4 | 4.3.0 | parity with the Claude edition: `sb_recall`, `sb_agenda`, `sb_decision_context`, `sb_decision_postmortem`, `sb_tend`, `sb_backfill_plan`, and the skills `recall`, `prioritize`, `challenge-decision`, `doc-ingest`, `vault-tend`, `kickstart-backfill` |
+All of it shipped in 4.2.0, in four passes. The order is worth knowing, because it is the order in
+which the pieces depend on each other — the contract had to be executable before anything could be
+trusted to a small model.
+
+| Pass | What it added |
+|---|---|
+| 1 | the plugin core (`vault/` as an executable contract), 3 capture skills, install, the conformance suite |
+| 2 | `sb_maintain` (TODO sync both ways, curator sweep with self-verification, staleness, health, `needs_judgment`), the source digests, `daily-digest` / `meeting-ingest` / `task-roundup`, cron |
+| 3 | the `sb_vault` memory provider for passive recall, `weekly-review`, and the guardrail scorecard |
+| 4 | parity with the Claude edition: `sb_recall`, `sb_agenda`, `sb_decision_context`, `sb_decision_postmortem`, `sb_tend`, `sb_backfill_plan`, and the six skills that use them |
+
+Ideas that have not been built: a semantic index (the current search is lexical and hub-first, which
+has been enough), and per-model tuning of the skill texts once there is real usage to tune against.
 
 ## Troubleshooting
 

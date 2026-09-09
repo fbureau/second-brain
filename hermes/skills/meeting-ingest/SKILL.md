@@ -1,7 +1,7 @@
 ---
 name: meeting-ingest
 description: Turn a meeting transcript (pasted text, or a Google Doc / Drive link) into a structured note in 04-meetings/ — decisions, action items, tensions, dynamics — and propagate to the people, project and daily notes. Transcript-first — the summary tab is only a flagged fallback. Use when the user says "process this meeting", "ingest meeting", pastes a transcript, or shares a Meet transcript link.
-version: 4.3.0
+version: 4.2.0
 author: fbureau
 license: MIT
 metadata:

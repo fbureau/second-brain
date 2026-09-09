@@ -1,7 +1,7 @@
 ---
 name: prioritize
 description: Recommend what to work on now and give a short plan, drawing on open tasks, deadlines, active projects, cooling relationships and the calendar. Use when the user says "what should I focus on", "prioritize", "plan my day", "where do I start", "help me triage", "what's most important".
-version: 4.3.0
+version: 4.2.0
 author: fbureau
 license: MIT
 metadata:

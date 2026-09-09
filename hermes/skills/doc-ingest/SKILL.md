@@ -1,7 +1,7 @@
 ---
 name: doc-ingest
 description: Ingest a produced document — strategy doc, analysis, report, deck, spec, research or external article — into a source note in 06-knowledge/_sources/, linked to its projects and domain hub. Use when the user shares a document or a link and says "ingest this", "process this report", "analyze this doc". Do NOT use for meeting transcripts (meeting-ingest).
-version: 4.3.0
+version: 4.2.0
 author: fbureau
 license: MIT
 metadata:

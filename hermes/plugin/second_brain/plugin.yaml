@@ -1,5 +1,5 @@
 name: second_brain
-version: 4.3.0
+version: 4.2.0
 description: >-
   Second Brain vault tools — write AI-first notes (braindumps, people, meetings, wiki
   stubs) into an Obsidian vault while the plugin enforces the vault contract

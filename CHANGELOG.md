@@ -12,98 +12,103 @@ The current version is in the [`VERSION`](VERSION) file. Each release is an anno
 Git tag (`X.Y.Z`, no `v` prefix) on `main`. See [`docs/RELEASING.md`](docs/RELEASING.md) for the process
 and [`docs/UPGRADING.md`](docs/UPGRADING.md) to move an existing vault between versions.
 
-## [4.3.0] - 2026-09-08
+## [4.2.0] - 2026-09-09
+
+The Hermes Agent edition: the vault can now be operated end to end by a **local model**,
+alongside or instead of Claude Cowork / Claude Code. Both editions share one contract — the
+vault itself (`_CLAUDE.md`, the templates, the pre-commit hook) — and only the harness bindings
+differ. The design principle throughout: **plumbing moves into code, judgment stays with the
+model**. A small model cannot hold 500-line procedures and a dozen "never" rules, but it does not
+need to when a non-conforming note simply cannot be written.
 
 ### Added
-- **Passive recall — the `sb_vault` memory provider** (`hermes/memory/sb_vault/`). Activated with
-  `hermes config set memory.provider sb_vault`, it injects the vault notes relevant to the turn you
-  just typed, with paths and dates, before the model thinks to search. Read-only on purpose:
-  `sync_turn`, `on_session_end`, `on_pre_compress` and `on_memory_write` are no-ops, so the vault's
-  append-only history stays a record of decisions rather than of chatter. Retrieval runs on a
-  background thread and stays silent when nothing matches — an empty context beats a plausible
-  irrelevant one. It shares its engine with `sb_recall`, so passive and explicit recall never disagree.
+
+**The plugin** (`hermes/plugin/second_brain/`) — `register(ctx)` publishes 21 tools under the
+`second_brain` toolset and 5 under `second_brain_sources`, each hidden automatically when no vault
+(or no credentials) is configured, plus an `on_session_start` hook.
+
+- **The contract as code** (`vault/`): `schemas.py` is an executable mirror of `_CLAUDE.md` §4
+  (folders, filenames, required fields, enums, sections). `notes.py` is the only writer — it
+  generates frontmatter, path and the `## For future Claude` preamble from the schema, validates
+  enums, never overwrites and never deletes. Stdlib only, and testable without Hermes.
+- **Capture and write**: `sb_brief` (a ~500-token operating brief instead of 400 lines),
+  `sb_search`, `sb_read`, `sb_find_person` (fuzzy match: exact / likely / ambiguous / none),
+  `sb_create_note`, `sb_append_timeline`, `sb_append_section`, `sb_daily_append`, `sb_new_action`
+  (unique `^t-` anchors), `sb_curate`, `sb_commit`.
+- **Maintenance as code** (`vault/maintain.py`, tool `sb_maintain`): TODO.md sync both ways
+  (anchors, mirror-aware reconciliation, buckets, removed-source flags), curator sweep with the
+  v4.0 self-verification loop, staleness flags, health audit. Ambiguous cases come back as
+  `needs_judgment` — unassigned owners, zombie tasks, near-duplicates, hub proposals — instead of
+  being decided in code. `sb_toggle_task` marks a task done by anchor; `sb_vault_activity` lists
+  what the vault has been busy with.
 - **Retrieval with citations** (`vault/recall.py`, tool `sb_recall`): resolves the people, projects
   and hubs a question mentions (a slug and a spoken name fold onto the same form), pulls the lines
   that actually match with the date heading above them, and returns a confidence of
   `stated | high | medium | speculation | unknown`. A note that hits one term out of three is
   dropped as a near-miss rather than dressed up as evidence, and `unknown` obliges the skill to say
   the vault does not know.
-- **Six more tools for parity with the Claude edition**: `sb_agenda` (open work, deadlines, quiet
-  projects, cooling relationships and a `signals` list — gathered, deliberately not ranked),
-  `sb_decision_context` and `sb_decision_postmortem` (comparable decisions with reversals weighted
-  first, unchecked reversal conditions, and what a reversal invalidates elsewhere), `sb_tend`
-  (whole-vault audit, preview-first: safe frontmatter fixes on request, everything else as a
-  proposal), `sb_backfill_plan` and `sb_backfill_done` (Day-1 backfill as session-sized batches,
-  entity phases first, resumable from a state note after an interrupt).
-- **Seven more Hermes skills — thirteen in all, full parity**: `recall`, `prioritize`,
-  `challenge-decision` (red-team and postmortem), `doc-ingest`, `vault-tend`,
-  `kickstart-backfill`, `weekly-review`.
-- **`sb-weekly-review` cron job** (Mondays 09:00), and the weekly synthesis it runs.
-- **Guardrail scorecard** (`hermes/bench/guardrails.py`, `hermes/tests/test_guardrails.py`): the
-  calls a confused small model actually makes — an invented enum, a missing preamble, an overwrite
-  instead of an append, a `..` in a path, a typo presented as an exact match, junk argument types —
-  each asserted to be refused **by the code**, with a message saying what to do instead. The
-  scorecard prints the share that held, and exits non-zero if any leaks.
+- **Evidence for the thinking skills**: `sb_agenda` (open work, deadlines, quiet projects, cooling
+  relationships and a `signals` list — gathered, deliberately **not** ranked), `sb_decision_context`
+  and `sb_decision_postmortem` (comparable decisions with reversals weighted first, committed
+  reversal conditions nobody revisited, and what a reversal invalidates elsewhere), `sb_tend`
+  (whole-vault audit, preview-first: only frontmatter keys with one correct value are applied on
+  request, everything else returns as a proposal with its evidence), `sb_backfill_plan` and
+  `sb_backfill_done` (Day-1 backfill as session-sized batches, entity phases first so people are
+  deduplicated before meetings arrive, resumable from a state note after an interrupt).
+- **Source digests** (`sources/`, stdlib `urllib`): Google Calendar, Drive changes with transcript
+  detection, Google Docs reading with the **transcript-first rule enforced in code**
+  (`sb_drive_doc` → `transcript_source`), Slack clustered per channel plus DMs and mentions, Jira
+  Cloud. Credentials live in `~/.hermes/.env`; each tool hides itself when its variables are missing,
+  so a small model never sees a tool it cannot call.
+
+**Passive recall — the `sb_vault` memory provider** (`hermes/memory/sb_vault/`). Activated with
+`hermes config set memory.provider sb_vault`, it injects the vault notes relevant to the turn you
+just typed, with paths and dates, before the model thinks to search. Read-only on purpose:
+`sync_turn`, `on_session_end`, `on_pre_compress` and `on_memory_write` are no-ops, so the vault's
+append-only history stays a record of decisions rather than of chatter. Retrieval runs on a
+background thread and stays silent when nothing matches — an empty context beats a plausible
+irrelevant one. It shares its engine with `sb_recall`, so passive and explicit recall never disagree.
+
+**Thirteen Hermes skills** (`hermes/skills/`) — full parity with the Claude edition, each a
+≤ 45-line procedure in agentskills.io format with Hermes metadata (`requires_toolsets`):
+`braindump`, `people-update`, `knowledge-stub`, `meeting-ingest`, `doc-ingest`, `daily-digest`,
+`weekly-review`, `task-roundup`, `recall`, `prioritize`, `challenge-decision` (red-team and
+postmortem), `vault-tend`, `kickstart-backfill`.
+
+**Install, identity and scheduling**: `hermes/install.sh` (idempotent — symlinks, seeds, `.env`,
+the vault git hook, never overwrites), `SOUL.md` (the rules code cannot enforce),
+`config.example.yaml`, `memories/USER.md.example` (pointers only — the vault is the memory), and
+`hermes/cron/jobs.sh` registering `sb-daily-digest` (weekdays 19:00), `sb-maintenance` (daily 07:30)
+and `sb-weekly-review` (Mondays 09:00), with per-job model and delivery target.
+
+**Conformance and reliability** (`hermes/tests/`, stdlib `unittest`): 80 cases, every generated note
+committed through `hooks/pre-commit` in a scratch vault — the hook is the shared judge of both
+editions. `test_guardrails.py` is the adversarial half: it sends the calls a confused small model
+actually makes (an invented enum, a missing preamble, an overwrite instead of an append, a `..` in a
+path, a typo presented as an exact match, junk argument types) and asserts each is refused **by the
+code**, with a message saying what to do instead. `hermes/bench/guardrails.py` prints the share that
+held and exits non-zero if any leaks.
+
+**Docs**: `docs/HERMES.md` (architecture, install, the plumbing-vs-judgment tables, credentials,
+cron, reliability), `hermes/README.md`, `vault-starter/AGENTS.md` for agents that auto-load
+`AGENTS.md`, and a `LICENSE` (MIT).
 
 ### Fixed
-- **Path traversal in every path-taking tool** (found by the new adversarial suite): `sb_read` would
-  return the contents of an absolute path such as `/etc/passwd`, and an append could have written
-  outside the vault. `vault.notes.safe_path` now refuses absolute paths, `~`, and any `..` that
-  escapes the vault, for reads as well as writes.
+- **Path traversal in every path-taking tool**, found by the adversarial suite: `sb_read` returned
+  the contents of an absolute path such as `/etc/passwd`, and an append could have written outside
+  the vault. `vault.notes.safe_path` now refuses absolute paths, `~`, and any `..` that escapes the
+  vault, on reads as well as writes.
 - **`sb_vault_activity`** raised a `TypeError` computing the "new note" cutoff, so the tool returned
-  an error instead of the day's activity. It also listed `_CLAUDE.md`, `AGENTS.md` and `MY-PROFILE.md`
-  as if they were notes.
-
-### Changed
-- `hermes/install.sh` also links the memory provider into `$HERMES_HOME/plugins/sb_vault`.
-- `docs/HERMES.md` documents phases 3 and 4, the read-only stance of the memory provider, the
-  parity table, and how to run the reliability scorecard.
-
-## [4.2.0] - 2026-09-08
-
-### Added
-- **Hermes Agent edition (`hermes/`)** — run the second brain with a local model. A plugin
-  (`hermes/plugin/second_brain/`) exposes the vault contract as typed `sb_*` tools (19 in all, across two toolsets); the
-  core eleven are
-  `sb_brief`, `sb_search`, `sb_read`, `sb_find_person`, `sb_create_note`, `sb_append_timeline`,
-  `sb_append_section`, `sb_daily_append`, `sb_new_action`, `sb_curate`, `sb_commit`. Every
-  write goes through `vault/notes.py`, which generates frontmatter/path/preamble from an
-  executable mirror of `_CLAUDE.md` §4 (`vault/schemas.py`), validates enums, never overwrites,
-  and appends only — so a small model cannot violate the AI-first rules. `sb_curate` is the
-  deterministic half of the curator (hub listings, recent activity, `_INDEX.md` counts).
-- **Three Hermes skills** (`hermes/skills/`): `braindump`, `people-update`, `knowledge-stub` —
-  ≤ 40-line procedures in agentskills.io format with Hermes metadata (`requires_toolsets`).
-  Analysis stays with the model; plumbing moved into the tools.
-- **`hermes/install.sh`**, `SOUL.md`, `config.example.yaml`, `memories/USER.md.example` —
-  idempotent install into `~/.hermes/` (symlinks, seeds, `.env`, vault git hook).
-- **Conformance suite** (`hermes/tests/`, stdlib `unittest`): every generated note is committed
-  through `hooks/pre-commit` in a scratch vault — the hook is the shared judge of both editions.
-- **`vault-starter/AGENTS.md`** — entry point for agents that auto-load `AGENTS.md` (Hermes):
-  read `_CLAUDE.md` and `MY-PROFILE.md` first, or call `sb_brief`.
-- **Maintenance as code** (`vault/maintain.py`, tool `sb_maintain`): task-roundup sync both ways
-  (anchors, TODO.md buckets, mirror-aware, removed-source flags), curator sweep with the v4.0
-  self-verification loop, staleness flags, health audit. Judgment calls come back as
-  `needs_judgment` (unassigned owners, zombies, near-duplicates, hub proposals) for the model.
-  `sb_toggle_task` marks a task done by anchor; `sb_vault_activity` lists recent vault changes.
-- **Source digests** (`sources/`, toolset `second_brain_sources`): Google Calendar, Drive changes with
-  transcript detection, Google Docs reading with the **transcript-first rule in code**
-  (`sb_drive_doc` → `transcript_source`), Slack clustered per channel + DMs + mentions, Jira Cloud.
-  Stdlib clients, credentials from `~/.hermes/.env`, tools hidden when credentials are missing.
-- **Three more Hermes skills**: `daily-digest` (synthesis + auto-logged people + TODO refresh, returns
-  the digest for delivery), `meeting-ingest` (transcript-first, propagation, ask before decision notes),
-  `task-roundup` (resolves the maintenance tool's open cases).
-- **`hermes/cron/jobs.sh`** — `sb-daily-digest` (weekdays 19:00) and `sb-maintenance` (daily 07:30) with
-  per-job model and delivery target.
-- **`docs/HERMES.md`** — architecture, install, phase 2 (plumbing vs judgment table, credentials, cron),
-  roadmap (phase 3: memory provider for passive recall, weekly review).
-- **`LICENSE`** — MIT.
+  an error instead of the day's activity, and it listed `_CLAUDE.md`, `AGENTS.md` and
+  `MY-PROFILE.md` as if they were notes.
 
 ### Changed
 - README and `CLAUDE.md` describe the third path (Cowork · Claude Code · Hermes).
 
 ### Migration (v4.1.0 → v4.2.0)
-Tooling only; nothing changes in existing vaults. Optionally copy `vault-starter/AGENTS.md`
-into your vault if you run an AGENTS.md-aware agent. See `docs/UPGRADING.md`.
+Tooling only; nothing changes in existing vaults, and the Claude edition is untouched. Optionally
+copy `vault-starter/AGENTS.md` into your vault if you run an AGENTS.md-aware agent. See
+`docs/UPGRADING.md`.
 
 ## [4.1.0] - 2026-08-12
 

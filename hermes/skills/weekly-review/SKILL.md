@@ -1,7 +1,7 @@
 ---
 name: weekly-review
 description: Synthesize the week from the daily notes into a weekly review note — themes, decisions, people focus, patterns, energy, and a plan for next week. Use when the user says "weekly review", "recap of the week", "how did the week go", or as the Monday scheduled job.
-version: 4.3.0
+version: 4.2.0
 author: fbureau
 license: MIT
 metadata:
