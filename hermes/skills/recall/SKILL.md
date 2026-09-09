@@ -1,7 +1,7 @@
 ---
 name: recall
 description: Answer a question from the vault with citations and an honest confidence level, or say the vault does not know. Use when the user asks "what do I know about X", "did we decide Y", "have I talked to Z about W", "remind me", "search my vault", or asks you to confirm something they half-remember.
-version: 4.3.0
+version: 4.2.0
 author: fbureau
 license: MIT
 metadata:
