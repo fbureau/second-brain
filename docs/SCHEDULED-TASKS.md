@@ -17,6 +17,13 @@ claude -p "Run the daily-brief skill. Mode: daily. Window: today 00:00 → now."
 Point it at wherever it can read both this repo's `.claude/skills/` and your vault.
 Anything you'd type interactively works here; the skill auto-triggers from the prompt.
 
+## Running on Hermes Agent instead
+
+If you run the Hermes edition (`docs/HERMES.md`), skip the external scheduler: `hermes/cron/jobs.sh`
+registers the daily digest and the maintenance run as built-in Hermes cron jobs, with a model
+per job and delivery to Slack/Telegram. The prompts below remain the reference for the Claude
+Code path.
+
 ## Scheduler options (pick one)
 
 - **cron** (Linux/macOS) — simplest. One crontab line per task (examples below).

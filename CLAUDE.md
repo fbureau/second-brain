@@ -7,7 +7,10 @@
 
 This repository is the **tooling** for an AI-first personal knowledge system:
 twelve skills (`.claude/skills/`), note templates, docs, Git hooks, and a
-`vault-starter/` you copy into your actual notes vault.
+`vault-starter/` you copy into your actual notes vault. A `hermes/` folder holds the
+Hermes Agent edition (a plugin exposing the vault contract as tools, thirteen short skills,
+and an optional read-only memory provider for passive recall) — same vault, same rules,
+different harness; see `docs/HERMES.md`.
 
 The **vault** is a separate folder of Markdown notes (an Obsidian vault, synced
 however you like). It is the *memory*. Claude has no persistent memory across

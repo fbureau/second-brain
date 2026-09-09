@@ -22,6 +22,89 @@ There are two parts, and they're separate:
 
 ---
 
+## 4.2.0 → 4.3.0  ·  Hermes parity, passive recall, guardrail scorecard
+
+**TL;DR:** the Hermes edition reaches feature parity with the Claude one (13 skills, 26 tools) and
+gains optional passive recall. Additive, **no vault migration**. Claude Cowork / Claude Code users
+get one security fix and nothing else to do.
+
+### Steps
+
+**1. Update the tooling** — `git pull`.
+
+**2. If you run the Hermes edition, re-run the installer** — it links the new memory provider:
+```bash
+./hermes/install.sh /path/to/your/vault
+```
+
+**3. (Optional) Turn on passive recall**
+```bash
+hermes config set memory.provider sb_vault
+```
+Read-only: it never writes to the vault. Only one external memory provider can be active at a time,
+so this replaces any other you had configured.
+
+**4. (Optional) Register the weekly review job**
+```bash
+MODEL_MID=<your model> DELIVER=<local|slack|…> ./hermes/cron/jobs.sh
+```
+Re-running the script is safe; it replaces jobs of the same name.
+
+**5. Check the guardrails on your machine**
+```bash
+./hermes/tests/run.sh && python3 hermes/bench/guardrails.py
+```
+
+### Security note
+
+4.3.0 fixes a path-traversal hole: before it, a tool call with an absolute path (`/etc/passwd`) or a
+`..` segment could read outside the vault, and an append could have written outside it. Only a
+confused or hostile model could trigger it, but upgrading is worth doing for that alone.
+
+### You're done when
+- `hermes plugins list` shows `second_brain` with 21 vault tools, and `/recall what do I know about X`
+  answers with citations or admits the vault does not know.
+- `python3 hermes/bench/guardrails.py` prints 22/22.
+
+### Rollback
+```bash
+cd /path/to/second-brain && git checkout 4.2.0
+```
+
+---
+
+## 4.1.0 → 4.2.0  ·  Hermes Agent edition (plugin + short skills)
+
+**TL;DR:** a new `hermes/` folder lets a local model operate the vault through a plugin that
+enforces the note contract in code. Nothing changes for Claude Cowork / Claude Code users —
+additive, **no vault migration**.
+
+### Steps
+
+**1. Update the tooling** — `git pull`.
+
+**2. (Optional) Install the Hermes edition**
+```bash
+./hermes/install.sh /path/to/your/vault
+hermes config set plugins.entries.second_brain.settings.vault_path /path/to/your/vault
+hermes config set terminal.cwd /path/to/your/vault
+hermes plugins doctor second_brain
+```
+Full guide: `docs/HERMES.md`.
+
+**3. (Optional) Add `AGENTS.md` to your vault** — `cp vault-starter/AGENTS.md /path/to/your/vault/`
+so any AGENTS.md-aware agent reads `_CLAUDE.md` first. Harmless for Claude.
+
+### You're done when
+- `hermes plugins list` shows `second_brain` enabled and `/braindump …` creates a committed note in `00-inbox/`.
+
+### Rollback
+```bash
+cd /path/to/second-brain && git checkout 4.1.0
+```
+
+---
+
 ## 4.0.0 → 4.1.0  ·  Audit release (hook hardening, doc fixes, template alignment)
 
 **TL;DR:** A repo-wide audit fixed ~50 defects: the pre-commit hook now blocks note
