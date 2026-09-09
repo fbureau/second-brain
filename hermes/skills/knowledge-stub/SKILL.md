@@ -1,7 +1,7 @@
 ---
 name: knowledge-stub
 description: Create or enrich a wiki page in 06-knowledge/ for a concept, tool, team, process or piece of jargon, with cited sources, then route it into its domain hub. Use when the user says "wiki on X", "fais une fiche sur X", "what do we know about X (write it down)", or when another skill reports a missing 06-knowledge/ wikilink.
-version: 4.2.0
+version: 4.3.0
 author: fbureau
 license: MIT
 metadata:

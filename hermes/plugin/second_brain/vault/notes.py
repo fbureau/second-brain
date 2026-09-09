@@ -31,8 +31,30 @@ def now_hhmm() -> str:
 
 # --------------------------------------------------------------------------- read
 
+def safe_path(root: Path, rel_path: str) -> Path:
+    """Resolve a vault-relative path, refusing anything that leaves the vault.
+
+    A model that passes `/etc/passwd` or `../../notes.md` is confused rather than hostile,
+    but the consequence is identical, so the contract refuses both — reads included, since
+    a read is how content escapes into a reply.
+    """
+    raw = str(rel_path or "").strip()
+    if not raw:
+        raise VaultError("path is required (vault-relative, e.g. '02-people/Alex Rivera.md')")
+    if raw.startswith(("/", "\\", "~")) or (len(raw) > 1 and raw[1] == ":"):
+        raise VaultError(f"path must be vault-relative, not absolute: {raw}")
+    root_r = root.resolve()
+    try:
+        resolved = (root / raw).resolve()
+    except (OSError, RuntimeError):
+        raise VaultError(f"invalid path: {raw}")
+    if resolved != root_r and root_r not in resolved.parents:
+        raise VaultError(f"path escapes the vault: {raw}")
+    return resolved
+
+
 def read_note(root: Path, rel_path: str) -> tuple[dict, str]:
-    p = root / rel_path
+    p = safe_path(root, rel_path)
     if not p.exists():
         raise VaultError(f"note not found: {rel_path}")
     return frontmatter.read(p.read_text(encoding="utf-8"))
@@ -164,7 +186,7 @@ def append_section(root: Path, rel_path: str, heading: str, new_lines: list[str]
                 seg = seg[:1]
         seg = seg + ([""] if len(seg) == 1 else []) + new_lines + [""]
         body = "\n".join(lines[:start] + seg + lines[end:])
-    _write(root / rel_path, fm, body.rstrip("\n") + "\n")
+    _write(safe_path(root, rel_path), fm, body.rstrip("\n") + "\n")
     return {"path": rel_path, "section": heading, "appended": len(new_lines)}
 
 
@@ -186,7 +208,7 @@ def append_timeline(root: Path, rel_path: str, title: str, lines: list[str], dat
         fm["last-interaction"] = date
         if fm.get("staleness-flag"):
             fm["staleness-flag"] = ""
-    _write(root / rel_path, fm, body)
+    _write(safe_path(root, rel_path), fm, body)
     res.update({"entry": header})
     return res
 

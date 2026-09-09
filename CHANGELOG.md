@@ -12,6 +12,53 @@ The current version is in the [`VERSION`](VERSION) file. Each release is an anno
 Git tag (`X.Y.Z`, no `v` prefix) on `main`. See [`docs/RELEASING.md`](docs/RELEASING.md) for the process
 and [`docs/UPGRADING.md`](docs/UPGRADING.md) to move an existing vault between versions.
 
+## [4.3.0] - 2026-09-08
+
+### Added
+- **Passive recall — the `sb_vault` memory provider** (`hermes/memory/sb_vault/`). Activated with
+  `hermes config set memory.provider sb_vault`, it injects the vault notes relevant to the turn you
+  just typed, with paths and dates, before the model thinks to search. Read-only on purpose:
+  `sync_turn`, `on_session_end`, `on_pre_compress` and `on_memory_write` are no-ops, so the vault's
+  append-only history stays a record of decisions rather than of chatter. Retrieval runs on a
+  background thread and stays silent when nothing matches — an empty context beats a plausible
+  irrelevant one. It shares its engine with `sb_recall`, so passive and explicit recall never disagree.
+- **Retrieval with citations** (`vault/recall.py`, tool `sb_recall`): resolves the people, projects
+  and hubs a question mentions (a slug and a spoken name fold onto the same form), pulls the lines
+  that actually match with the date heading above them, and returns a confidence of
+  `stated | high | medium | speculation | unknown`. A note that hits one term out of three is
+  dropped as a near-miss rather than dressed up as evidence, and `unknown` obliges the skill to say
+  the vault does not know.
+- **Six more tools for parity with the Claude edition**: `sb_agenda` (open work, deadlines, quiet
+  projects, cooling relationships and a `signals` list — gathered, deliberately not ranked),
+  `sb_decision_context` and `sb_decision_postmortem` (comparable decisions with reversals weighted
+  first, unchecked reversal conditions, and what a reversal invalidates elsewhere), `sb_tend`
+  (whole-vault audit, preview-first: safe frontmatter fixes on request, everything else as a
+  proposal), `sb_backfill_plan` and `sb_backfill_done` (Day-1 backfill as session-sized batches,
+  entity phases first, resumable from a state note after an interrupt).
+- **Seven more Hermes skills — thirteen in all, full parity**: `recall`, `prioritize`,
+  `challenge-decision` (red-team and postmortem), `doc-ingest`, `vault-tend`,
+  `kickstart-backfill`, `weekly-review`.
+- **`sb-weekly-review` cron job** (Mondays 09:00), and the weekly synthesis it runs.
+- **Guardrail scorecard** (`hermes/bench/guardrails.py`, `hermes/tests/test_guardrails.py`): the
+  calls a confused small model actually makes — an invented enum, a missing preamble, an overwrite
+  instead of an append, a `..` in a path, a typo presented as an exact match, junk argument types —
+  each asserted to be refused **by the code**, with a message saying what to do instead. The
+  scorecard prints the share that held, and exits non-zero if any leaks.
+
+### Fixed
+- **Path traversal in every path-taking tool** (found by the new adversarial suite): `sb_read` would
+  return the contents of an absolute path such as `/etc/passwd`, and an append could have written
+  outside the vault. `vault.notes.safe_path` now refuses absolute paths, `~`, and any `..` that
+  escapes the vault, for reads as well as writes.
+- **`sb_vault_activity`** raised a `TypeError` computing the "new note" cutoff, so the tool returned
+  an error instead of the day's activity. It also listed `_CLAUDE.md`, `AGENTS.md` and `MY-PROFILE.md`
+  as if they were notes.
+
+### Changed
+- `hermes/install.sh` also links the memory provider into `$HERMES_HOME/plugins/sb_vault`.
+- `docs/HERMES.md` documents phases 3 and 4, the read-only stance of the memory provider, the
+  parity table, and how to run the reliability scorecard.
+
 ## [4.2.0] - 2026-09-08
 
 ### Added

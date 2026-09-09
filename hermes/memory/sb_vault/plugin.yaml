@@ -1,0 +1,3 @@
+name: sb_vault
+version: 1.0.0
+description: "Second Brain vault as Hermes memory — passive recall from your Markdown notes, with citations. Read-only: the vault is written through the second_brain tools, never behind your back."

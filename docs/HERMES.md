@@ -17,7 +17,7 @@ in their head. So the Hermes edition moves the **plumbing into code** and keeps 
 | Bookkeeping (hub listings, `_INDEX.md` counts, anchors, staleness) | done by the model | done by code (`sb_curate`, `sb_new_action`, `sb_append_timeline`) |
 | Analysis (classification, extraction, insight, dynamics, recall, synthesis) | model | **model** — unchanged |
 | Skill length | 150–500 lines | ≤ 40 lines: which tools, in what order, what to judge |
-| Scope | 12 skills incl. red-team, postmortem, curator sweep, vault-tend | phase 1: braindump, people-update, knowledge-stub; heavy analysis stays on Claude |
+| Scope | 12 skills incl. red-team, postmortem, curator sweep, vault-tend | 13 skills — full parity since 4.3.0 |
 
 Token economy follows: a capture costs one `sb_brief` (~500 tokens) + one short skill + a few
 tool calls, instead of reading `_CLAUDE.md`, `MY-PROFILE.md` and a 200-line skill.
@@ -38,9 +38,12 @@ skill (procedure)  ──calls──▶  sb_* tools (plugin)  ──writes──
 - **`hermes/plugin/second_brain/vault/`** — the contract as code. `schemas.py` mirrors
   `_CLAUDE.md` §4 (folders, filenames, required fields, enums, sections). `notes.py` is the
   only writer: it never deletes or rewrites existing lines.
-- **`hermes/plugin/second_brain/`** — `register(ctx)` publishes 11 tools under the
-  `second_brain` toolset (hidden automatically when no vault is configured) and an
-  `on_session_start` hook.
+- **`hermes/plugin/second_brain/`** — `register(ctx)` publishes 21 tools under the
+  `second_brain` toolset and 5 under `second_brain_sources` (each hidden automatically when
+  no vault, or no credentials, are configured) plus an `on_session_start` hook.
+- **`hermes/memory/sb_vault/`** — an optional *memory provider* plugin: before each turn it
+  injects the vault notes relevant to what you just typed, with citations. Read-only, and it
+  shares the retrieval engine with `sb_recall`, so passive and explicit recall never disagree.
 - **`hermes/skills/`** — agentskills.io-format `SKILL.md` files with Hermes metadata
   (`requires_toolsets: [second_brain]`), loaded on demand via progressive disclosure.
 - **`hermes/SOUL.md`** — the rules code cannot enforce (language, no invention, cite, ask before
@@ -48,12 +51,15 @@ skill (procedure)  ──calls──▶  sb_* tools (plugin)  ──writes──
 - **Memory** — Hermes' `MEMORY.md`/`USER.md` hold pointers only; the vault is the memory, as
   in the Claude edition. `vault-starter/AGENTS.md` makes any AGENTS.md-aware agent read
   `_CLAUDE.md` first.
+- **`hermes/bench/guardrails.py`** — the reliability scorecard: how much of the contract survives
+  a model that gets it wrong (see *Reliability* below).
 
 ## Install
 
 1. Vault: copy `vault-starter/` somewhere, fill `00-inbox/MY-PROFILE.md`, `git init`, first commit.
-2. `./hermes/install.sh /path/to/vault` — symlinks the plugin into `~/.hermes/plugins/second_brain`
-   and the skills into `~/.hermes/skills/second-brain`, seeds `SOUL.md` and `memories/USER.md`
+2. `./hermes/install.sh /path/to/vault` — symlinks the plugin into `~/.hermes/plugins/second_brain`,
+   the memory provider into `~/.hermes/plugins/sb_vault`, the skills into
+   `~/.hermes/skills/second-brain`, seeds `SOUL.md` and `memories/USER.md`
    (never overwrites existing ones), writes `SECOND_BRAIN_VAULT` to `~/.hermes/.env`, installs
    the pre-commit hook in the vault.
 3. Config (or merge `hermes/config.example.yaml`):
@@ -64,7 +70,8 @@ skill (procedure)  ──calls──▶  sb_* tools (plugin)  ──writes──
 4. Model: `hermes model` — pick something that does reliable **function calling** with a context
    window ≥ 32k (Ollama defaults to 4k: raise `num_ctx`). Candidates on a laptop: Hermes 4 14B,
    Qwen3 14B / 30B-A3B, Gemma 4 12B. Validate with the smoke test below before trusting it.
-5. `hermes plugins doctor second_brain` · `hermes plugins list`.
+5. Optional — passive recall on every turn: `hermes config set memory.provider sb_vault`.
+6. `hermes plugins doctor second_brain` · `hermes plugins list`.
 
 ### Smoke test
 ```
@@ -97,9 +104,10 @@ wikilinks; `git log` in the vault shows the commit; the hook accepted it.
 The connectors are stdlib `urllib` clients; each `digest_*` function is pure and unit-tested on fixtures.
 Real API calls were not exercised in CI — the first `sb_calendar()` in your session is the integration test.
 
-**Cron.** `hermes/cron/jobs.sh` registers two jobs — `sb-daily-digest` (weekdays 19:00, skills daily-digest +
-meeting-ingest, delivered where you want) and `sb-maintenance` (daily 07:30, task-roundup with `sb_maintain(scope=all)`,
-which reports its open questions instead of deciding them because nobody is watching):
+**Cron.** `hermes/cron/jobs.sh` registers three jobs — `sb-daily-digest` (weekdays 19:00, skills daily-digest +
+meeting-ingest, delivered where you want), `sb-maintenance` (daily 07:30, task-roundup with `sb_maintain(scope=all)`,
+which reports its open questions instead of deciding them because nobody is watching), and `sb-weekly-review`
+(Mondays 09:00, the week's synthesis, added in 4.3.0):
 
 ```bash
 MODEL_MID=ollama/hermes4:14b DELIVER=slack ./hermes/cron/jobs.sh
@@ -107,6 +115,61 @@ MODEL_MID=ollama/hermes4:14b DELIVER=slack ./hermes/cron/jobs.sh
 
 Model per job is a flag (`--model`, `--provider`): use the smallest model that passes your smoke test for
 maintenance, a stronger one for the digest.
+
+## Phases 3 & 4 — passive recall, parity, and a number for the whole claim
+
+### Passive recall (`sb_vault` memory provider)
+
+The tools answer when the model thinks to ask. The memory provider answers before it does: it runs
+the retrieval engine on what you just typed and injects the matching notes, with their paths and
+dates, under the turn.
+
+```bash
+hermes config set memory.provider sb_vault     # installed by hermes/install.sh
+```
+
+Four decisions worth knowing about:
+
+- **Read-only.** `sync_turn`, `on_session_end` and `on_memory_write` are deliberate no-ops. Notes
+  are written only through the `sb_*` tools, by a skill you invoked. A vault whose history writes
+  itself is no longer an audit trail.
+- **Never blocking.** Retrieval runs on a background thread; `prefetch` returns what is ready. A
+  cold cache costs nothing but a turn without recall.
+- **Silent when it has nothing.** No match means no block — better an empty context than a
+  plausible irrelevant one, which is exactly what makes a small model confabulate.
+- **Evidence, not a summary.** What lands in context is note paths plus the lines that matched, so
+  the model quotes and cites instead of paraphrasing something it never read.
+
+Only one external memory provider can be active at a time, so this replaces (rather than joins)
+another one.
+
+### Parity: the remaining six skills
+
+| Skill | Tool | What the tool refuses to decide |
+|---|---|---|
+| `recall` | `sb_recall` | the answer. It returns citations and a `confidence` of `stated / high / medium / speculation / unknown`; a near-miss keyword hit is dropped rather than dressed up as evidence, and `unknown` means the skill must say the vault does not know |
+| `prioritize` | `sb_agenda` | the ranking. Tasks, deadlines, quiet projects, cooling relationships and a `signals` list come back unordered on purpose |
+| `challenge-decision` | `sb_decision_context` / `sb_decision_postmortem` | the argument. It surfaces comparable decisions with reversals first, the stakeholders they named, and committed reversal conditions nobody revisited |
+| `vault-tend` | `sb_tend` | everything but the frontmatter keys with one correct value. Language drift, broken links, duplicate people and archive candidates come back as proposals, never as edits |
+| `kickstart-backfill` | `sb_backfill_plan` / `sb_backfill_done` | the ingestion. It computes date-windowed batches that fit one session, puts the entity phases first so people are deduplicated before meetings arrive, and records progress in the vault so an interrupted run resumes |
+| `doc-ingest` | `sb_drive_doc` | the reading. It applies the transcript-first rule and hands over the text |
+
+### Reliability
+
+The project's claim is that a 12B model can run this because the tools hold the contract. That is
+measurable, so it is measured:
+
+```bash
+python3 hermes/bench/guardrails.py --verbose
+```
+
+`hermes/tests/test_guardrails.py` sends the calls a confused small model actually makes — an invented
+enum value, a missing preamble, an overwrite instead of an append, a path with `..` in it, a typo'd
+name presented as an exact match, junk arguments of the wrong type — and asserts each one is refused
+**by the code**, with a message saying what to do instead. The scorecard prints the share that held.
+
+It has already paid for itself: it found an absolute path (`/etc/passwd`) reaching `sb_read`, now
+refused by `vault.notes.safe_path` for every path-taking tool.
 
 ## Vault location resolution
 
@@ -120,11 +183,15 @@ directory or a parent containing `_CLAUDE.md`. When none resolves, the `sb_*` to
 |---|---|---|
 | 1 | 4.2.0 | plugin core, 3 skills (braindump, people-update, knowledge-stub), install, conformance tests |
 | 2 | 4.2.0 | `sb_maintain` (TODO sync both ways + curator sweep with self-verification + staleness + health, `needs_judgment` for the model), source digests (Calendar, Drive with transcript-first Docs reading, Slack, Jira), skills `daily-digest`, `meeting-ingest`, `task-roundup`, cron jobs |
-| 3 | 4.3.0 | `sb-vault` memory provider (passive recall via `prefetch`), `weekly-review`, reliability measurements |
+| 3 | 4.3.0 | `sb_vault` memory provider (passive recall via `prefetch`), `weekly-review`, the guardrail scorecard |
+| 4 | 4.3.0 | parity with the Claude edition: `sb_recall`, `sb_agenda`, `sb_decision_context`, `sb_decision_postmortem`, `sb_tend`, `sb_backfill_plan`, and the skills `recall`, `prioritize`, `challenge-decision`, `doc-ingest`, `vault-tend`, `kickstart-backfill` |
 
 ## Troubleshooting
 
 - **Tools missing in the session** → the vault could not be located: check the config key or `SECOND_BRAIN_VAULT`, then `hermes plugins doctor second_brain`.
 - **`sb_commit` returns `commit rejected`** → the pre-commit hook fired; the `output` field says which rule (frontmatter, preamble, append-only). Fix the note through the tools, commit again.
 - **Model edits notes with `write_file` instead of `sb_*`** → tighten the skill call in your prompt (`/braindump …`), or restrict the toolset for cron jobs; the hook still protects history.
-- **Run the suite** → `./hermes/tests/run.sh` (no Hermes needed).
+- **Passive recall never fires** → `memory.provider` must be `sb_vault`, and `hermes/install.sh` must
+  have linked `~/.hermes/plugins/sb_vault`. It is silent by design on trivial prompts and on questions
+  the vault cannot answer, so test it with a question you know is covered.
+- **Run the suite** → `./hermes/tests/run.sh` (no Hermes needed) · scorecard: `python3 hermes/bench/guardrails.py`.

@@ -131,6 +131,51 @@ def sb_vault_activity(args):
     return _vault().activity(_int(args.get("since_hours"), 24), _int(args.get("limit"), 40))
 
 
+# ----------------------------------------------------------------------------- analysis
+
+@_guard
+def sb_recall(args):
+    res = _vault().recall(args["question"], _int(args.get("limit"), 6))
+    res["next"] = ("Answer from these citations only, giving path and date for each claim. "
+                   if res["confidence"] not in ("unknown", "speculation")
+                   else "The vault does not know. Say so plainly, do not answer from general knowledge, "
+                        "and offer to capture the answer with braindump.")
+    return res
+
+
+@_guard
+def sb_agenda(args):
+    return _vault().agenda(_int(args.get("horizon_days"), 7), args.get("calendar"))
+
+
+@_guard
+def sb_decision_context(args):
+    return _vault().decision_context(args["subject"])
+
+
+@_guard
+def sb_decision_postmortem(args):
+    return _vault().decision_postmortem(args["path"])
+
+
+@_guard
+def sb_tend(args):
+    apply_safe = args.get("apply_safe", False)
+    apply_safe = apply_safe if isinstance(apply_safe, bool) else str(apply_safe).lower() in ("true", "1", "yes")
+    return _vault().tend(args.get("scope") or "all", apply_safe, args.get("target_language"))
+
+
+@_guard
+def sb_backfill_plan(args):
+    return _vault().backfill_plan(args["since"], args.get("until"), _int(args.get("batch_days"), 14),
+                                  args.get("sources"))
+
+
+@_guard
+def sb_backfill_done(args):
+    return _vault().backfill_done(str(args["batch_id"]))
+
+
 # ----------------------------------------------------------------------------- sources
 
 @_guard
@@ -172,6 +217,9 @@ VAULT_HANDLERS = {
     "sb_create_note": sb_create_note, "sb_append_timeline": sb_append_timeline, "sb_append_section": sb_append_section,
     "sb_daily_append": sb_daily_append, "sb_new_action": sb_new_action, "sb_curate": sb_curate, "sb_commit": sb_commit,
     "sb_maintain": sb_maintain, "sb_toggle_task": sb_toggle_task, "sb_vault_activity": sb_vault_activity,
+    "sb_recall": sb_recall, "sb_agenda": sb_agenda, "sb_decision_context": sb_decision_context,
+    "sb_decision_postmortem": sb_decision_postmortem, "sb_tend": sb_tend,
+    "sb_backfill_plan": sb_backfill_plan, "sb_backfill_done": sb_backfill_done,
 }
 SOURCE_HANDLERS = {"sb_calendar": sb_calendar, "sb_drive_changes": sb_drive_changes, "sb_drive_doc": sb_drive_doc,
                    "sb_slack": sb_slack, "sb_jira": sb_jira}

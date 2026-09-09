@@ -165,8 +165,8 @@ their descriptions, so most of the time you just talk.
 
 > **Local-model path — Hermes Agent.** `./hermes/install.sh <vault>` installs a plugin whose
 > tools generate compliant notes (frontmatter, preamble, append-only, anchors) so a small local
-> model only supplies content and judgment. Three skills in phase 1 (braindump, people-update,
-> knowledge-stub); the heavy analysis skills stay on Claude. See [`docs/HERMES.md`](docs/HERMES.md).
+> model only supplies content and judgment. Since v4.3 all thirteen skills are there, plus optional
+> passive recall from the vault on every turn. See [`docs/HERMES.md`](docs/HERMES.md).
 
 > **macOS note:** the `.claude/` folder is hidden in Finder (it starts with a dot). It's there
 > and required — press **⌘⇧.** to reveal it. Don't rename it.
@@ -186,7 +186,8 @@ their descriptions, so most of the time you just talk.
 │   │      vault-tend · kickstart-backfill   (each is a <name>/SKILL.md)
 │   └── settings.json          ← config for the Claude Code path
 ├── hooks/                     ← Git pre-commit vault validation (+ install.sh)
-├── hermes/                    ← Hermes Agent edition: plugin (sb_* tools), short skills, install, tests
+├── hermes/                    ← Hermes Agent edition: plugin (sb_* tools), memory provider,
+│                                13 short skills, cron jobs, install, tests, guardrail bench
 ├── docs/                      ← INSTALL · SCHEDULED-TASKS · USAGE-PATTERNS · ARCHITECTURE · …
 ├── templates/                 ← note templates (person, project, decision, daily, meeting, wiki, knowledge, doc)
 └── vault-starter/             ← copy this into your notes vault

@@ -25,10 +25,9 @@ hermes cron create "daily at 07:30" \
   "Run the second-brain MAINTENANCE. Follow the task-roundup skill with sb_maintain(scope=all): sync TODO.md, rebuild knowledge hubs, refresh staleness flags, audit health, then commit. Nobody is watching: for every needs_judgment item, do NOT change anything — list the question in your reply instead. Reply with: overdue/today counts, hubs rebuilt, stale people, and the open questions." \
   --skill task-roundup $small $PROVIDER_FLAG --deliver "$DELIVER" --name "sb-maintenance"
 
-# Phase 3 — weekly review (LLM-heavy synthesis of the week's daily notes). Uncomment when the skill lands.
-# hermes cron create "mondays at 09:00" \
-#   "Run the second-brain WEEKLY REVIEW: read last week's 01-daily notes with sb_search/sb_read, synthesize themes, decisions, people focus, patterns, energy, plan for next week into 01-daily/YYYY-WW-weekly.md via sb_create_note(type=daily...)." \
-#   --skill weekly-review $mid $PROVIDER_FLAG --deliver "$DELIVER" --name "sb-weekly-review"
+hermes cron create "mondays at 09:00" \
+  "Run the second-brain WEEKLY REVIEW for the week that just ended. Follow the weekly-review skill exactly: sb_vault_activity(since_hours=168), read every 01-daily note of the week with sb_read BEFORE writing anything, sb_agenda for the state the week ends in, then synthesize three or four themes, decisions made and deferred, people focus, patterns, energy and weak signals into a weekly note with sb_create_note(type=daily, tags=[weekly]), link it from the daily note, commit, and reply with the review itself. Do not list meetings: say what the week meant." \
+  --skill weekly-review $mid $PROVIDER_FLAG --deliver "$DELIVER" --name "sb-weekly-review"
 
 echo
 hermes cron list

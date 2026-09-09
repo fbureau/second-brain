@@ -211,7 +211,91 @@ SB_JIRA = {
         "required": []},
 }
 
+# --------------------------------------------------------------------------- analysis (phase 4)
+
+SB_RECALL = {
+    "name": "sb_recall",
+    "description": "Answer-grade evidence for a question about what the user already knows: the notes that match, "
+                   "the exact lines, a date for each, and a confidence level (stated | high | medium | speculation | "
+                   "unknown). Use before answering ANY 'what do I know / did we decide / have I talked to' question. "
+                   "confidence=unknown means the vault does not know — say that instead of guessing.",
+    "parameters": {"type": "object", "properties": {
+        "question": {"type": "string", "description": "The question in the user's own words."},
+        "limit": {"type": "integer", "description": "Max notes to consider (default 6)."}},
+        "required": ["question"]},
+}
+
+SB_AGENDA = {
+    "name": "sb_agenda",
+    "description": "Everything needed to prioritise, gathered but deliberately NOT ranked: open tasks by due date, "
+                   "what is waiting on others, active projects and which have gone quiet, cooling relationships, "
+                   "recent vault activity, and a 'signals' list of tensions to resolve. You do the ranking.",
+    "parameters": {"type": "object", "properties": {
+        "horizon_days": {"type": "integer", "description": "Upcoming window in days (default 7)."},
+        "calendar": {"type": "array", "items": {"type": "object"}, "description": "Optional events from sb_calendar to fold in."}},
+        "required": []},
+}
+
+SB_DECISION_CONTEXT = {
+    "name": "sb_decision_context",
+    "description": "Prior art before a decision (red-team mode): comparable past decisions with reversed ones first, "
+                   "the stakeholders they named, related lessons, and committed reversal conditions nobody revisited. "
+                   "Use before arguing against a decision so the challenge rests on this vault, not on generalities.",
+    "parameters": {"type": "object", "properties": {
+        "subject": {"type": "string", "description": "The decision or plan being considered, in one or two sentences."},
+        "limit": {"type": "integer", "description": "Max precedents per list (default 5)."}},
+        "required": ["subject"]},
+}
+
+SB_DECISION_POSTMORTEM = {
+    "name": "sb_decision_postmortem",
+    "description": "Propagation surface of a reversed decision: its rationale and reversal conditions, notes that link "
+                   "to it, notes resting on the same hypothesis, and the stakeholders involved. Use when a note in "
+                   "05-decisions/ flips to status: reversed, to run the learning loop.",
+    "parameters": {"type": "object", "properties": {
+        "path": {"type": "string", "description": "Vault-relative path of the reversed decision note."}},
+        "required": ["path"]},
+}
+
+SB_TEND = {
+    "name": "sb_tend",
+    "description": "Whole-vault maintenance audit, preview-first. Returns safe_fixes (frontmatter with one correct "
+                   "value) and proposals (language drift, missing preambles, broken links, duplicate people, archive "
+                   "candidates) with the evidence for each. NOTHING is applied unless apply_safe=true, and proposals "
+                   "are never applied automatically — show them, ask, then act through the write tools.",
+    "parameters": {"type": "object", "properties": {
+        "scope": {"type": "string", "enum": ["all", "frontmatter", "language", "links", "duplicates", "archive"],
+                  "description": "What to audit (default all)."},
+        "apply_safe": {"type": "boolean", "description": "Write the safe frontmatter fixes (default false)."},
+        "target_language": {"type": "string", "description": "Flag note bodies not in this language, e.g. 'fr'."}},
+        "required": []},
+}
+
+SB_BACKFILL_PLAN = {
+    "name": "sb_backfill_plan",
+    "description": "Ordered work plan for the one-shot Day-1 backfill: date-windowed batches sized to fit one session, "
+                   "entity phases first so people and projects are deduplicated before meetings are ingested, plus the "
+                   "names already in the vault. Resumes from the state note if a previous run was interrupted.",
+    "parameters": {"type": "object", "properties": {
+        "since": {"type": "string", "description": "Start date, YYYY-MM-DD."},
+        "until": {"type": "string", "description": "End date, YYYY-MM-DD (default today)."},
+        "batch_days": {"type": "integer", "description": "Days per batch (default 14)."},
+        "sources": {"type": "array", "items": {"type": "string"}, "description": "Sources to draw from, e.g. ['calendar','drive','slack']."}},
+        "required": ["since"]},
+}
+
+SB_BACKFILL_DONE = {
+    "name": "sb_backfill_done",
+    "description": "Tick one backfill batch as fully ingested and committed, so an interrupted run resumes after it "
+                   "instead of re-ingesting. Call it only after the batch's notes are committed.",
+    "parameters": {"type": "object", "properties": {
+        "batch_id": {"type": "string", "description": "Batch id from sb_backfill_plan, e.g. 'meetings-2026-05-01'."}},
+        "required": ["batch_id"]},
+}
+
 ALL_VAULT = [SB_BRIEF, SB_SEARCH, SB_READ, SB_FIND_PERSON, SB_CREATE_NOTE, SB_APPEND_TIMELINE, SB_APPEND_SECTION,
-             SB_DAILY_APPEND, SB_NEW_ACTION, SB_CURATE, SB_COMMIT, SB_MAINTAIN, SB_TOGGLE_TASK, SB_VAULT_ACTIVITY]
+             SB_DAILY_APPEND, SB_NEW_ACTION, SB_CURATE, SB_COMMIT, SB_MAINTAIN, SB_TOGGLE_TASK, SB_VAULT_ACTIVITY,
+             SB_RECALL, SB_AGENDA, SB_DECISION_CONTEXT, SB_DECISION_POSTMORTEM, SB_TEND, SB_BACKFILL_PLAN,
+             SB_BACKFILL_DONE]
 ALL_SOURCES = [SB_CALENDAR, SB_DRIVE_CHANGES, SB_DRIVE_DOC, SB_SLACK, SB_JIRA]
 ALL = ALL_VAULT + ALL_SOURCES

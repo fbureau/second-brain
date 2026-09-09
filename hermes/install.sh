@@ -24,6 +24,7 @@ link() {  # link <src> <dst>
 mkdir -p "$hermes_home/plugins" "$hermes_home/skills" "$hermes_home/memories"
 link "$repo/hermes/plugin/second_brain" "$hermes_home/plugins/second_brain"
 link "$repo/hermes/skills"              "$hermes_home/skills/second-brain"
+link "$repo/hermes/memory/sb_vault"     "$hermes_home/plugins/sb_vault"
 
 if [[ -f "$hermes_home/SOUL.md" ]]; then
   echo "• $hermes_home/SOUL.md exists — merge hermes/SOUL.md into it by hand (identity slot #1 of the system prompt)"
@@ -59,6 +60,9 @@ Next steps
        hermes config set plugins.entries.second_brain.settings.vault_path "$vault"
        hermes config set terminal.cwd "$vault"
      and pick a tool-calling-capable model with \`hermes model\` (context ≥ 32k).
-  2. Validate:   hermes plugins doctor second_brain   ·   hermes plugins list
-  3. Try it:     hermes  →  /braindump the onboarding team is struggling with the new script
+  2. Optional — passive recall from the vault on every turn:
+       hermes config set memory.provider sb_vault
+     (read-only; only one external memory provider can be active at a time.)
+  3. Validate:   hermes plugins doctor second_brain   ·   hermes plugins list
+  4. Try it:     hermes  →  /braindump the onboarding team is struggling with the new script
 EOF

@@ -29,6 +29,8 @@ compression:
 memory:
   memory_enabled: true       # MEMORY.md/USER.md hold pointers only; the vault is the memory
   user_profile_enabled: true
+  provider: sb_vault         # passive recall from the vault before each turn (read-only).
+                             # Optional; one external provider at a time, so this replaces any other.
 
 # Source credentials go in ~/.hermes/.env (not here). The source tools appear only when set:
 #   GOOGLE_CLIENT_ID=… GOOGLE_CLIENT_SECRET=… GOOGLE_REFRESH_TOKEN=…   # Calendar, Drive, Docs

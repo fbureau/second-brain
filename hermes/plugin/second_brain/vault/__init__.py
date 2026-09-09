@@ -10,7 +10,8 @@ import os
 import re
 from pathlib import Path
 
-from . import activity as activity_mod, frontmatter, gitops, index, links, maintain, notes, schemas, search, tasks  # noqa: F401
+from . import (agenda as agenda_mod, activity as activity_mod, backfill, decisions, frontmatter, gitops,  # noqa: F401
+               index, links, maintain, notes, recall as recall_mod, schemas, search, tasks, tend as tend_mod)
 from .notes import VaultError  # noqa: F401
 
 ENV_VAR = "SECOND_BRAIN_VAULT"
@@ -127,3 +128,25 @@ class Vault:
 
     def activity(self, since_hours: int = 24, limit: int = 40):
         return activity_mod.activity(self.root, since_hours, limit)
+
+    def recall(self, question: str, limit: int = 6):
+        return recall_mod.recall(self.root, question, limit)
+
+    def agenda(self, horizon_days: int = 7, calendar: list | None = None):
+        return agenda_mod.agenda(self.root, horizon_days, calendar)
+
+    def decision_context(self, subject: str):
+        return decisions.context(self.root, subject)
+
+    def decision_postmortem(self, rel: str):
+        return decisions.postmortem(self.root, rel)
+
+    def tend(self, scope: str = "all", apply_safe: bool = False, target_language: str | None = None):
+        return tend_mod.tend(self.root, scope, apply_safe, target_language)
+
+    def backfill_plan(self, since: str, until: str | None = None, batch_days: int = 14,
+                      sources: list | None = None, write_state: bool = True):
+        return backfill.plan(self.root, since, until, batch_days, sources, write_state)
+
+    def backfill_done(self, batch_id: str):
+        return backfill.mark_batch_done(self.root, batch_id)

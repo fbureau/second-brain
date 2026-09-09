@@ -1,7 +1,7 @@
 ---
 name: braindump
 description: Capture an unstructured thought into the second-brain vault as an AI-first note in 00-inbox/, linking people, projects and concepts. Use when the user says "braindump", "note this", "capture this", "I have an idea", or shares a stream of thoughts. Do NOT use for meeting transcripts (meeting-ingest) or questions (recall).
-version: 4.2.0
+version: 4.3.0
 author: fbureau
 license: MIT
 metadata:
