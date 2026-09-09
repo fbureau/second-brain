@@ -47,6 +47,10 @@ class MaintainTests(unittest.TestCase):
         res = self.v.commit(msg); self.assertTrue(res["ok"], res); return res
 
     # ------------------------------------------------------------------ tasks
+    def meeting_note(self):
+        """The seeded meeting note, by name — `glob` order is arbitrary and can hand back README.md."""
+        return next(m for m in sorted(self.root.glob("04-meetings/*.md")) if m.name.endswith("-team-sync.md"))
+
     def seed_tasks(self):
         self.v.create_note("meeting", {"participants": ["[[02-people/Alex Rivera]]"], "meeting-type": "team-sync",
                                        "date": days_ago(2)}, P,
@@ -88,7 +92,7 @@ class MaintainTests(unittest.TestCase):
         (self.root / "TODO.md").write_text("\n".join(lines), encoding="utf-8")
         rep3 = maintain.sync_tasks(self.root)
         self.assertEqual(rep3["reconciled"]["todo_to_source"], 1)
-        meeting = next(self.root.glob("04-meetings/*.md")).read_text(encoding="utf-8")
+        meeting = self.meeting_note().read_text(encoding="utf-8")
         self.assertRegex(meeting, r"- \[x\] Send the QA plan ✅ \d{4}-\d{2}-\d{2} — owner: me — due: .* \^t-" + anchor)
         self.assertIn(f"## ✅ Done (last 14 days)\n\n- [x] Send the QA plan", (self.root / "TODO.md").read_text(encoding="utf-8"))
         self.commit_ok("tick in todo")
@@ -113,7 +117,7 @@ class MaintainTests(unittest.TestCase):
 
     def test_source_removed_is_flagged_not_dropped(self):
         self.seed_tasks(); maintain.sync_tasks(self.root)
-        m = next(self.root.glob("04-meetings/*.md"))
+        m = self.meeting_note()
         m.write_text("\n".join(l for l in m.read_text(encoding="utf-8").split("\n") if "rollout memo" not in l), encoding="utf-8")
         rep = maintain.sync_tasks(self.root)
         self.assertTrue(any(f["kind"] == "source-removed" for f in rep["flags"]))
