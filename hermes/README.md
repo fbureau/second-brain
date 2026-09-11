@@ -26,18 +26,28 @@ hermes/
 └── tests/                   ← conformance suite: every generated note must pass hooks/pre-commit
 ```
 
-## Install (10 min)
+## Install
+
+One command. It creates the vault, initialises git, links the plugin, and writes the
+configuration itself. Works the same for Hermes Desktop and the CLI, and is safe to re-run.
 
 ```bash
-./hermes/install.sh /path/to/your/vault          # vault = a copy of vault-starter/, git-initialised
-hermes config set plugins.entries.second_brain.settings.vault_path /path/to/your/vault
-hermes config set terminal.cwd /path/to/your/vault
-hermes model                                      # pick a tool-calling-capable model, context ≥ 32k
-hermes plugins doctor second_brain && hermes plugins list
+./hermes/setup.sh                    # vault at ~/second-brain
+./hermes/setup.sh ~/notes/my-vault   # or wherever you want it
 ```
 
-Then in a session: `/braindump the onboarding team is struggling with the new script`.
-Full guide, architecture and roadmap: [`docs/HERMES.md`](../docs/HERMES.md).
+Then two things only you can do:
+
+1. Fill in `<vault>/00-inbox/MY-PROFILE.md` — your name, your language, your projects.
+   Every skill reads it at startup.
+2. In Hermes, pick a model that does reliable tool calling, then try
+   `/braindump the onboarding team is struggling with the new script`.
+
+If the `sb_*` tools do not appear, quit Hermes completely and reopen it: plugins are
+discovered at startup. `hermes/install.sh` remains for the piecemeal install (it assumes the
+vault and `~/.hermes` already exist).
+
+Architecture and the full guide: [`docs/HERMES.md`](../docs/HERMES.md).
 
 ## Tools
 

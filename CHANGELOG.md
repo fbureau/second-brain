@@ -93,6 +93,14 @@ held and exits non-zero if any leaks.
 cron, reliability), `hermes/README.md`, `vault-starter/AGENTS.md` for agents that auto-load
 `AGENTS.md`, and a `LICENSE` (MIT).
 
+**`hermes/setup.sh` — one-command install.** `install.sh` refused to start unless the vault and
+`$HERMES_HOME` already existed, and left the configuration as copy-paste instructions, which made
+a first install a treasure hunt (and was impossible to follow from Hermes Desktop, where there is
+no CLI to paste into). `setup.sh` creates the vault from `vault-starter/` if missing, runs
+`git init` and the first commit, installs the pre-commit hook, links the plugin, memory provider
+and skills, writes `config.yaml` itself with a backup, and self-checks that the plugin can read
+the vault. Idempotent, and it never overwrites a model you already configured.
+
 ### Fixed
 - **Path traversal in every path-taking tool**, found by the adversarial suite: `sb_read` returned
   the contents of an absolute path such as `/etc/passwd`, and an append could have written outside
