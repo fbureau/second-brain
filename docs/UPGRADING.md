@@ -22,6 +22,50 @@ There are two parts, and they're separate:
 
 ---
 
+## 4.2.0 → 4.2.1  ·  Install from Hermes Desktop, no terminal
+
+**TL;DR:** the Hermes plugin is now self-contained and installs from Desktop's plugin window.
+Nothing changes in existing vaults. One path moved, and it is the only thing to check.
+
+### If you are installing for the first time
+
+Hermes Desktop → Settings → Plugins → install from a URL:
+
+```
+https://github.com/fbureau/second-brain/tree/main/hermes/plugin/second_brain
+```
+
+Then say **"set up my second brain"**. With no vault yet, the only tool offered is `sb_setup`;
+it creates the vault, initialises git, and remembers the path. Nothing else to configure.
+
+### If you already run the Hermes edition
+
+**1. Update the tooling** — `git pull`.
+
+**2. Check `skills.external_dirs` in `~/.hermes/config.yaml`.** The skills moved:
+
+```
+hermes/skills/  →  hermes/plugin/second_brain/skills/
+```
+
+An entry pointing at the old path now points at nothing, and your skills quietly disappear.
+Delete the entry: the plugin links its own skills into `$HERMES_HOME/skills` at load, so it is
+no longer needed. Or update the path if you prefer to keep it explicit.
+
+**3. Re-run the installer if you use it** — `./hermes/setup.sh` — so the symlinks follow the move.
+
+### You're done when
+- `/braindump something` still triggers, and the note lands in `00-inbox/`.
+- With no vault configured, the toolset shows exactly one tool, `sb_setup`.
+- `./hermes/tests/run.sh` passes and `python3 hermes/bench/guardrails.py` prints 22/22.
+
+### Rollback
+```bash
+cd /path/to/second-brain && git checkout 4.2.0
+```
+
+---
+
 ## 4.1.0 → 4.2.0  ·  Hermes Agent edition (local-model path)
 
 **TL;DR:** a new `hermes/` folder lets a local model operate the vault through a plugin that

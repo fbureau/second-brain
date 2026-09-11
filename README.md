@@ -163,7 +163,8 @@ their descriptions, so most of the time you just talk.
 > Full procedure in [`docs/INSTALL.md`](docs/INSTALL.md) and
 > [`docs/SCHEDULED-TASKS.md`](docs/SCHEDULED-TASKS.md).
 
-> **Local-model path — Hermes Agent.** `./hermes/install.sh <vault>` installs a plugin whose
+> **Local-model path — Hermes Agent.** `./hermes/setup.sh` sets everything up in one command
+> (vault, git, plugin, config) for Hermes Desktop or the CLI. It installs a plugin whose
 > tools generate compliant notes (frontmatter, preamble, append-only, anchors) so a small local
 > model only supplies content and judgment. All thirteen skills are there, plus optional
 > passive recall from the vault on every turn. See [`docs/HERMES.md`](docs/HERMES.md).

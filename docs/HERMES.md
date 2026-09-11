@@ -44,7 +44,7 @@ skill (procedure)  ──calls──▶  sb_* tools (plugin)  ──writes──
 - **`hermes/memory/sb_vault/`** — an optional *memory provider* plugin: before each turn it
   injects the vault notes relevant to what you just typed, with citations. Read-only, and it
   shares the retrieval engine with `sb_recall`, so passive and explicit recall never disagree.
-- **`hermes/skills/`** — agentskills.io-format `SKILL.md` files with Hermes metadata
+- **`hermes/plugin/second_brain/skills/`** — agentskills.io-format `SKILL.md` files with Hermes metadata
   (`requires_toolsets: [second_brain]`), loaded on demand via progressive disclosure.
 - **`hermes/SOUL.md`** — the rules code cannot enforce (language, no invention, cite, ask before
   creating a person, describe don't judge).
@@ -56,22 +56,48 @@ skill (procedure)  ──calls──▶  sb_* tools (plugin)  ──writes──
 
 ## Install
 
-1. Vault: copy `vault-starter/` somewhere, fill `00-inbox/MY-PROFILE.md`, `git init`, first commit.
-2. `./hermes/install.sh /path/to/vault` — symlinks the plugin into `~/.hermes/plugins/second_brain`,
-   the memory provider into `~/.hermes/plugins/sb_vault`, the skills into
-   `~/.hermes/skills/second-brain`, seeds `SOUL.md` and `memories/USER.md`
-   (never overwrites existing ones), writes `SECOND_BRAIN_VAULT` to `~/.hermes/.env`, installs
-   the pre-commit hook in the vault.
-3. Config (or merge `hermes/config.example.yaml`):
-   ```bash
-   hermes config set plugins.entries.second_brain.settings.vault_path /path/to/vault
-   hermes config set terminal.cwd /path/to/vault
-   ```
-4. Model: `hermes model` — pick something that does reliable **function calling** with a context
-   window ≥ 32k (Ollama defaults to 4k: raise `num_ctx`). Candidates on a laptop: Hermes 4 14B,
-   Qwen3 14B / 30B-A3B, Gemma 4 12B. Validate with the smoke test below before trusting it.
-5. Optional — passive recall on every turn: `hermes config set memory.provider sb_vault`.
-6. `hermes plugins doctor second_brain` · `hermes plugins list`.
+### From Hermes Desktop, without a terminal
+
+Settings → Plugins → install from a URL, and paste:
+
+```
+https://github.com/fbureau/second-brain/tree/main/hermes/plugin/second_brain
+```
+
+That is the whole install. The plugin is self-contained: the thirteen skills live in
+`skills/` and the vault template in `starter/`, both inside the package, so a Git-URL
+install brings everything.
+
+Then open a conversation and say **"set up my second brain"**. With no vault yet, the only
+tool offered is `sb_setup` — so the model cannot do anything else, and cannot get it wrong.
+It creates the vault at `~/second-brain`, runs `git init`, and records the path in
+`$HERMES_HOME/.env` so every later session finds it. Pass your own path to put it elsewhere,
+or to adopt an Obsidian vault you already have.
+
+`sb_setup` refuses to write into a folder that already contains files, so it cannot damage
+an existing vault. Once a vault exists it hides itself and the other 21 tools appear.
+
+### From a terminal, if you prefer
+
+```bash
+./hermes/setup.sh                    # vault at ~/second-brain
+./hermes/setup.sh ~/notes/my-vault   # or wherever you want it
+```
+
+Same result, plus the two things a plugin cannot do for itself: it installs the vault's
+pre-commit hook (the shared judge of both editions) and seeds `SOUL.md`. Re-running it is
+safe, and it never overwrites a model you already configured.
+
+Both paths work identically for Hermes Desktop and the CLI: they resolve the same home
+(`~/.hermes` on macOS and Linux, `%LOCALAPPDATA%\hermes` on Windows).
+
+### The two things nobody can do for you
+
+1. **Your profile** — fill `<vault>/00-inbox/MY-PROFILE.md`. Every skill reads it at
+   preflight, and the working language set there decides the language of every note body.
+2. **Your model** — pick one that does reliable **function calling** with a context window
+   ≥ 32k. Ollama defaults to 4k, which is unusable here: raise `num_ctx`. Hermes 4 14B is the
+   natural fit, being post-trained for tool use; Qwen3 14B and Gemma 4 12B also work.
 
 ### Smoke test
 ```

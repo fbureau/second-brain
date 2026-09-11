@@ -23,7 +23,7 @@ link() {  # link <src> <dst>
 
 mkdir -p "$hermes_home/plugins" "$hermes_home/skills" "$hermes_home/memories"
 link "$repo/hermes/plugin/second_brain" "$hermes_home/plugins/second_brain"
-link "$repo/hermes/skills"              "$hermes_home/skills/second-brain"
+link "$repo/hermes/plugin/second_brain/skills"  "$hermes_home/skills/second-brain"
 link "$repo/hermes/memory/sb_vault"     "$hermes_home/plugins/sb_vault"
 
 if [[ -f "$hermes_home/SOUL.md" ]]; then
