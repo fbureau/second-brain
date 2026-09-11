@@ -61,6 +61,23 @@ need to when a non-conforming note simply cannot be written.
   Cloud. Credentials live in `~/.hermes/.env`; each tool hides itself when its variables are missing,
   so a small model never sees a tool it cannot call.
 
+**Installable from Hermes Desktop, with no terminal.** The plugin is self-contained: the
+thirteen skills (`skills/`) and the vault template (`starter/`) live inside the package, so
+pasting the plugin's Git URL into Desktop's plugin window is the entire install. With no vault
+configured the toolset offers exactly one tool, `sb_setup` — it scaffolds a vault from the
+bundled template, runs `git init`, and records the path in `$HERMES_HOME/.env` so later sessions
+find it; then it hides itself and the other 21 tools appear. It refuses to write into a folder
+that already holds files, so it cannot damage an existing Obsidian vault, and it adopts a vault
+already present rather than touching it. A conformance test asserts the bundled template stays
+byte-identical to `vault-starter/`, so a URL install can never scaffold a stale contract.
+
+**`hermes/setup.sh` — one command for the terminal path.** `install.sh` refused to start unless
+the vault and `$HERMES_HOME` already existed, and left the configuration as copy-paste
+instructions, which made a first install a treasure hunt. `setup.sh` creates the vault, runs
+`git init` and the first commit, installs the pre-commit hook, links everything, writes
+`config.yaml` itself with a backup, and self-checks that the plugin can read the vault.
+Idempotent, and it never overwrites a model you already configured.
+
 **Passive recall — the `sb_vault` memory provider** (`hermes/memory/sb_vault/`). Activated with
 `hermes config set memory.provider sb_vault`, it injects the vault notes relevant to the turn you
 just typed, with paths and dates, before the model thinks to search. Read-only on purpose:
@@ -92,14 +109,6 @@ held and exits non-zero if any leaks.
 **Docs**: `docs/HERMES.md` (architecture, install, the plumbing-vs-judgment tables, credentials,
 cron, reliability), `hermes/README.md`, `vault-starter/AGENTS.md` for agents that auto-load
 `AGENTS.md`, and a `LICENSE` (MIT).
-
-**`hermes/setup.sh` — one-command install.** `install.sh` refused to start unless the vault and
-`$HERMES_HOME` already existed, and left the configuration as copy-paste instructions, which made
-a first install a treasure hunt (and was impossible to follow from Hermes Desktop, where there is
-no CLI to paste into). `setup.sh` creates the vault from `vault-starter/` if missing, runs
-`git init` and the first commit, installs the pre-commit hook, links the plugin, memory provider
-and skills, writes `config.yaml` itself with a backup, and self-checks that the plugin can read
-the vault. Idempotent, and it never overwrites a model you already configured.
 
 ### Fixed
 - **Path traversal in every path-taking tool**, found by the adversarial suite: `sb_read` returned

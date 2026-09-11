@@ -60,7 +60,7 @@ link() {
 }
 link "$repo/hermes/plugin/second_brain" "$hermes_home/plugins/second_brain"
 link "$repo/hermes/memory/sb_vault"     "$hermes_home/plugins/sb_vault"
-link "$repo/hermes/skills"              "$hermes_home/skills/second-brain"
+link "$repo/hermes/plugin/second_brain/skills"  "$hermes_home/skills/second-brain"
 
 if [[ -f "$hermes_home/SOUL.md" ]]; then
   warn "SOUL.md already exists — merge hermes/SOUL.md into it if you want the second-brain identity"
@@ -90,9 +90,6 @@ plugins:
         vault_path: "$vault"
 terminal:
   cwd: "$vault"
-skills:
-  external_dirs:
-    - "$hermes_home/skills/second-brain"
 YAML
 
 python3 - "$cfg" "$vault" "$hermes_home" <<'PY' || warn "could not edit config.yaml automatically — paste $snippet into it by hand"
@@ -110,10 +107,6 @@ if os.path.exists(cfg):
 data.setdefault("plugins", {}).setdefault("entries", {}).setdefault("second_brain", {}) \
     .setdefault("settings", {})["vault_path"] = vault
 data.setdefault("terminal", {})["cwd"] = vault
-dirs = data.setdefault("skills", {}).setdefault("external_dirs", [])
-skills_dir = os.path.join(home, "skills", "second-brain")
-if skills_dir not in dirs:
-    dirs.append(skills_dir)
 with open(cfg, "w", encoding="utf-8") as f:
     yaml.safe_dump(data, f, sort_keys=False, allow_unicode=True)
 print("  ✓ config.yaml written" + (" (backup: config.yaml.backup-second-brain)" if os.path.exists(cfg + ".backup-second-brain") else ""))

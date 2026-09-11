@@ -7,52 +7,39 @@ format, the model only supplies content and judgment.
 
 ```
 hermes/
-├── plugin/second_brain/     ← Hermes plugin: 26 `sb_*` tools in two toolsets + on_session_start hook
+├── plugin/second_brain/     ← the plugin, self-contained: 27 `sb_*` tools in two toolsets
+│   ├── skills/              ← the 13 skills, inside the package so a URL install carries them
+│   ├── starter/             ← the vault template `sb_setup` scaffolds from
 │   ├── vault/               ← the vault contract as code (stdlib-only, testable without Hermes):
 │   │                          notes · links · search · tasks · index · maintenance · recall ·
 │   │                          agenda · decisions · tend · backfill
 │   └── sources/             ← Calendar · Drive/Docs (transcript-first) · Slack · Jira → compact digests
 ├── memory/sb_vault/         ← optional memory provider: read-only passive recall, with citations
-├── skills/                  ← 13 skills: capture (braindump, people-update, knowledge-stub, meeting-ingest,
-│                              doc-ingest) · routine (daily-digest, weekly-review, task-roundup) ·
-│                              thinking (recall, prioritize, challenge-decision) · upkeep (vault-tend,
-│                              kickstart-backfill)
 ├── cron/jobs.sh             ← `hermes cron create`: daily digest · maintenance · weekly review
 ├── bench/guardrails.py      ← reliability scorecard: how much holds when the model gets it wrong
 ├── SOUL.md                  ← agent identity: the rules code cannot enforce
 ├── config.example.yaml      ← settings to merge into ~/.hermes/config.yaml
 ├── memories/USER.md.example ← pointers only — the vault is the memory
-├── install.sh               ← symlinks plugin + skills, seeds SOUL/USER.md/.env, installs the git hook
+├── setup.sh                 ← one command: vault, git, hook, plugin, config, self-check
+├── install.sh               ← the piecemeal variant (assumes the vault already exists)
 └── tests/                   ← conformance suite: every generated note must pass hooks/pre-commit
 ```
 
 ## Install
 
-One command. It creates the vault, initialises git, links the plugin, and writes the
-configuration itself. Works the same for Hermes Desktop and the CLI, and is safe to re-run.
+**From Hermes Desktop**: Settings → Plugins → install from URL, paste
+`https://github.com/fbureau/second-brain/tree/main/hermes/plugin/second_brain`, then say
+"set up my second brain". The plugin ships its own skills and vault template, so that is all.
 
-```bash
-./hermes/setup.sh                    # vault at ~/second-brain
-./hermes/setup.sh ~/notes/my-vault   # or wherever you want it
-```
+**From a terminal**: `./hermes/setup.sh` — same result, plus the vault's pre-commit hook.
 
-Then two things only you can do:
-
-1. Fill in `<vault>/00-inbox/MY-PROFILE.md` — your name, your language, your projects.
-   Every skill reads it at startup.
-2. In Hermes, pick a model that does reliable tool calling, then try
-   `/braindump the onboarding team is struggling with the new script`.
-
-If the `sb_*` tools do not appear, quit Hermes completely and reopen it: plugins are
-discovered at startup. `hermes/install.sh` remains for the piecemeal install (it assumes the
-vault and `~/.hermes` already exist).
-
-Architecture and the full guide: [`docs/HERMES.md`](../docs/HERMES.md).
+Full guide: [`docs/HERMES.md`](../docs/HERMES.md).
 
 ## Tools
 
 | Tool | Guarantees |
 |---|---|
+| `sb_setup` | creates the vault from the bundled template and remembers where it is — the only tool offered when no vault exists, hidden once one does |
 | `sb_brief` | ~500-token operating brief (rules, profile essentials, counts) instead of 400 lines |
 | `sb_search` / `sb_read` | hub-first, frontmatter-aware search; read one note |
 | `sb_find_person` | fuzzy match against `02-people/` — exact / likely / ambiguous / none |

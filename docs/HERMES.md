@@ -44,7 +44,7 @@ skill (procedure)  ──calls──▶  sb_* tools (plugin)  ──writes──
 - **`hermes/memory/sb_vault/`** — an optional *memory provider* plugin: before each turn it
   injects the vault notes relevant to what you just typed, with citations. Read-only, and it
   shares the retrieval engine with `sb_recall`, so passive and explicit recall never disagree.
-- **`hermes/skills/`** — agentskills.io-format `SKILL.md` files with Hermes metadata
+- **`hermes/plugin/second_brain/skills/`** — agentskills.io-format `SKILL.md` files with Hermes metadata
   (`requires_toolsets: [second_brain]`), loaded on demand via progressive disclosure.
 - **`hermes/SOUL.md`** — the rules code cannot enforce (language, no invention, cite, ask before
   creating a person, describe don't judge).
@@ -56,30 +56,48 @@ skill (procedure)  ──calls──▶  sb_* tools (plugin)  ──writes──
 
 ## Install
 
+### From Hermes Desktop, without a terminal
+
+Settings → Plugins → install from a URL, and paste:
+
+```
+https://github.com/fbureau/second-brain/tree/main/hermes/plugin/second_brain
+```
+
+That is the whole install. The plugin is self-contained: the thirteen skills live in
+`skills/` and the vault template in `starter/`, both inside the package, so a Git-URL
+install brings everything.
+
+Then open a conversation and say **"set up my second brain"**. With no vault yet, the only
+tool offered is `sb_setup` — so the model cannot do anything else, and cannot get it wrong.
+It creates the vault at `~/second-brain`, runs `git init`, and records the path in
+`$HERMES_HOME/.env` so every later session finds it. Pass your own path to put it elsewhere,
+or to adopt an Obsidian vault you already have.
+
+`sb_setup` refuses to write into a folder that already contains files, so it cannot damage
+an existing vault. Once a vault exists it hides itself and the other 21 tools appear.
+
+### From a terminal, if you prefer
+
 ```bash
 ./hermes/setup.sh                    # vault at ~/second-brain
 ./hermes/setup.sh ~/notes/my-vault   # or wherever you want it
 ```
 
-That is the whole thing. The script creates the vault from `vault-starter/` if it is missing,
-runs `git init` and the first commit, installs the pre-commit hook, links the plugin, the memory
-provider and the skills into `$HERMES_HOME`, writes `config.yaml` (backing up any existing one),
-and finishes by checking that the plugin can actually read the vault. Re-running it is safe, and
-it never overwrites a model you already configured.
+Same result, plus the two things a plugin cannot do for itself: it installs the vault's
+pre-commit hook (the shared judge of both editions) and seeds `SOUL.md`. Re-running it is
+safe, and it never overwrites a model you already configured.
 
-It works identically for **Hermes Desktop** and the CLI: both resolve the same home
+Both paths work identically for Hermes Desktop and the CLI: they resolve the same home
 (`~/.hermes` on macOS and Linux, `%LOCALAPPDATA%\hermes` on Windows).
 
-Two things the script deliberately leaves to you:
+### The two things nobody can do for you
 
-1. **Your profile** — fill `<vault>/00-inbox/MY-PROFILE.md`. Every skill reads it at preflight,
-   and the working language set there decides the language of every note body.
+1. **Your profile** — fill `<vault>/00-inbox/MY-PROFILE.md`. Every skill reads it at
+   preflight, and the working language set there decides the language of every note body.
 2. **Your model** — pick one that does reliable **function calling** with a context window
    ≥ 32k. Ollama defaults to 4k, which is unusable here: raise `num_ctx`. Hermes 4 14B is the
    natural fit, being post-trained for tool use; Qwen3 14B and Gemma 4 12B also work.
-
-`hermes/install.sh` is still there for a piecemeal install, but it assumes the vault and
-`$HERMES_HOME` already exist and leaves the configuration to you.
 
 ### Smoke test
 ```

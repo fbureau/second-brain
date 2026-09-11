@@ -10,7 +10,8 @@ import os
 import re
 from pathlib import Path
 
-from . import (agenda as agenda_mod, activity as activity_mod, backfill, decisions, frontmatter, gitops,  # noqa: F401
+from . import (agenda as agenda_mod, activity as activity_mod, backfill, bootstrap, decisions,  # noqa: F401
+               frontmatter, gitops,
                index, links, maintain, notes, recall as recall_mod, schemas, search, tasks, tend as tend_mod)
 from .notes import VaultError  # noqa: F401
 

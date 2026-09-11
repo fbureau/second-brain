@@ -20,7 +20,9 @@ plugins:
 
 skills:
   external_dirs:
-    - "${SECOND_BRAIN_REPO}/hermes/skills"   # read-only; install.sh symlinks them instead if you prefer
+    # Optional: the plugin links its own skills into ~/.hermes/skills/second-brain at startup,
+    # so this is only needed if you keep the plugin somewhere Hermes does not scan.
+    # - "${SECOND_BRAIN_REPO}/hermes/plugin/second_brain/skills"
 
 compression:
   enabled: true

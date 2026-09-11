@@ -211,6 +211,18 @@ SB_JIRA = {
         "required": []},
 }
 
+SB_SETUP = {
+    "name": "sb_setup",
+    "description": "Create the user's Second Brain vault and remember where it is. Use when no vault "
+                   "exists yet (the other sb_* tools are hidden until one does), or when the user says "
+                   "'set up my second brain', 'create my vault', 'get me started'. Refuses to write into "
+                   "a folder that already contains files, so it cannot damage an existing Obsidian vault.",
+    "parameters": {"type": "object", "properties": {
+        "path": {"type": "string", "description": "Where to create it (default: ~/second-brain). Pass the "
+                                                  "user's existing vault path to adopt it instead of creating one."}},
+        "required": []},
+}
+
 # --------------------------------------------------------------------------- analysis (phase 4)
 
 SB_RECALL = {
@@ -293,9 +305,10 @@ SB_BACKFILL_DONE = {
         "required": ["batch_id"]},
 }
 
+ALL_SETUP = [SB_SETUP]
 ALL_VAULT = [SB_BRIEF, SB_SEARCH, SB_READ, SB_FIND_PERSON, SB_CREATE_NOTE, SB_APPEND_TIMELINE, SB_APPEND_SECTION,
              SB_DAILY_APPEND, SB_NEW_ACTION, SB_CURATE, SB_COMMIT, SB_MAINTAIN, SB_TOGGLE_TASK, SB_VAULT_ACTIVITY,
              SB_RECALL, SB_AGENDA, SB_DECISION_CONTEXT, SB_DECISION_POSTMORTEM, SB_TEND, SB_BACKFILL_PLAN,
              SB_BACKFILL_DONE]
 ALL_SOURCES = [SB_CALENDAR, SB_DRIVE_CHANGES, SB_DRIVE_DOC, SB_SLACK, SB_JIRA]
-ALL = ALL_VAULT + ALL_SOURCES
+ALL = ALL_SETUP + ALL_VAULT + ALL_SOURCES

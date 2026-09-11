@@ -1,14 +1,18 @@
 name: second_brain
 version: 4.2.0
 description: >-
-  Second Brain vault tools — write AI-first notes (braindumps, people, meetings, wiki
-  stubs) into an Obsidian vault while the plugin enforces the vault contract
+  Second Brain — an AI-first personal knowledge system in Markdown. Self-contained: the 13
+  skills and the vault template ship inside the plugin, so installing it from the plugin window
+  is the whole install. With no vault yet only `sb_setup` is offered; it scaffolds one and
+  remembers where it is. Then: write AI-first notes (braindumps, people, meetings, wiki stubs)
+  into an Obsidian vault while the plugin enforces the vault contract
   (frontmatter, preamble, append-only history, wikilinks, task anchors); run the
   deterministic maintenance (TODO sync, curator, staleness, health); retrieve with citations
   and an honest confidence level; assemble the evidence for prioritising, red-teaming a
   decision, tending the whole vault and planning a Day-1 backfill; pull compact digests
   from Calendar, Drive (transcript-first), Slack and Jira.
 provides_tools:
+  - sb_setup
   - sb_brief
   - sb_search
   - sb_read
@@ -38,8 +42,9 @@ provides_tools:
 provides_hooks:
   - on_session_start
 # Toolsets: `second_brain` (vault) and `second_brain_sources` (Calendar/Drive/Slack/Jira).
-# Vault location: plugins.entries.second_brain.settings.vault_path in config.yaml,
-# or the SECOND_BRAIN_VAULT environment variable, or run Hermes with cwd = the vault.
+# Vault location: plugins.entries.second_brain.settings.vault_path in config.yaml, or the
+# SECOND_BRAIN_VAULT environment variable (which `sb_setup` writes for you), or cwd.
+# Nothing needs configuring for a first install: ask the agent to set up your second brain.
 # Source tools appear only when their credentials are set in ~/.hermes/.env:
 #   GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REFRESH_TOKEN   (Calendar, Drive, Docs)
 #   SLACK_BOT_TOKEN [, SLACK_USER_ID]                                (Slack)

@@ -5,6 +5,8 @@ import json
 import os
 from typing import Callable
 
+from pathlib import Path
+
 from .sources import SourceError, calendar, drive, jira, slack
 from .vault import Vault, VaultError
 
@@ -41,6 +43,16 @@ def _int(v, default):
         return int(v) if v not in (None, "") else default
     except (TypeError, ValueError):
         return default
+
+
+# ----------------------------------------------------------------------------- setup
+
+@_guard
+def sb_setup(args):
+    from .vault import bootstrap
+    res = bootstrap.create(args.get("path"))
+    res.update(bootstrap.remember(Path(res["path"])))
+    return res
 
 
 # ----------------------------------------------------------------------------- vault
@@ -212,6 +224,7 @@ def sb_jira(args):
     return jira.digest_issues(raw)
 
 
+SETUP_HANDLERS = {"sb_setup": sb_setup}
 VAULT_HANDLERS = {
     "sb_brief": sb_brief, "sb_search": sb_search, "sb_read": sb_read, "sb_find_person": sb_find_person,
     "sb_create_note": sb_create_note, "sb_append_timeline": sb_append_timeline, "sb_append_section": sb_append_section,
@@ -224,7 +237,7 @@ VAULT_HANDLERS = {
 SOURCE_HANDLERS = {"sb_calendar": sb_calendar, "sb_drive_changes": sb_drive_changes, "sb_drive_doc": sb_drive_doc,
                    "sb_slack": sb_slack, "sb_jira": sb_jira}
 SOURCE_ENV = {"sb_calendar": "google", "sb_drive_changes": "google", "sb_drive_doc": "google", "sb_slack": "slack", "sb_jira": "jira"}
-HANDLERS = {**VAULT_HANDLERS, **SOURCE_HANDLERS}
+HANDLERS = {**SETUP_HANDLERS, **VAULT_HANDLERS, **SOURCE_HANDLERS}
 
 
 def source_available(kind: str) -> bool:
