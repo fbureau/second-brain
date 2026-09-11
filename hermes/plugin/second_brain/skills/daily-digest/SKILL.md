@@ -1,7 +1,7 @@
 ---
 name: daily-digest
 description: Produce the day's digest for the second brain — synthesize calendar, Drive, Slack, Jira and vault activity into today's daily note (TL;DR, top topics, weak signals, people touched, pending follow-ups), log auto-observed interactions on known people, refresh TODO.md, and return the digest text for delivery. Use as the scheduled evening job or when the user says "daily digest", "what happened today", "recap of the day".
-version: 4.2.0
+version: 4.2.1
 author: fbureau
 license: MIT
 metadata:

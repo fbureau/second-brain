@@ -12,6 +12,43 @@ The current version is in the [`VERSION`](VERSION) file. Each release is an anno
 Git tag (`X.Y.Z`, no `v` prefix) on `main`. See [`docs/RELEASING.md`](docs/RELEASING.md) for the process
 and [`docs/UPGRADING.md`](docs/UPGRADING.md) to move an existing vault between versions.
 
+## [4.2.1] - 2026-09-11
+
+Installing the Hermes edition required a terminal and a treasure hunt. It no longer does.
+
+### Added
+
+**Installable from Hermes Desktop, with no terminal.** The plugin is self-contained: the
+thirteen skills (`skills/`) and the vault template (`starter/`) live inside the package, so
+pasting the plugin's Git URL into Desktop's plugin window is the entire install. With no vault
+configured the toolset offers exactly one tool, `sb_setup` — it scaffolds a vault from the
+bundled template, runs `git init`, and records the path in `$HERMES_HOME/.env` so later sessions
+find it; then it hides itself and the other 21 tools appear. It refuses to write into a folder
+that already holds files, so it cannot damage an existing Obsidian vault, and it adopts a vault
+already present rather than touching it. A conformance test asserts the bundled template stays
+byte-identical to `vault-starter/`, so a URL install can never scaffold a stale contract.
+
+**`hermes/setup.sh` — one command for the terminal path.** `install.sh` refused to start unless
+the vault and `$HERMES_HOME` already existed, and left the configuration as copy-paste
+instructions, which made a first install a treasure hunt. `setup.sh` creates the vault, runs
+`git init` and the first commit, installs the pre-commit hook, links everything, writes
+`config.yaml` itself with a backup, and self-checks that the plugin can read the vault.
+Idempotent, and it never overwrites a model you already configured.
+
+### Fixed
+- **`sb_setup` merged two reports that both used a `note` key**, so "a vault is already there" was
+  silently replaced by "already set". The key sets are now disjoint, and a test asserts they stay that way.
+
+### Changed
+- **The skills moved into the plugin**: `hermes/skills/` → `hermes/plugin/second_brain/skills/`, so a
+  plugin installed from a Git URL carries them. The plugin links them into `$HERMES_HOME/skills` at
+  load, so nothing needs configuring — but a `config.yaml` that points `skills.external_dirs` at the
+  old path must be updated or removed. See `docs/UPGRADING.md`.
+- `plugin.yaml` declares 27 tools (26 + `sb_setup`), and the install docs lead with the Desktop path.
+
+### Migration (v4.2.0 → v4.2.1)
+Tooling only; nothing changes in existing vaults. One path moved — see above and `docs/UPGRADING.md`.
+
 ## [4.2.0] - 2026-09-09
 
 The Hermes Agent edition: the vault can now be operated end to end by a **local model**,
@@ -60,23 +97,6 @@ need to when a non-conforming note simply cannot be written.
   (`sb_drive_doc` → `transcript_source`), Slack clustered per channel plus DMs and mentions, Jira
   Cloud. Credentials live in `~/.hermes/.env`; each tool hides itself when its variables are missing,
   so a small model never sees a tool it cannot call.
-
-**Installable from Hermes Desktop, with no terminal.** The plugin is self-contained: the
-thirteen skills (`skills/`) and the vault template (`starter/`) live inside the package, so
-pasting the plugin's Git URL into Desktop's plugin window is the entire install. With no vault
-configured the toolset offers exactly one tool, `sb_setup` — it scaffolds a vault from the
-bundled template, runs `git init`, and records the path in `$HERMES_HOME/.env` so later sessions
-find it; then it hides itself and the other 21 tools appear. It refuses to write into a folder
-that already holds files, so it cannot damage an existing Obsidian vault, and it adopts a vault
-already present rather than touching it. A conformance test asserts the bundled template stays
-byte-identical to `vault-starter/`, so a URL install can never scaffold a stale contract.
-
-**`hermes/setup.sh` — one command for the terminal path.** `install.sh` refused to start unless
-the vault and `$HERMES_HOME` already existed, and left the configuration as copy-paste
-instructions, which made a first install a treasure hunt. `setup.sh` creates the vault, runs
-`git init` and the first commit, installs the pre-commit hook, links everything, writes
-`config.yaml` itself with a backup, and self-checks that the plugin can read the vault.
-Idempotent, and it never overwrites a model you already configured.
 
 **Passive recall — the `sb_vault` memory provider** (`hermes/memory/sb_vault/`). Activated with
 `hermes config set memory.provider sb_vault`, it injects the vault notes relevant to the turn you

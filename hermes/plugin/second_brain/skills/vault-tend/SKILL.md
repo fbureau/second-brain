@@ -1,7 +1,7 @@
 ---
 name: vault-tend
 description: Whole-vault maintenance pass — normalize frontmatter, flag language drift, repair broken wikilinks, find duplicate people or pages, propose archives. Always previews and asks before changing anything. Use when the user says "tidy the vault", "clean up", "normalize", "fix the broken links", "deduplicate", "translate the vault", "vault maintenance".
-version: 4.2.0
+version: 4.2.1
 author: fbureau
 license: MIT
 metadata:

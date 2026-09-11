@@ -1,7 +1,7 @@
 ---
 name: challenge-decision
 description: Pressure-test a decision before it is made (red-team) or run the learning loop after one is reversed (postmortem), arguing from the vault's own history. Use when the user says "challenge this", "red team", "stress test", "I'm thinking of X", "before I decide", "postmortem", "what went wrong", or when a decision note flips to status reversed.
-version: 4.2.0
+version: 4.2.1
 author: fbureau
 license: MIT
 metadata:

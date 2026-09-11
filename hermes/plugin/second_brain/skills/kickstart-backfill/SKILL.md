@@ -1,7 +1,7 @@
 ---
 name: kickstart-backfill
 description: One-shot Day-1 backfill that pre-fills an empty vault from one to six months of calendar, Drive and Slack history, creating people, project, meeting and decision notes in dependency order. Use when the user says "kickstart", "backfill", "initialize the vault", "pre-fill with the last three months". Single use — after that, daily-digest keeps the vault current.
-version: 4.2.0
+version: 4.2.1
 author: fbureau
 license: MIT
 metadata:

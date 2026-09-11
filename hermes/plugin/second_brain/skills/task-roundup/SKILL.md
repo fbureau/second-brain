@@ -1,7 +1,7 @@
 ---
 name: task-roundup
 description: Refresh TODO.md from every action item in the vault (both-ways checkbox sync via ^t-id anchors), mark tasks done, and resolve the cases the maintenance tool cannot decide alone. Use when the user says "task roundup", "my todo", "what do I have to do", "I finished X", "sync tasks", or as the scheduled maintenance job.
-version: 4.2.0
+version: 4.2.1
 author: fbureau
 license: MIT
 metadata:
